@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+---
+
+# MovieNight Core Agent Rules
+
+- Work only on the explicitly requested stage or sprint. Do not continue into later work automatically.
+- Treat `PROJECT.md`, `ARCHITECTURE.md`, and `DECISIONS.md` as canonical when they are provided or relevant.
+- Read `STATUS.md` and the active stage file before substantial implementation work.
+- Do not scan all documentation or the entire repository unless the task genuinely requires it.
+- Do not repeat questions already answered by canonical project documents.
+- For minor ambiguity, choose the simplest option consistent with the existing scope and record the assumption.
+- Ask only when an unresolved choice materially changes product scope, architecture, security, or data semantics.
+- Never silently introduce a new architecture pattern, infrastructure component, or dependency.
+- Do not perform unrelated refactors, renames, formatting sweeps, or cleanup.
+- Inspect existing relevant code before changing an unfamiliar area.
+- Prefer the smallest coherent implementation that satisfies current acceptance criteria.
+- Verify changed behavior with the narrowest relevant build/tests.
+- Do not claim completion when verification is failing because of your changes.
+- Update `STATUS.md` only when the requested sprint or stage has actually changed state.
+- End implementation work with a concise report of changes, files, verification, assumptions, and unresolved issues.

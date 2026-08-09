@@ -1,0 +1,44 @@
+# MovieNight Cursor access exclusions
+# .cursorignore controls files Cursor AI features may access.
+
+# Secrets and local environment
+**/.env
+**/.env.*
+!**/.env.example
+**/secrets.json
+**/credentials.json
+**/*.pem
+**/*.key
+
+# .NET generated/build output
+**/bin/
+**/obj/
+**/TestResults/
+**/*.user
+**/*.suo
+
+# Frontend generated/build output
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+**/coverage/
+
+# Local databases and transient database files
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Logs and temporary files
+**/*.log
+**/*.tmp
+**/*.bak
+
+# IDE / OS noise
+**/.vs/
+**/.idea/
+**/.DS_Store
+
+# Local scratch areas, if created
+scratch/
+tmp/

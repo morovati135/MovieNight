@@ -1,0 +1,19 @@
+---
+globs: frontend/**
+alwaysApply: false
+---
+
+# MovieNight Frontend Rules
+
+- Use Next.js with TypeScript.
+- Use Tailwind CSS and shadcn/ui for the primary UI implementation.
+- Keep the visual direction polished, responsive, cinematic, and portfolio-ready without adding unnecessary animation infrastructure.
+- The frontend must call only the MovieNight backend for movie/business data. Never call TMDB directly.
+- Centralize backend communication under the frontend API layer instead of scattering unrelated raw `fetch` calls across components.
+- Do not invent backend endpoints or response contracts; inspect the implemented backend contract first.
+- Prefer simple feature-oriented components over premature generic component abstractions.
+- Do not add a global state-management library unless current requirements clearly justify it.
+- Handle loading, empty, error, and not-found states for user-facing async flows.
+- Keep owner-token persistence client-side and avoid exposing it in shareable URLs.
+- Preserve responsive behavior across desktop and mobile.
+- Avoid unrelated redesigns while implementing a bounded sprint.
