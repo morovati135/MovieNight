@@ -1,0 +1,23 @@
+# Build outputs
+bin/
+obj/
+TestResults/
+
+# Node / Next.js
+node_modules/
+.next/
+coverage/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# SQLite local databases
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.vs/
+.idea/

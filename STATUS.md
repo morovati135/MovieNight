@@ -10,10 +10,11 @@ Stage 02 — Project Bootstrap (Ready)
 
 ## Current Sprint
 
-Sprint 02.1 — Repository Preflight (Next)
+Sprint 02.2 — Backend Bootstrap (Next)
 
 ## Completed
 
+- Sprint 02.1 — Repository Preflight
 - Product idea selected
 - Project scope agreed
 - Backend stack selected
@@ -43,7 +44,6 @@ Sprint 02.1 — Repository Preflight (Next)
 
 ## Not Started
 
-- Repository bootstrap
 - Backend project
 - Frontend project
 - TMDB integration
@@ -73,8 +73,8 @@ None.
 
 ## Next Planned Work
 
-1. Open the project root in Cursor.
-2. Start a new Agent chat for Sprint 02.1.
-3. Execute the Sprint 02.1 prompt from `docs/stages/02-project-bootstrap.md`.
+1. Start a new Agent chat for Sprint 02.2.
+2. Execute the Sprint 02.2 prompt from `docs/stages/02-project-bootstrap.md`.
+3. Scaffold the .NET solution, API project, test project, and health endpoint.
 4. Review the agent report and diff.
-5. Accept/fix Sprint 02.1 before starting Sprint 02.2.
+5. Accept/fix Sprint 02.2 before starting Sprint 02.3.
