@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MovieNight.Api.Tests/MovieNight.Api.Tests.csproj" />
+  <Project Path="MovieNight.Api/MovieNight.Api.csproj" />
+</Solution>
