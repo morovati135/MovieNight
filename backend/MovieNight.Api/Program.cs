@@ -1,11 +1,13 @@
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
+using MovieNight.Api.Features.Movies;
 using MovieNight.Api.Integrations.Tmdb;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddMemoryCache();
 builder.Services.AddOptions<TmdbOptions>().BindConfiguration(TmdbOptions.SectionName)
     .Validate(
         options => Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out var baseUrl) && baseUrl.Scheme == Uri.UriSchemeHttps,
@@ -14,6 +16,7 @@ builder.Services.AddOptions<TmdbOptions>().BindConfiguration(TmdbOptions.Section
         options => !string.IsNullOrWhiteSpace(options.ReadAccessToken),
         "TMDB configuration is missing. Set Tmdb__ReadAccessToken through a local environment variable or user secret.")
     .ValidateOnStart();
+
 builder.Services.AddHttpClient<TmdbClient>((serviceProvider, client) =>
 {
     var options = serviceProvider.GetRequiredService<IOptions<TmdbOptions>>().Value;
@@ -22,6 +25,8 @@ builder.Services.AddHttpClient<TmdbClient>((serviceProvider, client) =>
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", options.ReadAccessToken);
     client.Timeout = TimeSpan.FromSeconds(10);
 });
+builder.Services.AddScoped<MovieCatalogService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
