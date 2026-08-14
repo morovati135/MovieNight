@@ -10,7 +10,7 @@ Stage 03 — Movie Backend / TMDB Integration
 
 ## Current Sprint
 
-Sprint 03.1 — TMDB Access Preflight & Configuration (Next)
+Sprint 03.2 — TMDB Client & Movie Contract Boundary (Next)
 
 ## Accepted / Completed
 
@@ -21,6 +21,7 @@ Sprint 03.1 — TMDB Access Preflight & Configuration (Next)
 - Sprint 02.3 — Frontend Bootstrap
 - Sprint 02.4 — Local Full-Stack Smoke Integration
 - Sprint 02.5 — Bootstrap Verification & Handoff
+- Sprint 03.1 — TMDB Access Preflight & Configuration
 - Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
 - Backend/frontend stack selected
@@ -54,7 +55,6 @@ None.
 
 ## Next Planned Work
 
-1. Start Sprint 03.1 in a fresh Codex thread.
-2. Establish TMDB Bearer-token configuration and HttpClient boundary.
-3. Verify live TMDB connectivity.
-4. Stop before Sprint 03.2.
+1. Start Sprint 03.2 in a fresh Codex thread.
+2. Create the TMDB client and MovieNight movie contract boundary.
+3. Stop before Sprint 03.3.
