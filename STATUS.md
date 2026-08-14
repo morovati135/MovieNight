@@ -2,15 +2,15 @@
 
 ## Current Phase
 
-Implementation / Stage 02 Bootstrap
+Planning / Stage 03
 
 ## Current Stage
 
-Stage 02 — Project Bootstrap
+Stage 03 — Movie Backend / TMDB Integration (not started)
 
 ## Current Sprint
 
-Sprint 02.5 — Bootstrap Verification & Handoff
+None — awaiting Stage 03 planning
 
 ## Accepted / Completed
 
@@ -20,13 +20,14 @@ Sprint 02.5 — Bootstrap Verification & Handoff
 - Sprint 02.2 — Backend Bootstrap
 - Sprint 02.3 — Frontend Bootstrap
 - Sprint 02.4 — Local Full-Stack Smoke Integration
+- Sprint 02.5 — Bootstrap Verification & Handoff
+- Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
 
 ## Not Started
 
-- Sprint 02.5 — Bootstrap Verification & Handoff
 - Stage 03 — Movie Backend / TMDB integration
 - Watchlist backend
 - Frontend feature implementation
@@ -53,4 +54,4 @@ None.
 
 ## Next Planned Work
 
-1. Start Sprint 02.5 — Bootstrap Verification & Handoff in a fresh Codex thread.
+1. Plan and start Stage 03 — Movie Backend / TMDB Integration.
