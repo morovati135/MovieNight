@@ -10,7 +10,7 @@ Stage 02 — Project Bootstrap
 
 ## Current Sprint
 
-Sprint 02.3 — Frontend Bootstrap (Next)
+Sprint 02.4 — Local Full-Stack Smoke Integration
 
 ## Accepted / Completed
 
@@ -18,13 +18,13 @@ Sprint 02.3 — Frontend Bootstrap (Next)
 - Stage 01 — Technical Foundation
 - Sprint 02.1 — Repository Preflight
 - Sprint 02.2 — Backend Bootstrap
+- Sprint 02.3 — Frontend Bootstrap
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
 
 ## Not Started
 
-- Sprint 02.3 — Frontend Bootstrap
 - Sprint 02.4 — Local Full-Stack Smoke Integration
 - Sprint 02.5 — Bootstrap Verification & Handoff
 - Stage 03 — Movie Backend / TMDB integration
@@ -53,4 +53,4 @@ None.
 
 ## Next Planned Work
 
-1. Start Sprint 02.3 — Frontend Bootstrap in a fresh Codex thread.
+1. Start Sprint 02.4 — Local Full-Stack Smoke Integration in a fresh Codex thread.
