@@ -9,7 +9,7 @@ namespace MovieNight.Api.Tests;
 public sealed class MovieCatalogServiceTests
 {
     [Fact]
-    public async Task GetGenresAsync_maps_genres()
+    public async Task GetGenresAsync_maps_genres_and_uses_the_memory_cache()
     {
         var handler = new GenreHttpMessageHandler("""
             { "genres": [{ "id": 28, "name": "Action" }, { "id": 35, "name": "Comedy" }] }
@@ -26,7 +26,7 @@ public sealed class MovieCatalogServiceTests
             genre => Assert.Equal((28, "Action"), (genre.Id, genre.Name)),
             genre => Assert.Equal((35, "Comedy"), (genre.Id, genre.Name)));
         Assert.Equal(firstResult, secondResult);
-        Assert.Equal(2, handler.RequestCount);
+        Assert.Equal(1, handler.RequestCount);
         Assert.Equal("/3/genre/movie/list", handler.RequestUri?.AbsolutePath);
     }
 

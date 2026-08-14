@@ -7,15 +7,21 @@ namespace MovieNight.Api.Features.Movies;
 public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cache, Func<int, int, int>? nextRandom = null)
 {
     private const int PickPageLimit = 15;
+    private const string GenresCacheKey = "movies:genres";
     private const string TrendingCacheKey = "movies:trending";
     private const string PopularCacheKey = "movies:popular";
+    private static readonly TimeSpan GenresCacheDuration = TimeSpan.FromHours(6);
     private static readonly TimeSpan ListCacheDuration = TimeSpan.FromMinutes(5);
     private static readonly TimeSpan DetailsCacheDuration = TimeSpan.FromMinutes(10);
 
     public async Task<IReadOnlyList<GenreDto>> GetGenresAsync(CancellationToken cancellationToken)
     {
-        var response = await tmdbClient.GetMovieGenresAsync(cancellationToken);
-        return response.Genres.Select(TmdbMovieMapper.ToGenre).ToArray();
+        return await cache.GetOrCreateAsync(GenresCacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = GenresCacheDuration;
+            var response = await tmdbClient.GetMovieGenresAsync(cancellationToken);
+            return (IReadOnlyList<GenreDto>)response.Genres.Select(TmdbMovieMapper.ToGenre).ToArray();
+        }) ?? [];
     }
 
     public async Task<PagedMovieResultDto> GetTrendingAsync(CancellationToken cancellationToken)

@@ -2,15 +2,15 @@
 
 ## Current Phase
 
-Implementation / Stage 03
+Implementation / Stage 04
 
 ## Current Stage
 
-Stage 03 — Movie Backend / TMDB Integration
+Stage 04 — Anonymous Watchlist Backend & Persistence (Next)
 
 ## Current Sprint
 
-Sprint 03.6 — Stage 03 Verification & Handoff (Next)
+No active sprint — Stage 04 has not started
 
 ## Accepted / Completed
 
@@ -26,6 +26,8 @@ Sprint 03.6 — Stage 03 Verification & Handoff (Next)
 - Sprint 03.3 — Discovery & Search API
 - Sprint 03.4 — Movie Details, Cast & Similar API
 - Sprint 03.5 — Pick for Me
+- Sprint 03.6 — Stage 03 Verification & Handoff
+- Stage 03 — Movie Backend / TMDB Integration
 - Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
 - Backend/frontend stack selected
@@ -33,7 +35,6 @@ Sprint 03.6 — Stage 03 Verification & Handoff (Next)
 
 ## Not Started
 
-- Stage 03 — Movie Backend / TMDB integration
 - Watchlist backend
 - Frontend feature implementation
 - Final integration/polish
@@ -59,5 +60,5 @@ None.
 
 ## Next Planned Work
 
-1. Start Sprint 03.6 — Stage 03 Verification & Handoff.
-2. Stop before any later sprint.
+1. Start Stage 04 — Anonymous Watchlist Backend & Persistence.
+2. Stop before Stage 05.

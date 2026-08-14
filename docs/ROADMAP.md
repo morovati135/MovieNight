@@ -75,7 +75,7 @@ Important accepted local contracts:
 
 # Stage 03 — Movie Backend & TMDB Integration
 
-**Status:** Next
+**Status:** Completed
 
 Primary outcome:
 
@@ -120,7 +120,7 @@ Detailed file:
 
 # Stage 04 — Anonymous Watchlist Backend & Persistence
 
-**Status:** Planned
+**Status:** Next
 
 Primary outcome:
 
