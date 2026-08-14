@@ -15,6 +15,12 @@ public sealed class TmdbClient(HttpClient httpClient)
     private const string SearchMoviesPath = "search/movie";
     private const string DiscoverMoviesPath = "discover/movie";
 
+    internal Task<TmdbMovie> GetMovieDetailsAsync(int movieId, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMovie>(
+            $"movie/{movieId}?append_to_response=credits,similar",
+            "movie details",
+            cancellationToken);
+
     internal async Task<TmdbGenreListResponse> GetMovieGenresAsync(CancellationToken cancellationToken)
     {
         return await GetFromTmdbAsync<TmdbGenreListResponse>(MovieGenresPath, "genre", cancellationToken);
@@ -76,6 +82,11 @@ public sealed class TmdbClient(HttpClient httpClient)
             if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
             {
                 throw new TmdbAuthenticationException();
+            }
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new TmdbNotFoundException();
             }
 
             throw new TmdbUpstreamException($"TMDB rejected the {operation} request.");
@@ -142,6 +153,14 @@ public sealed class TmdbUpstreamException : Exception
 {
     public TmdbUpstreamException(string message)
         : base(message)
+    {
+    }
+}
+
+public sealed class TmdbNotFoundException : Exception
+{
+    public TmdbNotFoundException()
+        : base("TMDB movie was not found.")
     {
     }
 }

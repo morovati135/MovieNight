@@ -66,6 +66,12 @@ internal sealed class TmdbMovie
 
     [JsonPropertyName("vote_average")]
     public double VoteAverage { get; init; }
+
+    [JsonPropertyName("credits")]
+    public TmdbMovieCredits Credits { get; init; } = new();
+
+    [JsonPropertyName("similar")]
+    public TmdbMoviePage Similar { get; init; } = new();
 }
 
 internal sealed class TmdbNullableDateOnlyJsonConverter : JsonConverter<DateOnly?>

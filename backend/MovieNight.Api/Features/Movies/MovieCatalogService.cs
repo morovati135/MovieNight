@@ -9,6 +9,7 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
     private const string TrendingCacheKey = "movies:trending";
     private const string PopularCacheKey = "movies:popular";
     private static readonly TimeSpan ListCacheDuration = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan DetailsCacheDuration = TimeSpan.FromMinutes(10);
 
     public async Task<IReadOnlyList<GenreDto>> GetGenresAsync(CancellationToken cancellationToken)
     {
@@ -43,6 +44,16 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
     {
         var request = new TmdbDiscoverRequest(genreId, year, minRating, page);
         return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.DiscoverMoviesAsync(request, cancellationToken));
+    }
+
+    public async Task<MovieDetailsDto> GetDetailsAsync(int movieId, CancellationToken cancellationToken)
+    {
+        var cacheKey = $"movies:details:{movieId}";
+        return await cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = DetailsCacheDuration;
+            return TmdbMovieMapper.ToMovieDetails(await tmdbClient.GetMovieDetailsAsync(movieId, cancellationToken));
+        }) ?? throw new TmdbUpstreamException("TMDB returned an empty movie details response.");
     }
 
     private static PagedMovieResultDto EmptyPage() => new([], 1, 0, 0);

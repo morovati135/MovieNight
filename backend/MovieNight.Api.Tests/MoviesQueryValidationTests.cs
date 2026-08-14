@@ -40,6 +40,16 @@ public sealed class MoviesQueryValidationTests
         Assert.Equal(1, new DiscoverMoviesQuery().Page);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Movie_details_route_rejects_non_positive_ids(int id)
+    {
+        var attribute = new RangeAttribute(1, int.MaxValue);
+
+        Assert.False(attribute.IsValid(id));
+    }
+
     private static List<ValidationResult> Validate(object value)
     {
         var results = new List<ValidationResult>();

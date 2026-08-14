@@ -61,6 +61,37 @@ public sealed class TmdbClientTests
     }
 
     [Fact]
+    public async Task GetMovieDetailsAsync_uses_tmdb_response_aggregation()
+    {
+        var handler = new StubHttpMessageHandler(HttpStatusCode.OK, """{ "id": 1, "title": "Movie" }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        await client.GetMovieDetailsAsync(1, CancellationToken.None);
+
+        Assert.Equal("/3/movie/1", handler.RequestUri?.AbsolutePath);
+        Assert.Equal("append_to_response=credits,similar", handler.RequestUri?.Query.TrimStart('?'));
+    }
+
+    [Fact]
+    public async Task GetMovieDetailsAsync_translates_not_found()
+    {
+        using var httpClient = new HttpClient(new StubHttpMessageHandler(HttpStatusCode.NotFound)) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        await Assert.ThrowsAsync<TmdbNotFoundException>(() => client.GetMovieDetailsAsync(404, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetMovieDetailsAsync_translates_upstream_failure()
+    {
+        using var httpClient = new HttpClient(new StubHttpMessageHandler(HttpStatusCode.InternalServerError)) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        await Assert.ThrowsAsync<TmdbUpstreamException>(() => client.GetMovieDetailsAsync(1, CancellationToken.None));
+    }
+
+    [Fact]
     public void Popular_response_with_an_empty_release_date_maps_to_a_missing_optional_release_date()
     {
         const string response = """

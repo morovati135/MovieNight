@@ -73,6 +73,25 @@ public sealed class MovieCatalogServiceTests
         Assert.Equal(4, handler.RequestCount);
     }
 
+    [Fact]
+    public async Task GetDetailsAsync_uses_a_cache_key_per_movie_id()
+    {
+        var handler = new GenreHttpMessageHandler("""
+            { "id": 7, "title": "Movie", "credits": { "cast": [] }, "similar": { "results": [] } }
+            """);
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+
+        var first = await service.GetDetailsAsync(7, CancellationToken.None);
+        var second = await service.GetDetailsAsync(7, CancellationToken.None);
+        await service.GetDetailsAsync(8, CancellationToken.None);
+
+        Assert.Equal(7, first.Id);
+        Assert.Equal(first, second);
+        Assert.Equal(2, handler.RequestCount);
+    }
+
     private sealed class GenreHttpMessageHandler(string json) : HttpMessageHandler
     {
         public int RequestCount { get; private set; }

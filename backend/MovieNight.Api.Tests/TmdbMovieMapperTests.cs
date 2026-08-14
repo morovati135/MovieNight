@@ -40,7 +40,7 @@ public sealed class TmdbMovieMapperTests
     }
 
     [Fact]
-    public void ToMovieDetails_maps_genres_cast_in_order_and_image_urls()
+    public void ToMovieDetails_maps_genres_cast_in_order_similar_movies_and_image_urls()
     {
         var movie = new TmdbMovie
         {
@@ -50,18 +50,22 @@ public sealed class TmdbMovieMapperTests
             RuntimeMinutes = 123,
             PosterPath = "/poster.jpg",
             BackdropPath = "/backdrop.jpg",
-            VoteAverage = 8.5
-        };
-        var credits = new TmdbMovieCredits
-        {
-            Cast =
-            [
-                new TmdbCastMember { Id = 2, Name = "Second", Character = "B", Order = 1 },
-                new TmdbCastMember { Id = 1, Name = "First", Character = "A", Order = 0, ProfilePath = "/profile.jpg" }
-            ]
+            VoteAverage = 8.5,
+            Credits = new TmdbMovieCredits
+            {
+                Cast =
+                [
+                    new TmdbCastMember { Id = 2, Name = "Second", Character = "B", Order = 1 },
+                    new TmdbCastMember { Id = 1, Name = "First", Character = "A", Order = 0, ProfilePath = "/profile.jpg" }
+                ]
+            },
+            Similar = new TmdbMoviePage
+            {
+                Results = [new TmdbMovie { Id = 3, Title = "Similar", PosterPath = "/similar.jpg" }]
+            }
         };
 
-        var result = TmdbMovieMapper.ToMovieDetails(movie, credits);
+        var result = TmdbMovieMapper.ToMovieDetails(movie);
 
         Assert.Equal("Action", Assert.Single(result.Genres).Name);
         Assert.Equal(123, result.RuntimeMinutes);
@@ -75,6 +79,40 @@ public sealed class TmdbMovieMapperTests
                 Assert.Equal("https://image.tmdb.org/t/p/w185/profile.jpg", cast.ProfileUrl);
             },
             cast => Assert.Equal("Second", cast.Name));
+        var similarMovie = Assert.Single(result.SimilarMovies);
+        Assert.Equal(3, similarMovie.Id);
+        Assert.Equal("https://image.tmdb.org/t/p/w500/similar.jpg", similarMovie.PosterUrl);
+    }
+
+    [Fact]
+    public void ToMovieDetails_limits_cast_and_similar_results_and_allows_missing_images()
+    {
+        var movie = new TmdbMovie
+        {
+            Id = 1,
+            Title = "The Movie",
+            Credits = new TmdbMovieCredits
+            {
+                Cast = Enumerable.Range(0, 13).Reverse().Select(index => new TmdbCastMember
+                {
+                    Id = index,
+                    Name = $"Cast {index}",
+                    Order = index
+                }).ToArray()
+            },
+            Similar = new TmdbMoviePage
+            {
+                Results = Enumerable.Range(0, 13).Select(index => new TmdbMovie { Id = index + 10, Title = $"Similar {index}" }).ToArray()
+            }
+        };
+
+        var result = TmdbMovieMapper.ToMovieDetails(movie);
+
+        Assert.Equal(TmdbMovieMapper.DetailsCastLimit, result.Cast.Count);
+        Assert.Equal("Cast 0", result.Cast[0].Name);
+        Assert.Null(result.Cast[0].ProfileUrl);
+        Assert.Equal(TmdbMovieMapper.SimilarMoviesLimit, result.SimilarMovies.Count);
+        Assert.Null(result.SimilarMovies[0].PosterUrl);
     }
 
     [Fact]

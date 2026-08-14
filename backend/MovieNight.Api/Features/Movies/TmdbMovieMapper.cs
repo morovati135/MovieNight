@@ -6,6 +6,10 @@ namespace MovieNight.Api.Features.Movies;
 
 internal static class TmdbMovieMapper
 {
+    // Details pages need a concise, above-the-fold cast and recommendation list.
+    internal const int DetailsCastLimit = 12;
+    internal const int SimilarMoviesLimit = 12;
+
     public static GenreDto ToGenre(TmdbGenre genre) => new(genre.Id, genre.Name);
 
     public static MovieSummaryDto ToMovieSummary(TmdbMovie movie) => new(
@@ -23,7 +27,7 @@ internal static class TmdbMovieMapper
         page.TotalPages,
         page.TotalResults);
 
-    public static MovieDetailsDto ToMovieDetails(TmdbMovie movie, TmdbMovieCredits credits) => new(
+    public static MovieDetailsDto ToMovieDetails(TmdbMovie movie) => new(
         movie.Id,
         movie.Title,
         movie.Overview,
@@ -33,7 +37,8 @@ internal static class TmdbMovieMapper
         TmdbImageUrlBuilder.BuildPosterUrl(movie.PosterPath),
         TmdbImageUrlBuilder.BuildBackdropUrl(movie.BackdropPath),
         movie.VoteAverage,
-        credits.Cast.OrderBy(member => member.Order).Select(ToCast).ToArray());
+        movie.Credits.Cast.OrderBy(member => member.Order).Take(DetailsCastLimit).Select(ToCast).ToArray(),
+        movie.Similar.Results.Take(SimilarMoviesLimit).Select(ToMovieSummary).ToArray());
 
     public static CastDto ToCast(TmdbCastMember castMember) => new(
         castMember.Id,

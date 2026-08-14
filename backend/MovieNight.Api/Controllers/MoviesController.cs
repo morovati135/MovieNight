@@ -22,6 +22,10 @@ public sealed class MoviesController(MovieCatalogService movieCatalogService) : 
     public Task<ActionResult<PagedMovieResultDto>> GetPopular(CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.GetPopularAsync(cancellationToken));
 
+    [HttpGet("{id:int}")]
+    public Task<ActionResult<MovieDetailsDto>> GetDetails([Range(1, int.MaxValue)] int id, CancellationToken cancellationToken) =>
+        ExecuteAsync(() => movieCatalogService.GetDetailsAsync(id, cancellationToken));
+
     [HttpGet("search")]
     public Task<ActionResult<PagedMovieResultDto>> Search([FromQuery] SearchMoviesQuery search, CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.SearchAsync(search.Query, search.Page, cancellationToken));
@@ -39,6 +43,10 @@ public sealed class MoviesController(MovieCatalogService movieCatalogService) : 
         catch (TmdbAuthenticationException)
         {
             return Problem(statusCode: StatusCodes.Status502BadGateway, title: "TMDB authentication failed.", detail: "The MovieNight TMDB integration could not authenticate with its configured credentials.");
+        }
+        catch (TmdbNotFoundException)
+        {
+            return Problem(statusCode: StatusCodes.Status404NotFound, title: "Movie not found.", detail: "The requested movie does not exist.");
         }
         catch (TmdbUpstreamException)
         {

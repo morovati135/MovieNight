@@ -10,4 +10,5 @@ public sealed record MovieDetailsDto(
     string? PosterUrl,
     string? BackdropUrl,
     double VoteAverage,
-    IReadOnlyList<CastDto> Cast);
+    IReadOnlyList<CastDto> Cast,
+    IReadOnlyList<MovieSummaryDto> SimilarMovies);
