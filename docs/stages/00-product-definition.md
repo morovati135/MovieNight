@@ -2,9 +2,9 @@
 
 ## Stage Status
 
-**Completed before implementation begins.**
+**Completed and accepted before implementation began.**
 
-This stage captures the product contract that future implementation stages must preserve.
+This stage defines the product contract that all later Codex work must preserve.
 
 ---
 
@@ -12,28 +12,34 @@ This stage captures the product contract that future implementation stages must 
 
 Define exactly what MovieNight is, who it serves, which user journeys belong to version 1, and which tempting features are intentionally excluded.
 
-This stage contains no application code.
+This stage contains no application implementation.
 
-Its output is the stable product context in `PROJECT.md`.
+Its primary durable output is `PROJECT.md`.
 
 ---
 
 ## 2. Canonical Context
 
-- `PROJECT.md`
-- `DECISIONS.md`
-- this stage file
+For product-level decisions, use:
 
-`ARCHITECTURE.md` is not the authority for product scope. If architecture and product scope ever conflict, the conflict must be resolved explicitly rather than silently changing the product.
+- `AGENTS.md` — project-wide Codex execution rules
+- `PROJECT.md` — authoritative product scope and business rules
+- `DECISIONS.md` — locked decisions
+- this stage file — record of how the product scope was established
+
+`ARCHITECTURE.md` does not override product scope.
+
+If architecture and product requirements conflict, the conflict must be surfaced to the Tech Lead rather than silently resolving it through implementation.
 
 ---
 
 ## 3. Entry Criteria
 
 - A small full-stack portfolio project has been selected.
-- Backend/Agent Engineering is the primary learning goal.
-- The human intends to act primarily as Tech Lead and reviewer.
+- Backend and Agent Engineering are the primary learning goals.
+- The human acts as Tech Lead and reviewer.
 - The project must remain realistic but intentionally small.
+- Version 1 is local-only.
 
 ---
 
@@ -46,7 +52,7 @@ After this stage:
 - Primary user flows are explicit.
 - Business rules are explicit.
 - Non-goals are explicit.
-- Future agents can determine whether proposed work is in or out of scope without relying on old chat history.
+- Codex can determine whether proposed work is in or out of scope without relying on old chat history.
 
 ---
 
@@ -54,7 +60,7 @@ After this stage:
 
 ### Product
 
-MovieNight is a movie discovery application with an anonymous shareable watchlist.
+MovieNight is a movie discovery application with an anonymous, shareable watchlist.
 
 ### Version 1 capabilities
 
@@ -84,10 +90,10 @@ MovieNight is a movie discovery application with an anonymous shareable watchlis
 
 ## 6. Out of Scope
 
-Do not add these to version 1:
+Version 1 does not include:
 
 - TV series
-- user registration
+- registration
 - login
 - ASP.NET Identity
 - JWT
@@ -102,13 +108,13 @@ Do not add these to version 1:
 - payments
 - localization
 - multi-language UI
-- recommendation AI/LLM
-- deployment
+- AI/LLM recommendation
 - Docker
 - CI/CD
+- production deployment
 - microservices
 
-The authoritative extended non-goal list remains in `PROJECT.md`.
+The complete authoritative non-goal list remains in `PROJECT.md`.
 
 ---
 
@@ -119,68 +125,50 @@ The authoritative extended non-goal list remains in `PROJECT.md`.
 3. Only the owner token authorizes watchlist mutation.
 4. Raw owner tokens are not stored in the database.
 5. A movie cannot appear twice in one watchlist.
-6. Watchlists have a maximum of 30 movies.
-7. A movie is validated against TMDB before being added.
+6. Watchlists contain at most 30 movies.
+7. A movie is validated against TMDB before persistence.
 8. Version 1 supports movies only.
 9. `Pick for Me` is simple application logic, not an AI recommendation system.
-10. New features must not be added merely because the coding agent considers them common or useful.
+10. Codex must not add features merely because they are common or potentially useful.
 
 ---
 
-# 8. Sprint Breakdown
+# 8. Decision Breakdown
 
-This is a planning/specification stage. These sprints represent decisions already completed by the Tech Lead and are not coding-agent implementation tasks.
+This is a specification stage, not an implementation stage.
 
----
+## Decision 00.1 — Product Scope Lock
 
-## Sprint 00.1 — Product Scope Lock
+Accepted:
 
-### Objective
+- [x] Product vision documented.
+- [x] Core features documented.
+- [x] Movie-only scope selected.
+- [x] Authentication excluded.
+- [x] Local-only execution accepted.
 
-Freeze the minimum useful product.
+## Decision 00.2 — Business Rules Lock
 
-### Acceptance Criteria
+Accepted:
 
-- [x] Product vision is documented.
-- [x] Core features are documented.
-- [x] Version 1 is movie-only.
-- [x] Authentication is excluded.
-- [x] Local-only execution is accepted.
+- [x] Anonymous ownership model defined.
+- [x] Watchlist mutation authorization defined.
+- [x] Watchlist capacity defined.
+- [x] Duplicate prevention defined.
+- [x] TMDB validation before persistence defined.
+- [x] Pick-for-Me behavior defined.
 
----
+## Decision 00.3 — User Flow Lock
 
-## Sprint 00.2 — Business Rules Lock
+Accepted:
 
-### Objective
-
-Define the minimum backend behavior that makes MovieNight more than a TMDB UI.
-
-### Acceptance Criteria
-
-- [x] Anonymous ownership model is defined.
-- [x] Watchlist mutation authorization is defined.
-- [x] Watchlist capacity is defined.
-- [x] Duplicate prevention is defined.
-- [x] Movie validation before persistence is defined.
-- [x] Pick-for-Me behavior is defined.
-
----
-
-## Sprint 00.3 — User Flow Lock
-
-### Objective
-
-Define the end-to-end flows used later for integration verification.
-
-### Acceptance Criteria
-
-- [x] Discovery flow exists.
-- [x] Search flow exists.
-- [x] Filtering flow exists.
-- [x] Recommendation flow exists.
-- [x] Watchlist creation flow exists.
-- [x] Returning-owner flow exists.
-- [x] Shared read-only watchlist flow exists.
+- [x] Discovery flow
+- [x] Search flow
+- [x] Filtering flow
+- [x] Recommendation flow
+- [x] Watchlist creation flow
+- [x] Returning-owner flow
+- [x] Shared read-only flow
 
 ---
 
@@ -191,18 +179,18 @@ Define the end-to-end flows used later for integration verification.
 - [x] Business rules are explicit.
 - [x] Non-goals are explicit.
 - [x] Primary user flows are explicit.
-- [x] No code was required to complete this stage.
+- [x] No implementation code was required.
 
 ---
 
 # 10. Change Control
 
-If a future request changes a product-level decision:
+If a later request changes a product-level decision:
 
 1. Update `PROJECT.md`.
-2. Add or amend the relevant decision in `DECISIONS.md`.
+2. Update or append the relevant entry in `DECISIONS.md`.
 3. Evaluate architecture impact.
 4. Update affected future stage files.
 5. Update `STATUS.md`.
 
-Do not let an implementation sprint silently redefine product scope.
+A later implementation sprint must never silently redefine product scope.

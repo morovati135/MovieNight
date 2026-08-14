@@ -2,34 +2,41 @@
 
 ## Stage Status
 
-**Completed before implementation begins.**
+**Completed and accepted before implementation began.**
 
-This stage converts the product scope into a small set of technical constraints that implementation agents must preserve.
+This stage converts the accepted product scope into a small, explicit technical baseline that later Codex implementation work must preserve.
 
 ---
 
 ## 1. Stage Intent
 
-Choose the application stack, repository shape, primary boundaries, local development conventions, and intentionally excluded architectural patterns.
+Choose the application stack, repository shape, primary boundaries, local-development conventions, testing direction, and intentionally excluded architectural patterns.
 
-This stage contains no business-feature implementation.
+This stage does not implement business features.
 
-Its main outputs are `ARCHITECTURE.md` and `DECISIONS.md`.
+Its durable outputs are `ARCHITECTURE.md` and `DECISIONS.md`.
 
 ---
 
 ## 2. Canonical Context
 
-- `PROJECT.md`
-- `ARCHITECTURE.md`
-- `DECISIONS.md`
+Use:
+
+- `AGENTS.md` — project-wide Codex execution rules
+- `PROJECT.md` — product contract
+- `ARCHITECTURE.md` — architecture contract
+- `DECISIONS.md` — locked technical/product decisions
 - this stage file
+
+Backend-specific implementation work must additionally obey `backend/AGENTS.md`.
+
+Frontend-specific implementation work will use a nested `frontend/AGENTS.md` after the frontend is scaffolded.
 
 ---
 
 ## 3. Entry Criteria
 
-- Stage 00 product scope is stable.
+- Stage 00 product scope is accepted.
 - Movie discovery and anonymous watchlist are confirmed.
 - Backend/Agent Engineering is the primary learning goal.
 - Version 1 runs only on localhost.
@@ -38,15 +45,16 @@ Its main outputs are `ARCHITECTURE.md` and `DECISIONS.md`.
 
 ## 4. Stage Outcome
 
-After this stage, an implementation agent can answer:
+After this stage, Codex can determine:
 
-- what stack to use,
+- which stack to use,
 - where frontend/backend responsibilities live,
-- how the backend is structured,
+- how backend source should be organized,
 - what is persisted locally,
+- how external TMDB integration is isolated,
 - how errors are represented,
 - which architectural patterns are prohibited,
-- how the repository will be bootstrapped.
+- which local ports and boundaries the bootstrap must establish.
 
 ---
 
@@ -64,7 +72,7 @@ After this stage, an implementation agent can answer:
 - `IHttpClientFactory`
 - `IMemoryCache`
 - ASP.NET Core Problem Details
-- xUnit for backend tests
+- xUnit
 
 ### Frontend
 
@@ -74,42 +82,45 @@ After this stage, an implementation agent can answer:
 - Tailwind CSS
 - shadcn/ui
 - npm
-- Node.js LTS line
+- Node.js LTS
 - `src/` directory
 - `@/*` import alias
 
-### Current local runtime convention
+### Local runtime convention
 
 - Frontend: `http://localhost:3000`
 - Backend HTTP: `http://localhost:5080`
-
-The fixed backend HTTP port is a local-development convention so frontend configuration and smoke tests remain predictable.
 
 ---
 
 ## 6. Repository Shape
 
+Target shape:
+
 ```text
 MovieNight/
+├── AGENTS.md
 ├── PROJECT.md
 ├── ARCHITECTURE.md
 ├── DECISIONS.md
 ├── STATUS.md
-├── .cursorignore
-├── .cursor/
-│   └── rules/
+├── .editorconfig
+├── .gitignore
 ├── docs/
 │   ├── STAGE-TEMPLATE.md
-│   ├── CURSOR-WORKFLOW.md
+│   ├── CODEX-WORKFLOW.md
+│   ├── CODEX-HANDOFF.md       # temporary during migration
+│   ├── FIRST-CODEX-PROMPT.md  # temporary during migration
 │   └── stages/
 ├── backend/
+│   ├── AGENTS.md
 │   ├── MovieNight.slnx
 │   ├── MovieNight.Api/
 │   └── MovieNight.Api.Tests/
-└── frontend/
+└── frontend/                  # created in Sprint 02.3
 ```
 
-The backend test project is not an additional application architecture layer. It exists only for verification.
+A nested `frontend/AGENTS.md` will be added after `create-next-app` creates the frontend directory.
 
 ---
 
@@ -119,11 +130,11 @@ The backend test project is not an additional application architecture layer. It
 
 The frontend communicates with the MovieNight API.
 
-It does not know TMDB credentials and does not depend on TMDB response contracts.
+It does not know TMDB credentials and does not depend on raw TMDB response contracts.
 
 ### Backend -> TMDB
 
-TMDB-specific transport types remain under the integration boundary.
+TMDB-specific transport types remain inside the TMDB integration boundary.
 
 Public API contracts are MovieNight-owned DTOs.
 
@@ -131,20 +142,19 @@ Public API contracts are MovieNight-owned DTOs.
 
 EF Core `DbContext` is the persistence abstraction.
 
-Do not add a generic repository or a custom Unit of Work wrapper.
+Do not add a generic repository or custom Unit of Work wrapper.
 
 ---
 
 ## 8. API Conventions
 
 - Public application routes use `/api/...`.
-- Bootstrap health route: `GET /api/health`.
-- JSON uses the normal ASP.NET Core/System.Text.Json conventions unless a real requirement appears.
-- Expected API failures use Problem Details.
-- Never expose stack traces, secrets, or raw TMDB failure bodies.
-- Cancellation should flow through meaningful HTTP/database async operations.
+- Bootstrap health route is `GET /api/health`.
+- Expected public API failures use ASP.NET Core Problem Details.
+- Do not expose secrets, stack traces, or raw TMDB failures.
+- Cancellation should flow through meaningful async HTTP/database operations.
 
-Exact movie/watchlist contracts are defined in their implementation stages rather than invented during bootstrap.
+Exact Movie and Watchlist contracts are defined in their implementation stages.
 
 ---
 
@@ -158,38 +168,38 @@ Use:
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5080
 ```
 
-The committed repository contains only a safe example configuration such as `.env.example`.
+Commit only safe example configuration.
 
-A local `.env.local` may be created from that example but must not be committed.
+Local `.env.local` is not committed.
 
 ### CORS
 
-During local development the backend permits the frontend origin:
+Backend local development permits:
 
 ```text
 http://localhost:3000
 ```
 
-Do not use an unrestricted `AllowAnyOrigin` configuration.
+Do not use unrestricted `AllowAnyOrigin`.
 
 ### Secrets
 
-TMDB credentials are not needed during Stage 02.
-
-When TMDB is introduced later, secrets must stay outside committed source configuration.
+TMDB credentials stay outside committed source configuration.
 
 ---
 
 ## 10. Dependency Policy
 
-A package/library can be added only when:
+A package may be added only when:
 
-1. it directly supports current sprint requirements,
+1. it directly supports the active sprint,
 2. the platform does not already provide a reasonable solution,
 3. it does not violate `DECISIONS.md`,
-4. the agent reports the dependency and reason.
+4. Codex reports why it is needed.
 
-Do not install libraries "for later".
+Do not install libraries for hypothetical later use.
+
+Security warnings must be investigated rather than hidden.
 
 ---
 
@@ -197,7 +207,7 @@ Do not install libraries "for later".
 
 Do not introduce:
 
-- Clean Architecture multi-project layering
+- multi-project Clean Architecture layering
 - MediatR
 - CQRS
 - AutoMapper
@@ -210,69 +220,63 @@ Do not introduce:
 - microservices
 - Docker
 
----
-
-# 12. Sprint Breakdown
-
-This is a planning/specification stage. The decisions below are already accepted and should not trigger coding work.
+unless a future explicit Tech Lead decision changes the project.
 
 ---
 
-## Sprint 01.1 — Stack Selection
+# 12. Decision Breakdown
 
-### Acceptance Criteria
+## Decision 01.1 — Stack Selection
 
-- [x] .NET 10 is selected.
-- [x] Controller-based ASP.NET Core Web API is selected.
-- [x] Next.js + TypeScript is selected.
-- [x] Tailwind + shadcn/ui are selected.
-- [x] SQLite + EF Core are selected.
-- [x] npm and Node LTS are selected.
-- [x] xUnit is selected.
+Accepted:
 
----
+- [x] .NET 10
+- [x] controller-based ASP.NET Core API
+- [x] Next.js + TypeScript
+- [x] Tailwind + shadcn/ui
+- [x] SQLite + EF Core
+- [x] npm + Node LTS
+- [x] xUnit
 
-## Sprint 01.2 — Architecture Boundary Lock
+## Decision 01.2 — Architecture Boundary Lock
 
-### Acceptance Criteria
+Accepted:
 
-- [x] Frontend-to-backend boundary is documented.
-- [x] Backend-to-TMDB boundary is documented.
-- [x] Persistence boundary is documented.
-- [x] Feature-oriented backend structure is documented.
-- [x] Prohibited architecture patterns are documented.
+- [x] Frontend-to-backend boundary
+- [x] Backend-to-TMDB boundary
+- [x] Persistence boundary
+- [x] Feature-oriented backend structure
+- [x] Prohibited patterns
 
----
+## Decision 01.3 — Local Development Contract
 
-## Sprint 01.3 — Local Development Contract
+Accepted:
 
-### Acceptance Criteria
-
-- [x] Frontend localhost port is defined.
-- [x] Backend localhost HTTP port is defined.
-- [x] Local CORS origin is defined.
-- [x] Frontend API base URL convention is defined.
-- [x] Secret-handling direction is defined.
+- [x] Frontend port 3000
+- [x] Backend HTTP port 5080
+- [x] Local CORS origin
+- [x] API base URL convention
+- [x] Secret-handling direction
 
 ---
 
 # 13. Stage Definition of Done
 
 - [x] `ARCHITECTURE.md` describes the intended system structure.
-- [x] `DECISIONS.md` records decisions future agents must not silently reverse.
-- [x] Stage 02 can bootstrap the repository without making product or architecture decisions.
-- [x] No business feature implementation is part of this stage.
+- [x] `DECISIONS.md` records decisions later Codex threads must not silently reverse.
+- [x] Stage 02 can bootstrap the repository without reopening product or architecture selection.
+- [x] No business feature implementation belongs to this stage.
 
 ---
 
-# 14. Versioning Principle
+# 14. Stability Principle
 
-The project pins its actual dependencies through generated project/package files and lock files after bootstrap.
+Generated project/package files and lock files pin actual dependency versions after bootstrap.
 
-Do not repeatedly upgrade framework/package versions during feature work unless:
+Do not repeatedly upgrade dependencies during feature work unless:
 
-- a compatibility issue requires it,
-- a security issue requires it,
+- compatibility requires it,
+- security requires it,
 - or the Tech Lead explicitly requests it.
 
-The goal is a stable codebase, not continuous dependency churn.
+The objective is a stable implementation baseline, not continuous dependency churn.
