@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Globalization;
 using System.Text.Json;
 using MovieNight.Api.Integrations.Tmdb.Transport;
 
@@ -9,17 +10,67 @@ public sealed class TmdbClient(HttpClient httpClient)
 {
     private const string ConnectivityPath = "configuration/languages";
     private const string MovieGenresPath = "genre/movie/list";
+    private const string TrendingMoviesPath = "trending/movie/week";
+    private const string PopularMoviesPath = "movie/popular";
+    private const string SearchMoviesPath = "search/movie";
+    private const string DiscoverMoviesPath = "discover/movie";
 
     internal async Task<TmdbGenreListResponse> GetMovieGenresAsync(CancellationToken cancellationToken)
     {
+        return await GetFromTmdbAsync<TmdbGenreListResponse>(MovieGenresPath, "genre", cancellationToken);
+    }
+
+    internal Task<TmdbMoviePage> GetTrendingMoviesAsync(CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMoviePage>(TrendingMoviesPath, "trending movies", cancellationToken);
+
+    internal Task<TmdbMoviePage> GetPopularMoviesAsync(CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMoviePage>(PopularMoviesPath, "popular movies", cancellationToken);
+
+    internal Task<TmdbMoviePage> SearchMoviesAsync(string query, int page, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMoviePage>(
+            $"{SearchMoviesPath}?query={Uri.EscapeDataString(query)}&page={page}",
+            "movie search",
+            cancellationToken);
+
+    internal Task<TmdbMoviePage> DiscoverMoviesAsync(TmdbDiscoverRequest request, CancellationToken cancellationToken)
+    {
+        var parameters = new List<string>
+        {
+            "sort_by=popularity.desc",
+            $"page={request.Page}"
+        };
+
+        if (request.GenreId is not null)
+        {
+            parameters.Add($"with_genres={request.GenreId}");
+        }
+
+        if (request.Year is not null)
+        {
+            parameters.Add($"primary_release_year={request.Year}");
+        }
+
+        if (request.MinRating is not null)
+        {
+            parameters.Add($"vote_average.gte={request.MinRating.Value.ToString(CultureInfo.InvariantCulture)}");
+        }
+
+        return GetFromTmdbAsync<TmdbMoviePage>(
+            $"{DiscoverMoviesPath}?{string.Join('&', parameters)}",
+            "movie discovery",
+            cancellationToken);
+    }
+
+    private async Task<T> GetFromTmdbAsync<T>(string path, string operation, CancellationToken cancellationToken)
+    {
         try
         {
-            using var response = await httpClient.GetAsync(MovieGenresPath, cancellationToken);
+            using var response = await httpClient.GetAsync(path, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<TmdbGenreListResponse>(cancellationToken: cancellationToken)
-                    ?? throw new TmdbUpstreamException("TMDB returned an empty genre response.");
+                return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken)
+                    ?? throw new TmdbUpstreamException($"TMDB returned an empty {operation} response.");
             }
 
             if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
@@ -27,7 +78,7 @@ public sealed class TmdbClient(HttpClient httpClient)
                 throw new TmdbAuthenticationException();
             }
 
-            throw new TmdbUpstreamException("TMDB rejected the genre request.");
+            throw new TmdbUpstreamException($"TMDB rejected the {operation} request.");
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -39,7 +90,7 @@ public sealed class TmdbClient(HttpClient httpClient)
         }
         catch (JsonException)
         {
-            throw new TmdbUpstreamException("TMDB returned an invalid genre response.");
+            throw new TmdbUpstreamException($"TMDB returned an invalid {operation} response.");
         }
     }
 
@@ -76,6 +127,8 @@ public sealed class TmdbClient(HttpClient httpClient)
         }
     }
 }
+
+internal sealed record TmdbDiscoverRequest(int? GenreId, int? Year, double? MinRating, int Page);
 
 public sealed class TmdbAuthenticationException : Exception
 {

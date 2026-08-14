@@ -10,7 +10,7 @@ Stage 03 — Movie Backend / TMDB Integration
 
 ## Current Sprint
 
-Sprint 03.3 — Discovery & Search API (Next)
+Sprint 03.4 — Movie Details, Cast & Similar API (Next)
 
 ## Accepted / Completed
 
@@ -23,6 +23,7 @@ Sprint 03.3 — Discovery & Search API (Next)
 - Sprint 02.5 — Bootstrap Verification & Handoff
 - Sprint 03.1 — TMDB Access Preflight & Configuration
 - Sprint 03.2 — TMDB Client & Movie Contract Boundary
+- Sprint 03.3 — Discovery & Search API
 - Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
 - Backend/frontend stack selected
@@ -56,5 +57,5 @@ None.
 
 ## Next Planned Work
 
-1. Start Sprint 03.3 — Discovery & Search API.
+1. Start Sprint 03.4 — Movie Details, Cast & Similar API.
 2. Stop before any later sprint.
