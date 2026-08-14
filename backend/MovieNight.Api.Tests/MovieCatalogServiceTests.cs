@@ -73,6 +73,87 @@ public sealed class MovieCatalogServiceTests
         Assert.Equal(4, handler.RequestCount);
     }
 
+    [Theory]
+    [InlineData(null, null, null, "sort_by=popularity.desc&page=1")]
+    [InlineData(28, null, null, "sort_by=popularity.desc&page=1&with_genres=28")]
+    [InlineData(null, 2020, 7.5, "sort_by=popularity.desc&page=1&primary_release_year=2020&vote_average.gte=7.5")]
+    public async Task PickAsync_reuses_the_first_page_when_only_one_page_is_available_and_preserves_filters(int? genreId, int? year, double? minRating, string expectedQuery)
+    {
+        var handler = new GenreHttpMessageHandler("""
+            { "page": 1, "total_pages": 1, "total_results": 1, "results": [{ "id": 7, "title": "Movie", "vote_average": 8.1 }] }
+            """);
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, _) => min);
+
+        var result = await service.PickAsync(genreId, year, minRating, CancellationToken.None);
+
+        Assert.Equal(7, result?.Id);
+        Assert.Equal(1, handler.RequestCount);
+        Assert.Equal("/3/discover/movie", handler.RequestUri?.AbsolutePath);
+        Assert.Equal(expectedQuery, handler.RequestUri?.Query.TrimStart('?'));
+    }
+
+    [Fact]
+    public async Task PickAsync_selects_a_non_first_movie_from_a_bounded_random_page()
+    {
+        var handler = new PickHttpMessageHandler(request => request.RequestUri!.Query.Split('&').Contains("page=1")
+            ? """{ "page": 1, "total_pages": 50, "total_results": 1000, "results": [{ "id": 1, "title": "First page" }] }"""
+            : """{ "page": 15, "total_pages": 50, "total_results": 1000, "results": [{ "id": 7, "title": "First candidate" }, { "id": 8, "title": "Selected" }] }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var randomCalls = new List<(int Min, int Max)>();
+        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, max) =>
+        {
+            randomCalls.Add((min, max));
+            return max - 1;
+        });
+
+        var result = await service.PickAsync(28, 2020, 7.5, CancellationToken.None);
+
+        Assert.Equal((8, "Selected"), (result?.Id, result?.Title));
+        Assert.Equal([(1, 16), (0, 2)], randomCalls);
+        Assert.Collection(
+            handler.RequestUris,
+            request => Assert.Equal("sort_by=popularity.desc&page=1&with_genres=28&primary_release_year=2020&vote_average.gte=7.5", request.Query.TrimStart('?')),
+            request => Assert.Equal("sort_by=popularity.desc&page=15&with_genres=28&primary_release_year=2020&vote_average.gte=7.5", request.Query.TrimStart('?')));
+    }
+
+    [Fact]
+    public async Task PickAsync_limits_page_selection_to_available_pages_when_fewer_than_the_bound_exist()
+    {
+        var handler = new PickHttpMessageHandler(request => request.RequestUri!.Query.Split('&').Contains("page=1")
+            ? """{ "page": 1, "total_pages": 12, "total_results": 240, "results": [{ "id": 1, "title": "First page" }] }"""
+            : """{ "page": 12, "total_pages": 12, "total_results": 240, "results": [{ "id": 12, "title": "Selected" }] }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var randomCalls = new List<(int Min, int Max)>();
+        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, max) =>
+        {
+            randomCalls.Add((min, max));
+            return max - 1;
+        });
+
+        var result = await service.PickAsync(null, null, null, CancellationToken.None);
+
+        Assert.Equal(12, result?.Id);
+        Assert.Equal([(1, 13), (0, 1)], randomCalls);
+        Assert.Equal("sort_by=popularity.desc&page=12", handler.RequestUris[1].Query.TrimStart('?'));
+    }
+
+    [Fact]
+    public async Task PickAsync_returns_null_when_discover_has_no_candidates()
+    {
+        var handler = new GenreHttpMessageHandler("""{ "page": 1, "total_pages": 0, "total_results": 0, "results": [] }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, _) => min);
+
+        var result = await service.PickAsync(null, null, null, CancellationToken.None);
+
+        Assert.Null(result);
+    }
+
     [Fact]
     public async Task GetDetailsAsync_uses_a_cache_key_per_movie_id()
     {
@@ -105,6 +186,20 @@ public sealed class MovieCatalogServiceTests
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
+            });
+        }
+    }
+
+    private sealed class PickHttpMessageHandler(Func<HttpRequestMessage, string> responseFactory) : HttpMessageHandler
+    {
+        public List<Uri> RequestUris { get; } = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            RequestUris.Add(request.RequestUri!);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseFactory(request), Encoding.UTF8, "application/json")
             });
         }
     }

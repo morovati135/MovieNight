@@ -10,7 +10,7 @@ Stage 03 — Movie Backend / TMDB Integration
 
 ## Current Sprint
 
-Sprint 03.5 — Pick for Me (Next)
+Sprint 03.6 — Stage 03 Verification & Handoff (Next)
 
 ## Accepted / Completed
 
@@ -25,6 +25,7 @@ Sprint 03.5 — Pick for Me (Next)
 - Sprint 03.2 — TMDB Client & Movie Contract Boundary
 - Sprint 03.3 — Discovery & Search API
 - Sprint 03.4 — Movie Details, Cast & Similar API
+- Sprint 03.5 — Pick for Me
 - Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
 - Backend/frontend stack selected
@@ -58,5 +59,5 @@ None.
 
 ## Next Planned Work
 
-1. Start Sprint 03.5 — Pick for Me.
+1. Start Sprint 03.6 — Stage 03 Verification & Handoff.
 2. Stop before any later sprint.

@@ -4,8 +4,9 @@ using MovieNight.Api.Integrations.Tmdb;
 
 namespace MovieNight.Api.Features.Movies;
 
-public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cache)
+public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cache, Func<int, int, int>? nextRandom = null)
 {
+    private const int PickPageLimit = 15;
     private const string TrendingCacheKey = "movies:trending";
     private const string PopularCacheKey = "movies:popular";
     private static readonly TimeSpan ListCacheDuration = TimeSpan.FromMinutes(5);
@@ -44,6 +45,24 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
     {
         var request = new TmdbDiscoverRequest(genreId, year, minRating, page);
         return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.DiscoverMoviesAsync(request, cancellationToken));
+    }
+
+    public async Task<MovieSummaryDto?> PickAsync(int? genreId, int? year, double? minRating, CancellationToken cancellationToken)
+    {
+        var firstPage = await tmdbClient.DiscoverMoviesAsync(new TmdbDiscoverRequest(genreId, year, minRating, 1), cancellationToken);
+        if (firstPage.TotalPages < 1)
+        {
+            return null;
+        }
+
+        var random = nextRandom ?? Random.Shared.Next;
+        var page = random(1, Math.Min(firstPage.TotalPages, PickPageLimit) + 1);
+        var candidates = page == 1
+            ? firstPage
+            : await tmdbClient.DiscoverMoviesAsync(new TmdbDiscoverRequest(genreId, year, minRating, page), cancellationToken);
+        var validMovies = candidates.Results.Where(candidate => candidate.Id > 0 && !string.IsNullOrWhiteSpace(candidate.Title)).ToArray();
+
+        return validMovies.Length == 0 ? null : TmdbMovieMapper.ToMovieSummary(validMovies[random(0, validMovies.Length)]);
     }
 
     public async Task<MovieDetailsDto> GetDetailsAsync(int movieId, CancellationToken cancellationToken)

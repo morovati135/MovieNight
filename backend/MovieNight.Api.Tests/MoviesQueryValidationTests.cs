@@ -31,11 +31,25 @@ public sealed class MoviesQueryValidationTests
         Assert.NotEmpty(result);
     }
 
+    [Theory]
+    [InlineData(0, null, null)]
+    [InlineData(null, 1887, null)]
+    [InlineData(null, 2101, null)]
+    [InlineData(null, null, -0.1)]
+    [InlineData(null, null, 10.1)]
+    public void Pick_query_rejects_invalid_public_filters(int? genreId, int? year, double? minRating)
+    {
+        var result = Validate(new PickMovieQuery { GenreId = genreId, Year = year, MinRating = minRating });
+
+        Assert.NotEmpty(result);
+    }
+
     [Fact]
     public void Valid_queries_pass_validation_and_default_to_first_page()
     {
         Assert.Empty(Validate(new SearchMoviesQuery { Query = "arrival" }));
         Assert.Empty(Validate(new DiscoverMoviesQuery()));
+        Assert.Empty(Validate(new PickMovieQuery()));
         Assert.Equal(1, new SearchMoviesQuery { Query = "arrival" }.Page);
         Assert.Equal(1, new DiscoverMoviesQuery().Page);
     }
