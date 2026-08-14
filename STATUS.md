@@ -2,15 +2,15 @@
 
 ## Current Phase
 
-Planning / Stage 03
+Implementation / Stage 03
 
 ## Current Stage
 
-Stage 03 — Movie Backend / TMDB Integration (not started)
+Stage 03 — Movie Backend / TMDB Integration
 
 ## Current Sprint
 
-None — awaiting Stage 03 planning
+Sprint 03.1 — TMDB Access Preflight & Configuration (Next)
 
 ## Accepted / Completed
 
@@ -54,4 +54,7 @@ None.
 
 ## Next Planned Work
 
-1. Plan and start Stage 03 — Movie Backend / TMDB Integration.
+1. Start Sprint 03.1 in a fresh Codex thread.
+2. Establish TMDB Bearer-token configuration and HttpClient boundary.
+3. Verify live TMDB connectivity.
+4. Stop before Sprint 03.2.
