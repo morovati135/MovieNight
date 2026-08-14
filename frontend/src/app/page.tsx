@@ -1,3 +1,5 @@
+import { ApiHealthStatus } from "@/components/api-health-status";
+
 export default function Home() {
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-24">
@@ -6,6 +8,7 @@ export default function Home() {
         <p className="text-muted-foreground">
           Discover your next movie night favorite.
         </p>
+        <ApiHealthStatus />
       </section>
     </main>
   );
