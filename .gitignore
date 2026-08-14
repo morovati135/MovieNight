@@ -21,3 +21,7 @@ coverage/
 # IDE
 .vs/
 .idea/
+
+# Local .NET CLI state
+.dotnet-cli/
+**/.dotnet-cli/
