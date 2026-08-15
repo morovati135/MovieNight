@@ -46,6 +46,7 @@ builder.Services.AddHttpClient<TmdbClient>((serviceProvider, client) =>
 });
 
 builder.Services.AddScoped<MovieCatalogService>();
+builder.Services.AddScoped<IMovieSummaryLookup>(serviceProvider => serviceProvider.GetRequiredService<MovieCatalogService>());
 
 builder.Services.AddScoped<IAnonymousVisitorIdentityService, AnonymousVisitorIdentityService>();
 

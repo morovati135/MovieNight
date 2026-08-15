@@ -173,6 +173,35 @@ public sealed class MovieCatalogServiceTests
         Assert.Equal(2, handler.RequestCount);
     }
 
+    [Fact]
+    public async Task GetSummaryAsync_uses_lightweight_movie_lookup_mapping_and_per_movie_cache()
+    {
+        var handler = new GenreHttpMessageHandler("""
+            {
+              "id": 7,
+              "title": "Movie",
+              "overview": "Summary",
+              "release_date": "2026-08-15",
+              "genres": [{ "id": 18, "name": "Drama" }],
+              "poster_path": "/poster.jpg",
+              "vote_average": 8.2
+            }
+            """);
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+
+        var first = await service.GetSummaryAsync(7, CancellationToken.None);
+        var second = await service.GetSummaryAsync(7, CancellationToken.None);
+
+        Assert.Equal(first, second);
+        Assert.Equal([18], first.GenreIds);
+        Assert.Equal("https://image.tmdb.org/t/p/w500/poster.jpg", first.PosterUrl);
+        Assert.Equal(1, handler.RequestCount);
+        Assert.Equal("/3/movie/7", handler.RequestUri?.AbsolutePath);
+        Assert.Equal(string.Empty, handler.RequestUri?.Query);
+    }
+
     private sealed class GenreHttpMessageHandler(string json) : HttpMessageHandler
     {
         public int RequestCount { get; private set; }

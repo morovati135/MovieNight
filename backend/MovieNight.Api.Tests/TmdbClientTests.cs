@@ -74,6 +74,19 @@ public sealed class TmdbClientTests
     }
 
     [Fact]
+    public async Task GetMovieSummaryAsync_uses_the_lightweight_movie_resource()
+    {
+        var handler = new StubHttpMessageHandler(HttpStatusCode.OK, """{ "id": 1, "title": "Movie" }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        await client.GetMovieSummaryAsync(1, CancellationToken.None);
+
+        Assert.Equal("/3/movie/1", handler.RequestUri?.AbsolutePath);
+        Assert.Equal(string.Empty, handler.RequestUri?.Query);
+    }
+
+    [Fact]
     public async Task GetMovieDetailsAsync_translates_not_found()
     {
         using var httpClient = new HttpClient(new StubHttpMessageHandler(HttpStatusCode.NotFound)) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };

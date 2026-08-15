@@ -17,7 +17,7 @@ internal static class TmdbMovieMapper
         movie.Title,
         movie.Overview,
         movie.ReleaseDate,
-        movie.GenreIds,
+        movie.GenreIds.Count > 0 ? movie.GenreIds : movie.Genres.Select(genre => genre.Id).ToArray(),
         TmdbImageUrlBuilder.BuildPosterUrl(movie.PosterPath),
         movie.VoteAverage);
 

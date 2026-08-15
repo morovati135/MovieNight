@@ -1,6 +1,8 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using MovieNight.Api.Data;
+using MovieNight.Api.Features.Movies;
+using MovieNight.Api.Features.Movies.Contracts;
 using MovieNight.Api.Features.Watchlists;
 
 namespace MovieNight.Api.Tests;
@@ -23,7 +25,7 @@ public sealed class WatchlistPersistenceTests
         }
 
         await using var context = database.CreateContext();
-        var service = new WatchlistService(context);
+        var service = CreateService(context);
 
         var items = await service.GetItemsAsync(anonymousId);
 
@@ -36,7 +38,7 @@ public sealed class WatchlistPersistenceTests
         await using var database = await CreateDatabaseAsync();
         var anonymousId = Guid.NewGuid();
         await using var context = database.CreateContext();
-        var service = new WatchlistService(context);
+        var service = CreateService(context);
 
         var firstResult = await service.AddAsync(anonymousId, 123);
         var duplicateResult = await service.AddAsync(anonymousId, 123);
@@ -60,7 +62,7 @@ public sealed class WatchlistPersistenceTests
         }
 
         await using var context = database.CreateContext();
-        var service = new WatchlistService(context);
+        var service = CreateService(context);
 
         var result = await service.AddAsync(anonymousId, 51);
 
@@ -74,7 +76,7 @@ public sealed class WatchlistPersistenceTests
         await using var database = await CreateDatabaseAsync();
         var anonymousId = Guid.NewGuid();
         await using var context = database.CreateContext();
-        var service = new WatchlistService(context);
+        var service = CreateService(context);
 
         await service.RemoveAsync(anonymousId, 123);
         await service.RemoveAsync(anonymousId, 123);
@@ -107,6 +109,9 @@ public sealed class WatchlistPersistenceTests
         CreatedAtUtc = createdAtUtc
     };
 
+    private static WatchlistService CreateService(MovieNightDbContext context) =>
+        new(context, new SuccessfulMovieSummaryLookup());
+
     private static async Task<SqliteWatchlistDatabase> CreateDatabaseAsync()
     {
         var connection = new SqliteConnection("Data Source=:memory:");
@@ -126,5 +131,11 @@ public sealed class WatchlistPersistenceTests
         public MovieNightDbContext CreateContext() => new(options);
 
         public ValueTask DisposeAsync() => connection.DisposeAsync();
+    }
+
+    private sealed class SuccessfulMovieSummaryLookup : IMovieSummaryLookup
+    {
+        public Task<MovieSummaryDto> GetSummaryAsync(int movieId, CancellationToken cancellationToken) =>
+            Task.FromResult(new MovieSummaryDto(movieId, $"Movie {movieId}", null, null, [], null, 0));
     }
 }

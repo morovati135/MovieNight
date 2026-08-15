@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MovieNight.Api.Data;
+using MovieNight.Api.Features.Movies;
+using MovieNight.Api.Features.Movies.Contracts;
+using MovieNight.Api.Integrations.Tmdb;
 
 namespace MovieNight.Api.Features.Watchlists;
 
@@ -10,9 +13,10 @@ public enum WatchlistAddResult
     CapacityReached
 }
 
-public sealed class WatchlistService(MovieNightDbContext dbContext)
+public sealed class WatchlistService(MovieNightDbContext dbContext, IMovieSummaryLookup movieSummaryLookup)
 {
     public const int MaximumItems = 50;
+    internal const int MaximumHydrationConcurrency = 4;
 
     public async Task<IReadOnlyList<WatchlistItem>> GetItemsAsync(
         Guid anonymousId,
@@ -23,6 +27,34 @@ public sealed class WatchlistService(MovieNightDbContext dbContext)
             .Where(item => item.AnonymousId == anonymousId)
             .OrderByDescending(item => item.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<MovieSummaryDto>> GetMoviesAsync(
+        Guid anonymousId,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await GetItemsAsync(anonymousId, cancellationToken);
+        using var concurrencyGate = new SemaphoreSlim(MaximumHydrationConcurrency);
+
+        var lookups = items.Select(async item =>
+        {
+            await concurrencyGate.WaitAsync(cancellationToken);
+            try
+            {
+                return await movieSummaryLookup.GetSummaryAsync(item.MovieId, cancellationToken);
+            }
+            catch (TmdbNotFoundException)
+            {
+                return null;
+            }
+            finally
+            {
+                concurrencyGate.Release();
+            }
+        });
+
+        var movies = await Task.WhenAll(lookups);
+        return movies.OfType<MovieSummaryDto>().ToArray();
     }
 
     public async Task<WatchlistAddResult> AddAsync(
@@ -47,6 +79,8 @@ public sealed class WatchlistService(MovieNightDbContext dbContext)
         {
             return WatchlistAddResult.CapacityReached;
         }
+
+        await movieSummaryLookup.GetSummaryAsync(movieId, cancellationToken);
 
         var item = new WatchlistItem
         {

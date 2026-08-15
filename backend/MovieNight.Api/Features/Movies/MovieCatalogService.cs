@@ -4,7 +4,13 @@ using MovieNight.Api.Integrations.Tmdb;
 
 namespace MovieNight.Api.Features.Movies;
 
+public interface IMovieSummaryLookup
+{
+    Task<MovieSummaryDto> GetSummaryAsync(int movieId, CancellationToken cancellationToken);
+}
+
 public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cache, Func<int, int, int>? nextRandom = null)
+    : IMovieSummaryLookup
 {
     private const int PickPageLimit = 15;
     private const string GenresCacheKey = "movies:genres";
@@ -12,7 +18,18 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
     private const string PopularCacheKey = "movies:popular";
     private static readonly TimeSpan GenresCacheDuration = TimeSpan.FromHours(6);
     private static readonly TimeSpan ListCacheDuration = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan SummaryCacheDuration = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan DetailsCacheDuration = TimeSpan.FromMinutes(10);
+
+    public async Task<MovieSummaryDto> GetSummaryAsync(int movieId, CancellationToken cancellationToken)
+    {
+        var cacheKey = $"movies:summary:{movieId}";
+        return await cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = SummaryCacheDuration;
+            return TmdbMovieMapper.ToMovieSummary(await tmdbClient.GetMovieSummaryAsync(movieId, cancellationToken));
+        }) ?? throw new TmdbUpstreamException("TMDB returned an empty movie summary response.");
+    }
 
     public async Task<IReadOnlyList<GenreDto>> GetGenresAsync(CancellationToken cancellationToken)
     {

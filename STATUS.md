@@ -10,7 +10,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence (In progress)
 
 ## Current Sprint
 
-No active sprint — Sprint 04.3 complete
+No active sprint — Sprint 04.4 complete
 
 ## Accepted / Completed
 
@@ -30,6 +30,7 @@ No active sprint — Sprint 04.3 complete
 - Sprint 04.1 — Persistence Foundation
 - Sprint 04.2 — Anonymous Visitor Identity
 - Sprint 04.3 — Watchlist Domain & Persistence
+- Sprint 04.4 — Watchlist API & Hydration
 - Stage 03 — Movie Backend / TMDB Integration
 - Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
@@ -38,7 +39,6 @@ No active sprint — Sprint 04.3 complete
 
 ## Not Started
 
-- Watchlist public APIs, Movie validation, and hydration
 - Frontend feature implementation
 - Final integration/polish
 
@@ -63,5 +63,5 @@ None.
 
 ## Next Planned Work
 
-1. Continue Stage 04 with Sprint 04.4.
+1. Continue Stage 04 with Sprint 04.5.
 2. Stop before Stage 05.

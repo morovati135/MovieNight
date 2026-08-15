@@ -15,6 +15,12 @@ public sealed class TmdbClient(HttpClient httpClient)
     private const string SearchMoviesPath = "search/movie";
     private const string DiscoverMoviesPath = "discover/movie";
 
+    internal Task<TmdbMovie> GetMovieSummaryAsync(int movieId, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMovie>(
+            $"movie/{movieId}",
+            "movie summary",
+            cancellationToken);
+
     internal Task<TmdbMovie> GetMovieDetailsAsync(int movieId, CancellationToken cancellationToken) =>
         GetFromTmdbAsync<TmdbMovie>(
             $"movie/{movieId}?append_to_response=credits,similar",
