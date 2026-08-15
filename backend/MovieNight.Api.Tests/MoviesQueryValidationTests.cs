@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using MovieNight.Api.Controllers;
 
 namespace MovieNight.Api.Tests;
@@ -62,6 +63,23 @@ public sealed class MoviesQueryValidationTests
         var attribute = new RangeAttribute(1, int.MaxValue);
 
         Assert.False(attribute.IsValid(id));
+    }
+
+    [Theory]
+    [InlineData(nameof(WatchlistController.Add))]
+    [InlineData(nameof(WatchlistController.Remove))]
+    public void Watchlist_routes_reject_non_positive_movie_ids(string actionName)
+    {
+        var movieIdParameter = typeof(WatchlistController)
+            .GetMethod(actionName)!
+            .GetParameters()
+            .Single(parameter => parameter.Name == "movieId");
+        var attribute = movieIdParameter.GetCustomAttribute<RangeAttribute>();
+
+        Assert.NotNull(attribute);
+        Assert.False(attribute.IsValid(0));
+        Assert.False(attribute.IsValid(-1));
+        Assert.True(attribute.IsValid(1));
     }
 
     private static List<ValidationResult> Validate(object value)

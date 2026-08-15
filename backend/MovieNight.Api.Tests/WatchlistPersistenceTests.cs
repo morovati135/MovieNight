@@ -71,6 +71,28 @@ public sealed class WatchlistPersistenceTests
     }
 
     [Fact]
+    public async Task AddAsync_accepts_an_existing_duplicate_when_the_watchlist_has_fifty_items()
+    {
+        await using var database = await CreateDatabaseAsync();
+        var anonymousId = Guid.NewGuid();
+        await using (var setupContext = database.CreateContext())
+        {
+            setupContext.WatchlistItems.AddRange(
+                Enumerable.Range(1, WatchlistService.MaximumItems)
+                    .Select(movieId => CreateItem(anonymousId, movieId, DateTime.UtcNow)));
+            await setupContext.SaveChangesAsync();
+        }
+
+        await using var context = database.CreateContext();
+        var service = CreateService(context);
+
+        var result = await service.AddAsync(anonymousId, WatchlistService.MaximumItems);
+
+        Assert.Equal(WatchlistAddResult.AlreadyExists, result);
+        Assert.Equal(WatchlistService.MaximumItems, await context.WatchlistItems.CountAsync());
+    }
+
+    [Fact]
     public async Task RemoveAsync_is_idempotent_for_missing_items()
     {
         await using var database = await CreateDatabaseAsync();
@@ -99,6 +121,25 @@ public sealed class WatchlistPersistenceTests
         duplicateContext.WatchlistItems.Add(CreateItem(anonymousId, 123, DateTime.UtcNow));
 
         await Assert.ThrowsAsync<DbUpdateException>(() => duplicateContext.SaveChangesAsync());
+    }
+
+    [Fact]
+    public void Persistence_model_contains_only_watchlist_identity_and_ordering_fields()
+    {
+        var options = new DbContextOptionsBuilder<MovieNightDbContext>()
+            .UseSqlite("Data Source=:memory:")
+            .Options;
+        using var context = new MovieNightDbContext(options);
+
+        var propertyNames = context.Model.FindEntityType(typeof(WatchlistItem))!
+            .GetProperties()
+            .Select(property => property.Name)
+            .OrderBy(name => name)
+            .ToArray();
+
+        Assert.Equal(
+            [nameof(WatchlistItem.AnonymousId), nameof(WatchlistItem.CreatedAtUtc), nameof(WatchlistItem.Id), nameof(WatchlistItem.MovieId)],
+            propertyNames);
     }
 
     private static WatchlistItem CreateItem(Guid anonymousId, int movieId, DateTime createdAtUtc) => new()

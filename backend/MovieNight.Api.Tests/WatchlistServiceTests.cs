@@ -59,13 +59,20 @@ public sealed class WatchlistServiceTests
 
         var activeLookups = 0;
         var maximumConcurrentLookups = 0;
+        var firstWaveStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseLookups = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var lookup = new RecordingMovieSummaryLookup(async (movieId, cancellationToken) =>
         {
             var active = Interlocked.Increment(ref activeLookups);
             UpdateMaximum(ref maximumConcurrentLookups, active);
+            if (active == WatchlistService.MaximumHydrationConcurrency)
+            {
+                firstWaveStarted.TrySetResult();
+            }
+
             try
             {
-                await Task.Delay(25, cancellationToken);
+                await releaseLookups.Task.WaitAsync(cancellationToken);
                 return movieId == 5
                     ? throw new TmdbNotFoundException()
                     : CreateSummary(movieId);
@@ -78,7 +85,15 @@ public sealed class WatchlistServiceTests
         await using var context = database.CreateContext();
         var service = new WatchlistService(context, lookup);
 
-        var movies = await service.GetMoviesAsync(anonymousId);
+        var getMovies = service.GetMoviesAsync(anonymousId);
+        await firstWaveStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.Equal(WatchlistService.MaximumHydrationConcurrency, Volatile.Read(ref activeLookups));
+        Assert.Equal(WatchlistService.MaximumHydrationConcurrency, lookup.RequestedMovieIds.Count);
+        Assert.False(getMovies.IsCompleted);
+
+        releaseLookups.SetResult();
+        var movies = await getMovies;
 
         Assert.Equal([8, 7, 6, 4, 3, 2, 1], movies.Select(movie => movie.Id));
         Assert.Equal(WatchlistService.MaximumHydrationConcurrency, maximumConcurrentLookups);
