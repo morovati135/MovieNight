@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using MovieNight.Api.Controllers;
@@ -23,6 +24,24 @@ public sealed class MoviesControllerTests
 
         var movie = Assert.IsType<OkObjectResult>(result.Result).Value;
         Assert.IsType<MovieNight.Api.Features.Movies.Contracts.MovieSummaryDto>(movie);
+    }
+
+    [Fact]
+    public async Task Movie_api_usage_does_not_create_an_anonymous_visitor_cookie()
+    {
+        using var httpClient = new HttpClient(new JsonHandler("""{ "page": 1, "total_pages": 1, "total_results": 0, "results": [] }"""))
+        {
+            BaseAddress = new Uri("https://api.themoviedb.org/3/")
+        };
+        using var cache = new MemoryCache(new MemoryCacheOptions());
+        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), cache))
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
+        };
+
+        await controller.GetTrending(CancellationToken.None);
+
+        Assert.Equal(0, controller.HttpContext.Response.Headers.SetCookie.Count);
     }
 
     [Fact]

@@ -1,8 +1,10 @@
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MovieNight.Api.Data;
 using MovieNight.Api.Features.Movies;
+using MovieNight.Api.Features.Watchlists;
 using MovieNight.Api.Integrations.Tmdb;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
 Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtection-Keys")))
+    .SetApplicationName("MovieNight");
 var databaseConnectionString = builder.Configuration.GetConnectionString("MovieNightDatabase")
     ?? throw new InvalidOperationException("Connection string 'MovieNightDatabase' is required.");
 builder.Services.AddDbContext<MovieNightDbContext>(options =>
@@ -33,6 +38,7 @@ builder.Services.AddHttpClient<TmdbClient>((serviceProvider, client) =>
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 builder.Services.AddScoped<MovieCatalogService>();
+builder.Services.AddScoped<IAnonymousVisitorIdentityService, AnonymousVisitorIdentityService>();
 
 builder.Services.AddCors(options =>
 {
