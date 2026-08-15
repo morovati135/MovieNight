@@ -2,15 +2,15 @@
 
 ## Current Phase
 
-Implementation / Stage 05 (not started)
+Implementation / Stage 05 (in progress)
 
 ## Current Stage
 
-Stage 05 — Frontend Product Experience (Next; not started)
+Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-No active sprint — Sprint 04.7 complete
+Sprint 05.1 — Frontend Design Foundation & App Shell complete
 
 ## Accepted / Completed
 
@@ -34,6 +34,7 @@ No active sprint — Sprint 04.7 complete
 - Sprint 04.5 — OpenAPI & Scalar API Documentation
 - Sprint 04.6 — Watchlist Integration & Edge Cases
 - Sprint 04.7 — Stage 04 Verification & Handoff
+- Sprint 05.1 — Frontend Design Foundation & App Shell (Manrope selected)
 - Stage 04 — Anonymous Watchlist Backend & Persistence
 - Stage 03 — Movie Backend / TMDB Integration
 - Stage 02 — Project Bootstrap
@@ -43,7 +44,7 @@ No active sprint — Sprint 04.7 complete
 
 ## Not Started
 
-- Frontend feature implementation
+- Frontend feature implementation (Sprint 05.2 onward)
 - Final integration/polish
 
 ## Current Architectural Constraints
@@ -67,6 +68,5 @@ None.
 
 ## Next Planned Work
 
-1. Begin Stage 05 — Frontend Product Experience.
-2. Stage 05 has not started.
-3. Complete the mandatory Stage 06 Cache Completion & Hardening work during Stage 06.
+1. Begin Sprint 05.2 — shared movie UI and Discover/Home experience.
+2. Complete the mandatory Stage 06 Cache Completion & Hardening work during Stage 06.
