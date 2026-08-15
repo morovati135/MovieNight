@@ -54,25 +54,25 @@ This file records decisions that future agent sessions must preserve unless expl
 
 ## D007 — Watchlist Model
 
-**Decision:** Anonymous watchlists use a public identifier plus a separate owner token.
+**Decision:** Each browser has one private anonymous watchlist, associated through a protected anonymous-browser identity.
 
-**Reason:** Public URLs should remain shareable while write access remains restricted without requiring user accounts.
+**Reason:** The application supports an account-free personal watchlist without public sharing or a separate owner credential.
 
 ---
 
-## D008 — Owner Token Storage
+## D008 — Anonymous-Browser Identity Protection
 
-**Decision:** Store only a hash of the owner token in the database.
+**Decision:** Do not use owner tokens; protect the anonymous-browser identity at the browser boundary.
 
-**Reason:** A database leak should not expose usable watchlist mutation credentials.
+**Reason:** The identity is an implementation boundary for a browser-private watchlist, not a reusable public write credential.
 
 ---
 
 ## D009 — Watchlist Movie Storage
 
-**Decision:** Store a small snapshot of movie data when a movie is added to a watchlist.
+**Decision:** Store TMDB movie identifiers and application-owned watchlist metadata, not movie-detail snapshots.
 
-**Reason:** Rendering a watchlist should not require one TMDB request per movie while avoiding a full local movie catalog.
+**Reason:** TMDB remains the source of truth for movie details and the local database stays limited to application-owned state.
 
 ---
 

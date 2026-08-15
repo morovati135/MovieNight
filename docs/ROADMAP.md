@@ -132,17 +132,14 @@ Major capabilities:
 - SQLite
 - migrations
 - watchlist aggregate/model
-- public `ShareId`
-- private owner token
-- hashed owner-token persistence
-- create watchlist
-- read public watchlist
+- protected anonymous-browser identity
+- browser-private watchlist
+- create or reopen watchlist
 - add movie
 - remove movie
 - duplicate prevention
-- maximum 30 movies
 - TMDB movie validation before persistence
-- movie snapshot persistence
+- TMDB movie-ID persistence
 - watchlist backend tests
 
 Explicitly out of scope:
@@ -177,8 +174,7 @@ Major capabilities:
 - similar movies
 - `Pick for Me`
 - anonymous watchlist creation
-- watchlist owner experience
-- public shared watchlist
+- private watchlist experience
 - loading states
 - empty states
 - error states

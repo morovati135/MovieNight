@@ -4,7 +4,7 @@
 
 MovieNight is a small full-stack movie discovery application designed to be portfolio-ready while remaining intentionally limited in scope.
 
-The application allows users to discover movies, inspect movie details, receive a simple recommendation, and maintain an anonymous shareable watchlist without registration or login.
+The application allows users to discover movies, inspect movie details, receive a simple recommendation, and maintain an anonymous private watchlist without registration or login.
 
 The primary engineering goal is to build the project almost entirely through an AI coding agent while keeping the codebase simple, reviewable, and maintainable.
 
@@ -30,7 +30,7 @@ A visitor who wants to:
 - inspect movie details,
 - receive a movie suggestion,
 - create a personal watchlist without creating an account,
-- share that watchlist through a public URL.
+- reopen that watchlist from the same browser.
 
 ---
 
@@ -86,35 +86,7 @@ This is rule-based/randomized recommendation logic, not AI recommendation.
 
 ### 4.5 Anonymous Watchlist
 
-Users can:
-
-- create one anonymous watchlist,
-- give it a name,
-- add movies,
-- remove movies,
-- reopen it later from the same browser,
-- share it through a public URL.
-
-A watchlist has:
-
-- `PublicId`
-- `OwnerTokenHash`
-- `Name`
-- `CreatedAt`
-- `Items`
-
-The raw owner token is returned only when the watchlist is created.
-
-The frontend stores:
-
-- `PublicId`
-- raw `OwnerToken`
-
-in browser local storage.
-
-Public visitors can read a shared watchlist.
-
-Only a client with a valid owner token can modify it.
+Each browser has one private anonymous watchlist. It can add and remove movies and reopen the watchlist later from the same browser. A protected anonymous-browser identity associates the browser with its watchlist; watchlists are not shared through public URLs.
 
 ---
 
@@ -144,16 +116,7 @@ The backend is responsible for:
 
 The project does not maintain a full local movie catalog.
 
-When a movie is added to a watchlist, store only the snapshot required to render that watchlist efficiently.
-
-A watchlist item may contain:
-
-- `TmdbMovieId`
-- `Title`
-- `PosterPath`
-- `ReleaseDate`
-- `Rating`
-- `AddedAt`
+When a movie is added to a watchlist, store the TMDB movie identifier and application-owned watchlist metadata. TMDB remains the source of truth for movie details.
 
 Before adding a movie, the backend must validate that the movie exists in TMDB.
 
@@ -162,17 +125,14 @@ Before adding a movie, the backend must validate that the movie exists in TMDB.
 ## 7. Business Rules
 
 1. Registration and login do not exist.
-2. A watchlist is publicly readable by its `PublicId`.
-3. Watchlist mutations require a valid owner token.
-4. The backend stores only a hash of the owner token.
-5. A movie cannot exist more than once in the same watchlist.
-6. A watchlist can contain at most 30 movies.
-7. Movies must be validated through TMDB before being added.
-8. Rating filters must be between 0 and 10.
-9. Invalid year filters must be rejected.
-10. Empty search queries must not be sent as movie searches.
-11. Third-party TMDB errors must not leak directly to the frontend.
-12. Movie data exposed to the frontend must use application-owned DTOs rather than raw TMDB response models.
+2. A watchlist is private to its associated anonymous browser.
+3. A movie cannot exist more than once in the same watchlist.
+4. Movies must be validated through TMDB before being added.
+5. Rating filters must be between 0 and 10.
+6. Invalid year filters must be rejected.
+7. Empty search queries must not be sent as movie searches.
+8. Third-party TMDB errors must not leak directly to the frontend.
+9. Movie data exposed to the frontend must use application-owned DTOs rather than raw TMDB response models.
 
 ---
 
@@ -196,15 +156,11 @@ Pick for Me -> Select preferences -> Backend selects candidate -> Movie details
 
 ### Flow E — Create Watchlist
 
-Movie details -> Add to watchlist -> No watchlist exists -> Create watchlist -> Store ownership locally -> Add movie
+Movie details -> Add to watchlist -> Associate the browser with its private watchlist -> Add movie
 
 ### Flow F — Returning Owner
 
-Open application -> Read local ownership data -> Open My Watchlist -> Modify watchlist
-
-### Flow G — Shared Watchlist
-
-Owner copies public URL -> Another visitor opens URL -> Read-only watchlist
+Open application -> Send the browser identity -> Open My Watchlist -> Modify watchlist
 
 ---
 

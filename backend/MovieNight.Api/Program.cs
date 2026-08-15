@@ -1,5 +1,7 @@
 using System.Net.Http.Headers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MovieNight.Api.Data;
 using MovieNight.Api.Features.Movies;
 using MovieNight.Api.Integrations.Tmdb;
 
@@ -8,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
+Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
+var databaseConnectionString = builder.Configuration.GetConnectionString("MovieNightDatabase")
+    ?? throw new InvalidOperationException("Connection string 'MovieNightDatabase' is required.");
+builder.Services.AddDbContext<MovieNightDbContext>(options =>
+    options.UseSqlite(databaseConnectionString));
 builder.Services.AddOptions<TmdbOptions>().BindConfiguration(TmdbOptions.SectionName)
     .Validate(
         options => Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out var baseUrl) && baseUrl.Scheme == Uri.UriSchemeHttps,

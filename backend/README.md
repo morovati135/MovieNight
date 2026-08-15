@@ -16,3 +16,11 @@ dotnet user-secrets set "Tmdb:ReadAccessToken" "your-tmdb-read-access-token"
 ```
 
 Run `GET /api/tmdb/preflight` to make one harmless TMDB read request. A successful check returns `204 No Content`; failures return a safe Problem Details response without exposing the token or raw TMDB response.
+
+## Local database migrations
+
+The local SQLite database is stored at `backend/MovieNight.Api/App_Data/movienight.db` and is not tracked by Git. Apply migrations explicitly from `backend/MovieNight.Api`:
+
+```powershell
+dotnet ef database update
+```

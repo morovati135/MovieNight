@@ -183,10 +183,6 @@ GET  /api/movies/{id}
 GET  /api/movies/{id}/similar
 POST /api/movies/pick
 
-POST   /api/watchlists
-GET    /api/watchlists/{publicId}
-POST   /api/watchlists/{publicId}/items
-DELETE /api/watchlists/{publicId}/items/{movieId}
 ```
 
 Exact route design may be refined during the relevant stage, but endpoint behavior must remain resource-oriented and simple.
@@ -201,9 +197,8 @@ Expected application errors include:
 
 - invalid input,
 - resource not found,
-- invalid owner token,
+- invalid anonymous-browser identity,
 - duplicate watchlist movie,
-- watchlist capacity exceeded,
 - unavailable TMDB dependency.
 
 Raw TMDB responses, stack traces, internal exception messages, or secrets must never be returned to the frontend.
@@ -221,9 +216,7 @@ Important validations include:
 - search query,
 - year,
 - rating range,
-- watchlist name,
-- owner token,
-- watchlist capacity,
+- anonymous-browser identity,
 - duplicate movie,
 - TMDB movie existence.
 
@@ -271,7 +264,7 @@ Persist only application-owned state:
 
 - watchlists,
 - watchlist items,
-- anonymous ownership hash.
+- anonymous-browser association.
 
 TMDB movie catalog data is not replicated locally.
 
@@ -279,15 +272,7 @@ TMDB movie catalog data is not replicated locally.
 
 ## 13. Anonymous Ownership
 
-When creating a watchlist:
-
-1. Generate a cryptographically strong owner token.
-2. Return the raw token once to the client.
-3. Store only a secure hash in the database.
-4. Require the raw token on all mutation requests.
-5. Validate the provided token against the stored hash.
-
-The public watchlist ID and owner token must be independent values.
+Each browser is associated with one private watchlist through a protected anonymous-browser identity. The identity is not a public share identifier or a separate owner token, and no shared-watchlist read behavior exists.
 
 ---
 
@@ -316,9 +301,8 @@ Prioritize tests for logic with meaningful failure modes.
 Backend tests should cover:
 
 - watchlist business rules,
-- owner token validation,
+- anonymous-browser identity handling,
 - duplicate prevention,
-- capacity limit,
 - movie validation,
 - recommendation rules,
 - API success/error behavior.
