@@ -89,7 +89,7 @@ backend/
     │   └── Watchlists/
     ├── Integrations/
     │   └── Tmdb/
-    ├── Persistence/
+    ├── Data/
     ├── Common/
     ├── Program.cs
     └── appsettings.json
@@ -127,10 +127,10 @@ TMDB models must not be exposed directly from public API endpoints.
 EF Core infrastructure belongs under:
 
 ```text
-Persistence/
+Data/
 ```
 
-The initial persistence model contains only watchlist-related data.
+The initial persistence model contains only watchlist items keyed by the protected anonymous-browser identity. It does not persist TMDB movie snapshots or require a separate watchlist table.
 
 ### Common
 

@@ -120,7 +120,7 @@ Detailed file:
 
 # Stage 04 — Anonymous Watchlist Backend & Persistence
 
-**Status:** Next
+**Status:** Completed
 
 Primary outcome:
 
@@ -154,7 +154,7 @@ Explicitly out of scope:
 
 # Stage 05 — Frontend Product Experience
 
-**Status:** Planned
+**Status:** Next
 
 Primary outcome:
 

@@ -1419,28 +1419,28 @@ Fix only genuine Stage 04 inconsistencies.
 
 ### Stage 04 Definition of Done
 
-- [ ] all Sprint 04.1–04.7 acceptance criteria are satisfied.
-- [ ] backend build passes.
-- [ ] backend tests pass.
-- [ ] vulnerability audit is clean or contains only explicitly understood non-actionable issues.
-- [ ] migrations recreate/update the SQLite schema successfully.
-- [ ] runtime DB artifacts are untracked.
-- [ ] anonymous browser isolation works.
-- [ ] returning browser persistence works.
-- [ ] add/remove/list behavior is correct.
-- [ ] 50-item limit is correct.
-- [ ] duplicate prevention exists at application + DB level.
-- [ ] hydration uses MovieNight Movie boundary.
-- [ ] summary cache is limited and explicit.
-- [ ] Stage 06 cache hardening remains mandatory.
-- [ ] OpenAPI + Scalar work in Development.
-- [ ] no authentication/user-account system exists.
-- [ ] no movie snapshot persistence exists.
-- [ ] no Stage 05 frontend feature work exists.
-- [ ] canonical documents reflect the approved Stage 04 model.
-- [ ] `STATUS.md` marks Stage 04 complete only after all checks pass.
-- [ ] Stage 05 is marked next.
-- [ ] Stage 05 has not been started.
+- [x] all Sprint 04.1–04.7 acceptance criteria are satisfied.
+- [x] backend build passes.
+- [x] backend tests pass.
+- [x] vulnerability audit is clean or contains only explicitly understood non-actionable issues.
+- [x] migrations recreate/update the SQLite schema successfully.
+- [x] runtime DB artifacts are untracked.
+- [x] anonymous browser isolation works.
+- [x] returning browser persistence works.
+- [x] add/remove/list behavior is correct.
+- [x] 50-item limit is correct.
+- [x] duplicate prevention exists at application + DB level.
+- [x] hydration uses MovieNight Movie boundary.
+- [x] summary cache is limited and explicit.
+- [x] Stage 06 cache hardening remains mandatory.
+- [x] OpenAPI + Scalar work in Development.
+- [x] no authentication/user-account system exists.
+- [x] no movie snapshot persistence exists.
+- [x] no Stage 05 frontend feature work exists.
+- [x] canonical documents reflect the approved Stage 04 model.
+- [x] `STATUS.md` marks Stage 04 complete only after all checks pass.
+- [x] Stage 05 is marked next.
+- [x] Stage 05 has not been started.
 
 ### Completion Report
 

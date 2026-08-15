@@ -2,15 +2,15 @@
 
 ## Current Phase
 
-Implementation / Stage 04
+Implementation / Stage 05 (not started)
 
 ## Current Stage
 
-Stage 04 — Anonymous Watchlist Backend & Persistence (In progress)
+Stage 05 — Frontend Product Experience (Next; not started)
 
 ## Current Sprint
 
-No active sprint — Sprint 04.6 complete
+No active sprint — Sprint 04.7 complete
 
 ## Accepted / Completed
 
@@ -33,6 +33,8 @@ No active sprint — Sprint 04.6 complete
 - Sprint 04.4 — Watchlist API & Hydration
 - Sprint 04.5 — OpenAPI & Scalar API Documentation
 - Sprint 04.6 — Watchlist Integration & Edge Cases
+- Sprint 04.7 — Stage 04 Verification & Handoff
+- Stage 04 — Anonymous Watchlist Backend & Persistence
 - Stage 03 — Movie Backend / TMDB Integration
 - Stage 02 — Project Bootstrap
 - Product scope and non-goals locked
@@ -49,7 +51,7 @@ No active sprint — Sprint 04.6 complete
 - One ASP.NET Core application project
 - .NET 10
 - Next.js frontend
-- SQLite + EF Core when persistence begins
+- SQLite + EF Core for application-owned watchlist persistence
 - TMDB accessed only through backend
 - No authentication system
 - No MediatR
@@ -65,5 +67,6 @@ None.
 
 ## Next Planned Work
 
-1. Continue Stage 04 with Sprint 04.7.
-2. Stop before Stage 05.
+1. Begin Stage 05 — Frontend Product Experience.
+2. Stage 05 has not started.
+3. Complete the mandatory Stage 06 Cache Completion & Hardening work during Stage 06.
