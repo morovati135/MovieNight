@@ -6,12 +6,26 @@ using MovieNight.Api.Data;
 using MovieNight.Api.Features.Movies;
 using MovieNight.Api.Features.Watchlists;
 using MovieNight.Api.Integrations.Tmdb;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Info = new()
+        {
+            Title = "MovieNight API",
+            Version = "v1",
+            Description = "Movie discovery and anonymous watchlist API."
+        };
+
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddMemoryCache();
 
@@ -65,6 +79,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options => options
+        .WithTitle("MovieNight API Reference")
+        .WithTheme(ScalarTheme.BluePlanet));
 }
 
 app.UseCors();

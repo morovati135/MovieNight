@@ -17,6 +17,10 @@ dotnet user-secrets set "Tmdb:ReadAccessToken" "your-tmdb-read-access-token"
 
 Run `GET /api/tmdb/preflight` to make one harmless TMDB read request. A successful check returns `204 No Content`; failures return a safe Problem Details response without exposing the token or raw TMDB response.
 
+## Development API reference
+
+In the Development environment, the built-in OpenAPI document is available at `/openapi/v1.json` and the interactive Scalar reference at `/scalar`. Neither endpoint is mapped outside Development. Scalar can exercise the public Movie and Watchlist endpoints; Watchlist requests use the browser's `movienight.anonymous-id` cookie to select the anonymous watchlist.
+
 ## Local database migrations
 
 The local SQLite database is stored at `backend/MovieNight.Api/App_Data/movienight.db` and is not tracked by Git. Apply migrations explicitly from `backend/MovieNight.Api`:

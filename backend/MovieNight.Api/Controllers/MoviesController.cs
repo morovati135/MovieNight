@@ -8,33 +8,62 @@ namespace MovieNight.Api.Controllers;
 
 [ApiController]
 [Route("api/movies")]
+[Tags("Movies")]
 public sealed class MoviesController(MovieCatalogService movieCatalogService) : ControllerBase
 {
     [HttpGet("genres")]
+    [EndpointSummary("List movie genres.")]
+    [ProducesResponseType(typeof(IReadOnlyList<GenreDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<IReadOnlyList<GenreDto>>> GetGenres(CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.GetGenresAsync(cancellationToken));
 
     [HttpGet("trending")]
+    [EndpointSummary("Get trending movies.")]
+    [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<PagedMovieResultDto>> GetTrending(CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.GetTrendingAsync(cancellationToken));
 
     [HttpGet("popular")]
+    [EndpointSummary("Get popular movies.")]
+    [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<PagedMovieResultDto>> GetPopular(CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.GetPopularAsync(cancellationToken));
 
     [HttpGet("{id:int}")]
+    [EndpointSummary("Get movie details.")]
+    [ProducesResponseType(typeof(MovieDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<MovieDetailsDto>> GetDetails([Range(1, int.MaxValue)] int id, CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.GetDetailsAsync(id, cancellationToken));
 
     [HttpGet("search")]
+    [EndpointSummary("Search movies.")]
+    [EndpointDescription("Searches TMDB by a non-blank query string.")]
+    [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<PagedMovieResultDto>> Search([FromQuery] SearchMoviesQuery search, CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.SearchAsync(search.Query, search.Page, cancellationToken));
 
     [HttpGet("discover")]
+    [EndpointSummary("Discover movies by optional filters.")]
+    [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<PagedMovieResultDto>> Discover([FromQuery] DiscoverMoviesQuery discover, CancellationToken cancellationToken) =>
         ExecuteAsync(() => movieCatalogService.DiscoverAsync(discover.GenreId, discover.Year, discover.MinRating, discover.Page, cancellationToken));
 
     [HttpGet("pick")]
+    [EndpointSummary("Pick a movie matching optional filters.")]
+    [ProducesResponseType(typeof(MovieSummaryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public async Task<ActionResult<MovieSummaryDto>> Pick([FromQuery] PickMovieQuery pick, CancellationToken cancellationToken)
     {
         try
