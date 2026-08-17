@@ -7,7 +7,7 @@ export function HomeLoading() {
     <div
       aria-label="Loading featured movies"
       aria-live="polite"
-      className="relative min-h-[calc(100svh-5rem)] overflow-hidden bg-[#020b1b] md:min-h-[100svh] lg:min-h-[46rem] xl:min-h-[min(100svh,54rem)]"
+      className="relative min-h-[calc(100svh-5rem)] overflow-hidden bg-background md:min-h-[100svh] lg:min-h-[46rem] xl:min-h-[min(100svh,54rem)]"
     >
       <div className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_68%_35%,rgb(28_52_79/52%),transparent_38%)]" />
       <div className="relative mx-auto flex min-h-[calc(100svh-5rem)] w-full max-w-7xl items-end px-5 pb-12 sm:px-8 md:min-h-[100svh] md:pb-32 lg:min-h-[46rem] lg:px-10 lg:pb-16 xl:min-h-[min(100svh,54rem)]">

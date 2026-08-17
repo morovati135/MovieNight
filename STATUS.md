@@ -15,7 +15,7 @@ Sprint 05.2 — Discover Home Experience (in progress)
 ### Sprint 05.2 Work Packages
 
 - [x] 05.2-H1 — Shell Adaptation + Featured Hero
-- [ ] 05.2-H2 — Trending + Popular + Movie Rails
+- [x] 05.2-H2 — Trending + Popular + Movie Rails
 - [ ] 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview
 - [ ] 05.2-H4 — Home States + Responsive Polish + Visual QA
 
@@ -81,6 +81,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 - Stage 04 — Anonymous Watchlist Backend & Persistence
 - Sprint 05.1 — Frontend Design Foundation & App Shell (Manrope selected)
 - 05.2-H1 — Shell Adaptation + Featured Hero
+- 05.2-H2 — Trending + Popular + Movie Rails
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
@@ -167,7 +168,7 @@ Sprint 05.2 is intentionally executed as small work packages to reduce context u
 
 ## Known Issues / Blockers
 
-None currently blocking Sprint 05.2-H2.
+None currently blocking Sprint 05.2.
 
 Repository transition caution:
 
@@ -179,8 +180,8 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Execute and review Sprint 05.2-H2 — Trending + Popular + Movie Rails.
-2. Start 05.2-H3 only after H2 acceptance.
+1. Execute and review 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview.
+2. Start 05.2-H4 only after H3 acceptance.
 3. Continue H3 → H4 sequentially with Tech Lead review between work packages.
 4. Mark Sprint 05.2 complete only after H4 acceptance.
 5. Do not start Sprint 05.3 before Sprint 05.2 is accepted.

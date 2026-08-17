@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { PageContainer } from "@/components/layout/page-container";
 import { FeaturedMovieHero } from "@/components/movie/featured-movie-hero";
-import { getMovieDetails, getTrendingMovies } from "@/lib/api/movies";
+import { MovieRow } from "@/components/movie/movie-row";
+import { getMovieDetails, getPopularMovies, getTrendingMovies } from "@/lib/api/movies";
 import { addToWatchlist, getWatchlist, removeFromWatchlist } from "@/lib/api/watchlist";
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
 
@@ -12,6 +13,8 @@ import { HomeEmpty, HomeError, HomeLoading } from "./home-states";
 
 type HomeData = {
   featured: FeaturedMovie[];
+  popular: MovieSummary[];
+  trending: MovieSummary[];
   watchlist: MovieSummary[];
 };
 
@@ -25,8 +28,8 @@ export function HomeExperience() {
   useEffect(() => {
     let isCurrent = true;
 
-    Promise.all([getTrendingMovies(), getWatchlist()])
-      .then(async ([trending, watchlist]) => {
+    Promise.all([getTrendingMovies(), getPopularMovies(), getWatchlist()])
+      .then(async ([trending, popular, watchlist]) => {
         const featuredSummaries = trending.results.slice(0, 6);
         const detailResults = await Promise.allSettled(
           featuredSummaries.map((movie) => getMovieDetails(movie.id)),
@@ -48,7 +51,12 @@ export function HomeExperience() {
         });
 
         if (isCurrent) {
-          setData({ featured, watchlist });
+          setData({
+            featured,
+            popular: popular.results,
+            trending: trending.results,
+            watchlist,
+          });
         }
       })
       .catch(() => {
@@ -146,6 +154,22 @@ export function HomeExperience() {
         savedMovieIds={savedMovieIds}
         updatingMovieIds={updatingMovieIds}
       />
+      <div className="h2-rails-ambient w-full space-y-4 overflow-x-clip px-4 pt-10 pb-14 sm:space-y-20 sm:px-8 sm:pt-16 sm:pb-20 lg:space-y-24 lg:px-12 lg:pt-20 lg:pb-24">
+        <MovieRow
+          movies={data.trending}
+          onWatchlistToggle={handleWatchlistToggle}
+          savedMovieIds={savedMovieIds}
+          title="Trending Now"
+          updatingMovieIds={updatingMovieIds}
+        />
+        <MovieRow
+          movies={data.popular}
+          onWatchlistToggle={handleWatchlistToggle}
+          savedMovieIds={savedMovieIds}
+          title="Popular Movies"
+          updatingMovieIds={updatingMovieIds}
+        />
+      </div>
       <p aria-live="polite" className="sr-only" role="status">
         {statusMessage}
       </p>

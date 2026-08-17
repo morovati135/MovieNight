@@ -95,7 +95,7 @@ export function FeaturedMovieHero({
     <section
       aria-label="Featured movies"
       aria-roledescription="carousel"
-      className="featured-hero relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#020b1b] md:min-h-[100svh] lg:min-h-[46rem] xl:min-h-[min(100svh,54rem)]"
+      className="featured-hero relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-background md:min-h-[100svh] lg:min-h-[46rem] xl:min-h-[min(100svh,54rem)]"
       onBlurCapture={handleBlur}
       onFocusCapture={handleFocus}
       onPointerCancelCapture={() => {
@@ -216,7 +216,7 @@ export function FeaturedMovieHero({
                 aria-label={`Show featured movie ${index + 1}: ${movie.title}`}
                 aria-pressed={isActive}
                 className={cn(
-                  "relative h-[3.75rem] w-[3.75rem] shrink-0 overflow-hidden rounded-xl border bg-surface shadow-[0_12px_30px_rgb(0_0_0/32%)] outline-none transition-[width,height,border-color,opacity,transform,filter] duration-300 ease-out focus-visible:z-50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[#020b1b] md:h-[5.5rem] md:w-[5.5rem] md:rounded-2xl",
+                  "relative h-[3.75rem] w-[3.75rem] shrink-0 overflow-hidden rounded-xl border bg-surface shadow-[0_12px_30px_rgb(0_0_0/32%)] outline-none transition-[width,height,border-color,opacity,transform,filter] duration-300 ease-out focus-visible:z-50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:h-[5.5rem] md:w-[5.5rem] md:rounded-2xl",
                   order > 0 && "-ml-4 md:-ml-6",
                   isActive
                     ? "z-30 h-[5.75rem] w-[5.75rem] -translate-y-1.5 border-accent opacity-100 shadow-[0_20px_44px_rgb(0_0_0/48%),0_0_0_1px_rgb(41_187_244/22%)] md:h-[8.75rem] md:w-[8.75rem] md:-translate-y-2"

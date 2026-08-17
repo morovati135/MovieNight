@@ -19,7 +19,7 @@ export function MobileNavigation() {
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#061126]/92 px-4 pb-[max(0.55rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-14px_40px_rgb(0_0_0/26%)] backdrop-blur-xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 bg-background px-4 pb-[max(0.55rem,env(safe-area-inset-bottom))] pt-1.5 md:hidden"
     >
       <div className="mx-auto grid max-w-md grid-cols-3 gap-1">
         {navigation.map(({ href, icon: Icon, label }) => {
