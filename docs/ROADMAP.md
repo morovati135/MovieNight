@@ -4,9 +4,18 @@
 
 This file is the high-level delivery roadmap for MovieNight.
 
-It defines the major project stages, their boundaries, and the order in which they should be executed.
+It defines:
 
-Detailed implementation belongs in the individual files under `docs/stages/`.
+- major project stages
+- stage boundaries
+- execution order
+- current stage status
+
+Detailed implementation belongs in the individual files under:
+
+```text
+docs/stages/
+```
 
 The project uses Stage numbers starting at `00`.
 
@@ -63,13 +72,19 @@ Primary outcomes:
 - local CORS configuration
 - frontend-to-backend smoke integration
 - Codex-native project instructions
-- full bootstrap verification
+- bootstrap verification/handoff
 
-Important accepted local contracts:
+Accepted local contracts:
 
-- Backend: `http://localhost:5080`
-- Frontend: `http://localhost:3000`
-- Health: `GET /api/health`
+```text
+Backend:  http://localhost:5080
+Frontend: http://localhost:3000
+Health:   GET /api/health
+```
+
+Detailed Stage file:
+
+- `docs/stages/02-project-bootstrap.md`
 
 ---
 
@@ -79,38 +94,37 @@ Important accepted local contracts:
 
 Primary outcome:
 
-Build the complete read-only movie backend boundary over TMDB.
+Build a stable MovieNight-owned read-only Movie backend boundary over TMDB.
 
-Major capabilities:
+Completed capabilities include:
 
-- TMDB application authentication with Bearer token
+- TMDB Bearer Read Access Token integration
 - typed TMDB configuration
 - `HttpClient` integration
 - TMDB transport models isolated from public MovieNight contracts
 - MovieNight-owned DTOs
-- full image URLs produced by the backend
+- backend-produced full image URLs
 - genres
-- trending movies
-- popular movies
+- trending
+- popular
 - search
 - discover/filtering
-- movie details
+- Movie Details
 - cast
 - similar movies
-- rule-based `Pick for Me`
-- explicit error handling
+- rule-based Pick for Me
+- explicit error translation
 - limited targeted in-memory caching
-- backend tests
-- live TMDB smoke verification
+- tests and live verification
+- Stage handoff
 
-Explicitly out of scope:
+Important boundary:
 
-- EF Core
-- SQLite
-- watchlist persistence
-- frontend movie UI
-- authentication
-- user accounts
+```text
+Frontend → MovieNight backend → TMDB
+```
+
+The frontend must never call TMDB directly.
 
 Detailed file:
 
@@ -124,69 +138,141 @@ Detailed file:
 
 Primary outcome:
 
-Add application-owned persistence and the anonymous watchlist domain.
+Add application-owned persistence and a browser-private anonymous Watchlist without user accounts.
 
-Major capabilities:
+Accepted capabilities:
 
 - EF Core
 - SQLite
 - migrations
-- watchlist aggregate/model
-- protected anonymous-browser identity
-- browser-private watchlist
-- create or reopen watchlist
-- add movie
-- remove movie
+- backend-generated anonymous browser identity
+- protected persistent anonymous cookie
+- one implicit Watchlist per anonymous browser identity
+- no public ShareId / owner-token model in V1
+- Movie IDs only in persistence
+- no persisted Movie snapshots
 - duplicate prevention
-- TMDB movie validation before persistence
-- TMDB movie-ID persistence
-- watchlist backend tests
+- maximum 50 Watchlist items
+- backend Movie validation
+- backend hydration through the Movie/TMDB boundary
+- newest-first ordering
+- bounded summary lookup behavior
+- Watchlist tests/integration verification
+- ASP.NET Core OpenAPI
+- Scalar API documentation
+- Stage handoff
 
 Explicitly out of scope:
 
 - registration/login
 - ASP.NET Identity
 - JWT
-- profiles
-- frontend final product experience
+- user profiles
+- device/account Watchlist sync
+- public shared Watchlists
+- named collections
+
+Detailed file:
+
+- `docs/stages/04-anonymous-watchlist-backend-persistence.md`
 
 ---
 
 # Stage 05 — Frontend Product Experience
 
-**Status:** Next
+**Status:** In Progress
 
 Primary outcome:
 
-Build the real portfolio-ready MovieNight user experience over the completed backend contracts.
+Build the polished, responsive, portfolio-ready MovieNight frontend over the completed Movie and Anonymous Watchlist backend contracts.
+
+Public frontend routes:
+
+```text
+/                    → Discover / Home
+/movies/[id]         → Movie Details
+/pick                → Pick for Me
+/watchlist           → Anonymous Watchlist
+```
 
 Major capabilities:
 
-- application layout and visual direction
-- discovery/home experience
-- trending section
-- popular section
-- search experience
-- discover filters
-- movie cards
-- movie details
-- cast
-- similar movies
-- `Pick for Me`
-- anonymous watchlist creation
-- private watchlist experience
-- loading states
-- empty states
-- error states
-- responsive behavior
-- final component organization
+- application shell / design foundation
+- Discover / Home
+- Search and Discover interaction
+- Trending and Popular discovery
+- Genre discovery
+- Movie cards / rails / grids
+- Movie Details
+- Cast
+- Similar Movies
+- Pick for Me
+- anonymous browser-private Watchlist
+- saved-state feedback
+- loading / error / empty / not-found states
+- responsive layouts
+- accessibility / interaction quality
+- reference-driven visual implementation
+- final frontend verification/handoff
 
-Constraints:
+## Current Stage 05 Progress
+
+```text
+05.1 — Frontend Design Foundation & App Shell
+       Status: Completed / Accepted
+
+05.2 — Discover Home Experience
+       Status: In Progress
+       Execution:
+       05.2-H1 → 05.2-H2 → 05.2-H3 → 05.2-H4
+
+05.3 — Search & Discover Experience
+       Status: Not Started
+
+05.4 — Movie Details Experience
+       Status: Not Started
+
+05.5 — Pick for Me Experience
+       Status: Not Started
+
+05.6 — Anonymous Watchlist Experience
+       Status: Not Started
+
+05.7 — Responsive, Interaction & UX Polish
+       Status: Not Started
+
+05.8 — Stage 05 Verification & Handoff
+       Status: Not Started
+```
+
+Sprint 05.2 remains **one Sprint**.
+
+Its H1–H4 items are internal work packages used to reduce Agent context and create explicit visual review checkpoints.
+
+Detailed H1–H4 scope, reference assets, acceptance criteria, and stop boundaries live only in:
+
+- `docs/stages/05-frontend-product-experience.md`
+
+Detailed product/visual/reference rules live in:
+
+- `.agents/skills/movienight-ui/`
+
+Stage 05 constraints:
 
 - frontend calls only MovieNight backend
-- no direct TMDB calls
-- no unnecessary state-management/data-fetching libraries
-- no redesign of backend contracts without explicit Tech Lead decision
+- no direct TMDB frontend calls
+- no fake account/profile/streaming capabilities
+- no authentication frontend
+- no subscription product
+- no unnecessary frontend frameworks/libraries
+- reference assets define approved appearance
+- existing frontend visuals are not the redesign source of truth
+- valid existing API/data-flow logic may be reused
+- no Stage 06 hardening work is started early
+
+Detailed Stage file:
+
+- `docs/stages/05-frontend-product-experience.md`
 
 ---
 
@@ -196,7 +282,7 @@ Constraints:
 
 Primary outcome:
 
-Verify all user journeys end-to-end and complete cross-cutting runtime concerns that were intentionally kept lightweight during feature construction.
+Verify the complete user journeys end-to-end and complete cross-cutting runtime concerns that were intentionally kept lightweight during feature construction.
 
 Major capabilities:
 
@@ -210,34 +296,32 @@ Major capabilities:
 - runtime/error-path review
 - final CORS/configuration validation
 
-## Cache Completion & Hardening
+## Mandatory Cache Completion & Hardening
 
-Stage 03 intentionally introduces only a small explicit `IMemoryCache` baseline.
+Stage 03 intentionally introduced only a small explicit `IMemoryCache` baseline.
 
-Stage 06 MUST revisit caching as a dedicated hardening concern rather than leaving the Stage 03 implementation as the final cache design.
+Stage 06 must revisit caching as a dedicated hardening concern.
 
-The Stage 06 cache review must include:
+The review must include:
 
-- inventory of all cacheable TMDB read operations
-- verification of whether each existing cache provides measurable value
-- explicit TTL policy by data category
-- reconsideration of caching for search/discover based on actual behavior and repetition
+- cacheable-operation inventory
+- evidence/value of existing caches
+- TTL policy by data category
+- Search/Discover caching reconsideration
 - cache-key consistency
-- optional negative-cache policy for suitable failures/not-found responses
+- suitable negative-cache policy
 - stale-data tolerance
-- refresh/expiration behavior
+- expiration/refresh behavior
 - memory-bound considerations
-- concurrency/cache-stampede considerations where relevant
-- logging/observability for cache behavior where useful
-- validation that cached DTOs do not leak TMDB transport models
-- tests for important cache behavior
-- removal of cache entries that add complexity without real value
+- concurrency/cache-stampede concerns where relevant
+- useful cache observability
+- DTO/transport-boundary verification
+- important cache tests
+- removal of cache complexity that provides no value
 
-This is a **planned project requirement**, not an optional future idea.
+This is a planned requirement, not an optional future idea.
 
-The goal is still to keep caching simple and local unless measured project needs justify something more complex.
-
-Redis or distributed caching remains out of scope unless a future explicit architecture decision changes that.
+Redis/distributed caching remains out of scope unless a future explicit architecture decision changes that.
 
 ---
 
@@ -247,14 +331,14 @@ Redis or distributed caching remains out of scope unless a future explicit archi
 
 Primary outcome:
 
-Turn the completed application into a clean portfolio deliverable.
+Turn the verified application into a clean portfolio deliverable.
 
 Major capabilities:
 
 - final UX polish
-- accessibility pass
+- final accessibility review
 - responsive review
-- final error/empty/loading-state review
+- final error/empty/loading review
 - code cleanup
 - dead-code removal
 - documentation consistency
@@ -263,10 +347,10 @@ Major capabilities:
 - architecture summary
 - screenshots/demo guidance
 - final security/dependency checks
-- final repository hygiene
+- repository hygiene
 - portfolio/LinkedIn handoff notes
 
-No major new business feature should be introduced in this stage.
+No major new business feature should be introduced in this Stage.
 
 ---
 
@@ -296,17 +380,19 @@ Total project stages: **8 stages (00 through 07)**.
 
 # Roadmap Change Rule
 
-A stage boundary should change only when:
+A Stage boundary should change only when:
 
 1. product scope changes materially;
 2. an accepted architecture decision changes;
 3. implementation reveals a genuine dependency that makes the current ordering unsafe or impractical.
 
-Do not split or merge stages merely because an Agent proposes a different organization.
+Do not split or merge Stages merely because an Agent proposes a different organization.
 
-Any roadmap change must be explicitly approved by the Tech Lead and reflected in:
+Internal work packages such as Sprint 05.2-H1 through H4 do not change the Stage or Sprint numbering model.
+
+Any material roadmap change must be explicitly approved by the Tech Lead and reflected in:
 
 - `docs/ROADMAP.md`
-- affected stage files
+- affected Stage files
 - `DECISIONS.md` when appropriate
 - `STATUS.md`

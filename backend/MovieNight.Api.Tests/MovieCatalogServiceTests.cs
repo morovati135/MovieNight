@@ -196,7 +196,7 @@ public sealed class MovieCatalogServiceTests
 
         Assert.Equal(first, second);
         Assert.Equal([18], first.GenreIds);
-        Assert.Equal("https://image.tmdb.org/t/p/w500/poster.jpg", first.PosterUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w780/poster.jpg", first.PosterUrl);
         Assert.Equal(1, handler.RequestCount);
         Assert.Equal("/3/movie/7", handler.RequestUri?.AbsolutePath);
         Assert.Equal(string.Empty, handler.RequestUri?.Query);

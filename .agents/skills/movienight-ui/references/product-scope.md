@@ -1,0 +1,143 @@
+# MovieNight Product Scope
+
+MovieNight is a small, polished movie-discovery application.
+
+The current product is movie-only.
+
+## Routes
+
+### `/`
+Home / Discover.
+
+### `/movies/[id]`
+Movie Details.
+
+### `/pick`
+Pick for Me.
+
+### `/watchlist`
+Anonymous Watchlist.
+
+## Explicitly out of scope
+
+Do not introduce:
+- authentication
+- sign in
+- sign up
+- user profiles
+- account settings
+- TV series
+- subscription plans
+- pricing
+- streaming playback
+- continue watching
+- playback progress
+- kids mode
+- studio browsing
+- FAQ marketing sections
+- social features
+- multi-user synchronization
+
+## Anonymous Watchlist
+
+Watchlist is intentionally anonymous.
+
+It is private to the current browser/device storage.
+
+Do not:
+- require login
+- prompt the user to create an account
+- imply cloud synchronization
+
+## Home features
+
+Home contains:
+- application header/navigation
+- search
+- featured movie hero
+- Trending movies
+- Popular movies
+- genre discovery
+- Pick for Me promotional CTA
+- optional Watchlist preview
+- minimal footer
+
+## Featured Hero
+
+The hero is a cinematic carousel.
+
+Requirements:
+- six featured movies
+- approximately seven-second auto advance
+- previous and next controls
+- slide indicators
+- pause and resume support
+- pause during relevant hover/focus interactions
+- reduced-motion handling
+- strong movie artwork prominence
+- title
+- metadata
+- short overview
+- View Details action
+- Watchlist action
+
+## Search
+
+Search belongs to Home.
+
+There is no standalone Search route in the current scope.
+
+## Genre discovery
+
+Trending and Popular are independent rails.
+
+Selecting a genre must not locally filter or replace Trending or Popular.
+
+Genre selection produces a separate Discover result for the selected genre.
+
+## Movie Details
+
+Movie Details should support:
+- cinematic backdrop
+- poster
+- title
+- release metadata
+- runtime where available
+- rating
+- genres
+- overview
+- Watchlist action
+- Cast
+- Similar Movies
+
+It should remain image-driven and cinematic rather than becoming a text-heavy information page.
+
+## Pick for Me
+
+Pick for Me is a signature MovieNight feature.
+
+The flow contains:
+- preference/filter controls
+- loading state
+- one spotlight recommendation
+- primary movie information
+- View Details
+- Add to Watchlist
+- Pick Again
+
+The result should feel like a deliberate recommendation, not another generic movie grid.
+
+Do not present the feature as an LLM or AI recommendation unless the actual implementation later uses one.
+
+## Watchlist page
+
+The Watchlist page contains:
+- page title
+- concise description
+- subtle browser-private note
+- saved movie grid
+- View Details
+- Remove
+- empty state
+
+==================================================

@@ -2,9 +2,13 @@
 
 ## Stage Status
 
-**Planned — Next Stage after Stage 04 acceptance and commit**
+**In Progress**
 
-Stage 04 — Anonymous Watchlist Backend & Persistence must be complete, accepted, and committed before implementation begins.
+Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
+
+Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
+
+Current work is Sprint 05.2 — Discover Home Experience.
 
 ---
 
@@ -12,69 +16,112 @@ Stage 04 — Anonymous Watchlist Backend & Persistence must be complete, accepte
 
 Turn the completed MovieNight backend into a polished, responsive, portfolio-ready frontend product.
 
-This stage focuses on the visible user experience:
+Stage 05 owns the user-facing frontend experience for:
 
-- movie discovery
-- search/discover filtering
-- movie details
+- Discover / Home
+- Search and Discover filtering
+- Movie Details
 - Pick for Me
-- anonymous watchlist
+- Anonymous Watchlist
 - loading / error / empty states
 - responsive behavior
-- subtle interaction polish
+- interaction and accessibility polish
+- final frontend verification and handoff
 
-The frontend must consume only MovieNight backend APIs.
+The frontend must consume MovieNight backend APIs only.
 
 The frontend must not call TMDB directly.
 
-The visual direction is locked as a modern cinematic movie-discovery website inspired by the approved references, with dark-but-not-black surfaces, rounded geometry, image-driven color, selective glass/glow effects, and restrained motion.
-
-The final result should feel like a real product rather than a tutorial dashboard, admin UI, generic shadcn demo, or Netflix clone.
+Detailed product/visual rules are maintained by the repository-local MovieNight UI skill and approved reference assets rather than duplicated throughout this Stage document.
 
 ---
 
-# 2. Canonical Context
+# 2. Canonical Context and Authority
 
-Use only the context required by the active sprint.
+Use only the context required by the active sprint or work package.
 
-Primary sources of truth:
+Primary project sources:
 
-- `AGENTS.md`
+- applicable `AGENTS.md`
 - `frontend/AGENTS.md`
-- `PROJECT.md`
-- `ARCHITECTURE.md`
-- `DECISIONS.md`
 - `STATUS.md`
 - `docs/ROADMAP.md`
 - this Stage 05 file
+- `.agents/skills/movienight-ui/SKILL.md`
+- only the active page/work-package references under `.agents/skills/movienight-ui/`
 
-Stage 03 and Stage 04 implementation may be inspected only when the current frontend sprint depends on:
+Read `PROJECT.md`, `ARCHITECTURE.md`, and `DECISIONS.md` only when the active task needs a product or architecture decision that is not already resolved by the active Stage/sprint context.
 
-- current public Movie API contracts
+Inspect Stage 03 or Stage 04 implementation only when required for:
+
+- current Movie API contracts
 - current Watchlist API contracts
 - current Problem Details behavior
-- current frontend API-client conventions
-- current anonymous-cookie behavior
-- current ports and CORS rules
+- current API-client conventions
+- anonymous-cookie / browser-credential behavior
+- ports / CORS
+- other concrete backend integration dependencies
 
-Do not read all previous stage files by default.
+Do not read every completed Stage by default.
+
+## 2.1 Authority Order for Frontend Work
+
+For MovieNight frontend implementation, resolve conflicts in this order:
+
+1. explicit current Tech Lead instruction
+2. active Sprint / work-package scope in this Stage file
+3. MovieNight product requirements in `$movienight-ui`
+4. approved visual reference assets for the active task
+5. remaining `$movienight-ui` visual / responsive / implementation rules
+6. existing backend/API contracts
+7. supporting implementation skills
+8. agent preference or creativity
+
+Existing frontend visuals are not a source of truth for the redesign.
+
+Existing frontend code may still be reused for valid integration, data-flow, state, or other non-visual logic.
 
 ---
 
-# 3. Entry Criteria
+# 3. Stage Transition Notes
 
-Before Sprint 05.1 implementation begins:
+## 3.1 Sprint 05.1 Preservation Rule
 
-- Stage 04 is accepted and committed.
-- Git working tree is clean.
-- frontend app builds in its current baseline state.
-- backend health endpoint works.
-- Movie APIs are stable.
-- Watchlist APIs are stable.
-- anonymous Watchlist cookie behavior is stable.
-- Scalar/OpenAPI are available for development reference.
-- no direct frontend-to-TMDB integration exists.
-- current frontend API client remains the intended integration boundary.
+Sprint 05.1 remains accepted and is **not reopened**.
+
+Its valid engineering foundation remains part of the project, including:
+
+- Manrope typography foundation
+- global design-token direction
+- non-pure-black base palette
+- reusable shell/layout primitives
+- reusable button/control foundations
+- accessibility / reduced-motion foundation
+- application navigation structure
+- centralized frontend API-client direction
+
+During Sprint 05.2 and later frontend work, visual styling or composition created during 05.1 may be adapted when required to match newly approved references.
+
+Such adaptation does not reopen Sprint 05.1 and must not discard valid reusable engineering foundations without a concrete reason.
+
+## 3.2 Sprint 05.2 Redesign Transition
+
+An earlier Sprint 05.2 implementation was partially completed but was **not accepted as the final visual Home implementation**.
+
+Its visual composition is superseded by the approved reference-driven workflow defined below.
+
+Existing 05.2 implementation may still be reused or deliberately ported when it provides valid:
+
+- MovieNight backend API adapters
+- client-side Movie/Genre contracts
+- Watchlist transport behavior
+- browser credential handling
+- saved-state logic
+- other reusable non-visual data-flow/state logic
+
+Do not discard these areas blindly merely because the visual implementation is being redesigned.
+
+The current frontend implementation must not be used as the visual reference for the new Home.
 
 ---
 
@@ -82,25 +129,24 @@ Before Sprint 05.1 implementation begins:
 
 After Stage 05:
 
-- `/` provides the complete Discover/Home experience.
+- `/` provides the complete Discover / Home experience.
 - `/movies/[id]` provides the complete Movie Details experience.
 - `/pick` provides the complete Pick for Me experience.
 - `/watchlist` provides the complete anonymous Watchlist experience.
-- users can search and discover movies without seeing backend/API distinctions.
-- users can add/remove movies from the Watchlist from relevant UI locations.
-- saved-state feedback is consistent across the frontend.
+- Search and Discover feel like one coherent product experience even when backed by separate backend operations.
+- Watchlist add/remove and saved-state feedback are consistent across relevant screens.
 - Watchlist behavior remains anonymous and browser-private.
-- the UI has loading, error, validation, and empty states.
+- loading, error, validation, empty, and not-found states exist where required.
 - desktop, tablet, and mobile layouts are intentionally designed.
-- MovieNight uses the approved cinematic design direction.
-- frontend code remains simple and feature-oriented rather than architecture-heavy.
-- no direct TMDB calls exist in the frontend.
-- no fake login/profile/account features exist.
-- Stage 06 can focus on full-stack integration, runtime hardening, cache completion, and final cross-layer verification.
+- the approved MovieNight visual direction is implemented through approved references.
+- frontend code remains simple and feature-oriented.
+- frontend calls no TMDB API directly.
+- no fake login/profile/account/streaming capabilities exist.
+- Stage 06 can focus on integration, testing, runtime hardening, and cache completion.
 
 ---
 
-# 5. Locked Stage 05 Product Routes
+# 5. Locked Product Routes
 
 Version 1 public frontend routes:
 
@@ -111,11 +157,9 @@ Version 1 public frontend routes:
 /watchlist           → Anonymous Watchlist
 ```
 
-Search and Discover are part of the `/` product experience.
+Search remains part of the `/` product experience.
 
-Do not create a separate public Search route unless a later explicit product decision requires one.
-
-Do not create frontend routes for:
+Do not create public routes for:
 
 ```text
 /login
@@ -126,372 +170,51 @@ Do not create frontend routes for:
 /admin
 ```
 
-No matching backend capabilities exist.
+unless a later explicit product decision changes scope.
 
 ---
 
-# 6. Locked Visual Direction
+# 6. Product / Visual Source of Truth
 
-MovieNight is a:
-
-```text
-modern
-cinematic
-dark
-soft
-rounded
-image-first
-polished
-movie-discovery web app
-```
-
-It must not look like:
+Detailed frontend product, visual, responsive, and implementation rules live in:
 
 ```text
-an admin dashboard
-a generic SaaS dashboard
-a neon-heavy cyberpunk dashboard
-a Netflix clone
-a shadcn component showcase
+.agents/skills/movienight-ui/
 ```
+
+Use `$movienight-ui` explicitly during MovieNight frontend implementation and review.
+
+Approved reference images define appearance.
+
+MovieNight requirements define functionality.
+
+Do not copy irrelevant product semantics from a visual reference.
+
+High-level Stage 05 non-negotiables remain:
+
+- movie-only V1
+- cinematic, image-first frontend
+- dark-but-not-pure-black foundation
+- no authentication/profile UI
+- no subscription/pricing product
+- no streaming playback / Continue Watching behavior
+- no fake backend capabilities
+- no direct frontend-to-TMDB access
+- responsive design is required
+- accessibility is required
+- motion must be restrained and respect reduced-motion preferences
 
 ---
 
-## 6.1 Background
-
-The primary background must **not** be pure black.
-
-Avoid:
-
-```text
-#000000
-```
-
-Use a family of:
-
-```text
-graphite
-deep navy-gray
-muted blue-black
-dark charcoal
-```
-
-The exact implementation color should be tuned visually during Sprint 05.1.
-
-The base UI should remain visually neutral enough that movie artwork provides much of the page color.
-
----
-
-## 6.2 Accent Color
-
-Do not make teal/cyan the permanent dominant color of every surface.
-
-Accent color is intended for:
-
-- primary CTA
-- active navigation
-- selected filter / genre
-- focused control
-- subtle interactive glow
-- small success/active states
-
-Movie imagery should carry a large share of the visual color.
-
----
-
-## 6.3 Image-Driven Gradients
-
-Use movie artwork as a primary visual source.
-
-Approved pattern:
-
-```text
-movie backdrop/poster
-+
-dark overlay
-+
-soft transparent gradient
-+
-page background blend
-```
-
-Use this especially for:
-
-- Featured Hero
-- Movie Details hero
-- Pick result spotlight
-- card bottom overlays where useful
-
-Do not introduce dominant-color extraction or runtime palette-generation algorithms in Stage 05.
-
----
-
-## 6.4 Typography
-
-Typography must follow the approved reference direction:
-
-```text
-modern
-rounded/geometric
-clean
-premium
-highly readable
-streaming-product feel
-```
-
-Approved candidates include:
-
-```text
-Manrope
-Plus Jakarta Sans
-DM Sans
-Outfit
-```
-
-Sprint 05.1 must select one exact font after a lightweight visual comparison.
-
-Current preference:
-
-```text
-Manrope
-or
-Plus Jakarta Sans
-```
-
-Use strong typography hierarchy:
-
-```text
-Hero/movie title     → heavy/bold
-Section heading      → semibold/bold
-Body/meta            → regular/medium
-```
-
-Do not use decorative “cinema” fonts that reduce readability.
-
----
-
-## 6.5 Rounded Geometry
-
-Rounded surfaces are a core design rule.
-
-Use consistent radius scales for:
-
-- hero surfaces
-- movie posters/cards
-- buttons
-- search
-- filters
-- dropdowns
-- small floating controls
-
-Prefer:
-
-```text
-Hero          → large radius
-Cards         → medium/large soft radius
-Inputs        → medium/large radius
-Genre chips   → pill
-Primary CTA   → rounded / pill-like
-```
-
-Avoid random per-component radii.
-
----
-
-## 6.6 Borders
-
-Do **not** wrap every section in a bordered container.
-
-Section separation should primarily come from:
-
-- spacing
-- typography
-- imagery
-- background contrast
-- gradients
-- subtle shadows
-
-Borders may be used only where visually meaningful:
-
-- input boundary
-- selected state
-- floating glass control
-- subtle card treatment
-- focus/accessibility state
-
-Persistent neon outlines around cards are not allowed.
-
----
-
-## 6.7 Glass Effects
-
-Glassmorphism is selective, not global.
-
-Good locations:
-
-- top header/navigation
-- search
-- floating hero controls
-- filter popovers
-- small overlay controls
-
-Bad locations:
-
-- every movie card
-- every content section
-- entire page surfaces
-
-Glass is a detail, not the primary design system.
-
----
-
-## 6.8 Glow
-
-Glow is interaction/highlight feedback.
-
-Approved uses:
-
-- primary CTA hover/focus
-- selected genre/filter
-- focused search/control
-- Pick for Me primary action
-- brief successful interaction feedback
-
-Do not keep large permanent glows around normal cards or sections.
-
----
-
-## 6.9 Motion
-
-Motion must be subtle and functional.
-
-Default interaction timing:
-
-```text
-approximately 150–250ms
-ease-out
-```
-
-Approved motion:
-
-```text
-Movie card hover
-→ small scale
-→ slight lift
-→ overlay fade
-
-Button hover
-→ brightness / subtle glow
-→ tiny icon movement where appropriate
-
-Filter/chip
-→ smooth active-state transition
-
-Watchlist mutation
-→ quick icon/status feedback
-
-Pick result
-→ subtle fade/reveal
-
-Skeleton
-→ soft shimmer
-```
-
-Do not add:
-
-- large parallax systems
-- heavy 3D effects
-- large animation frameworks without proven need
-- excessive page-transition choreography
-
-Prefer CSS/Tailwind transitions when sufficient.
-
----
-
-# 7. Locked Layout Direction
-
-Desktop layout should follow the approved reference style:
-
-- primarily open/full-width content
-- some sections may use an asymmetric layout
-- movie rows may be paired with a smaller side feature card
-- side feature cards must support the content, not make the page feel like a dashboard
-
-Approved examples:
-
-```text
-Trending movie row
-+ small Pick for Me feature card
-```
-
-or:
-
-```text
-Popular movie content
-+ compact Watchlist preview
-```
-
-Do not convert every section into a two-column dashboard.
-
----
-
-# 8. App Navigation
-
-## Desktop
-
-Primary navigation:
-
-```text
-MovieNight
-Discover
-Pick for Me
-Watchlist
-Search
-```
-
-Do not show fake:
-
-```text
-Profile
-Settings
-Notifications
-Collections
-Login
-```
-
-unless a real capability is later approved.
-
-Header may use a light glass treatment.
-
----
-
-## Mobile
-
-Recommended primary navigation:
-
-```text
-Discover
-Pick
-Watchlist
-```
-
-Prefer a compact bottom navigation or equivalent touch-friendly mobile pattern.
-
-Final implementation should be validated during Sprint 05.7.
-
----
-
-# 9. Frontend Data Boundary
-
-Frontend architecture remains intentionally simple.
+# 7. Frontend Data Boundary
 
 Expected flow:
 
 ```text
-React / Next.js UI
-        ↓
+Next.js UI
+    ↓
 central MovieNight API client
-        ↓
+    ↓
 ASP.NET Core backend
 ```
 
@@ -503,450 +226,605 @@ Frontend → TMDB
 
 All Movie and Watchlist data must come through MovieNight backend APIs.
 
----
+## 7.1 Anonymous Watchlist
 
-## 9.1 Watchlist Cookie
+The backend owns anonymous browser identity and its protected cookie.
 
-The backend owns the anonymous cookie.
-
-Frontend requests that interact with the Watchlist must preserve browser credentials.
-
-Conceptual fetch behavior:
-
-```text
-credentials: "include"
-```
-
-The browser must manage the protected anonymous cookie naturally.
+Frontend Watchlist requests must preserve browser credentials where required.
 
 The frontend must not:
 
-- read or display the anonymous Guid
-- create its own anonymous identity
-- store backend identity tokens manually
+- read or display the anonymous identity
+- create a second identity model
+- manually persist backend identity tokens
 - expose Data Protection details
 
----
+## 7.2 Saved State
 
-## 9.2 Watchlist Saved State
+Do not add one backend status request per Movie card.
 
-Do not add a backend `movie status` endpoint for every Movie card.
-
-Frontend may load:
-
-```http
-GET /api/watchlist
-```
-
-once for the current browser session/page flow and derive an in-memory set:
-
-```text
-savedMovieIds
-```
-
-This state may drive:
-
-- watchlist icon state
-- Add/Remove CTA state
-- duplicate-safe UI feedback
-
-Do not generate one status request per movie card.
+The frontend may derive saved Movie IDs from the current Watchlist payload and keep a small in-memory saved-state representation for the active UI flow.
 
 ---
 
-# 10. Next.js Component Strategy
+# 8. Frontend Engineering Direction
 
-Use Server Components where they clearly reduce complexity or improve initial rendering.
+Keep the frontend intentionally simple.
 
-Use Client Components for interaction-heavy features such as:
+Prefer:
 
-- search input
-- discover filters
-- Watchlist mutations
-- Pick form
-- interactive controls
+- existing project dependencies
+- platform/browser capabilities
+- reusable feature-oriented components
+- lightweight client state
+- existing centralized API client
+- CSS/Tailwind transitions when sufficient
 
-Do not create complicated server/client boundaries merely to use advanced Next.js features.
+Do not add without a concrete need:
 
-Prefer the simplest boundary that preserves:
+- large state-management frameworks
+- TanStack Query / React Query
+- heavy animation libraries
+- a new frontend architecture layer
+- packages that only reproduce simple platform behavior
 
-- maintainability
-- cookie behavior
-- API-client reuse
-- predictable UX
+Use Server Components where they simplify initial rendering.
 
----
+Use Client Components where interaction requires them.
 
-# 11. Dependency Strategy
-
-Prefer existing project dependencies and platform capabilities.
-
-Use shadcn only for useful primitives such as:
-
-```text
-Button
-Select
-Sheet
-Skeleton
-Tooltip
-Dialog if genuinely required
-```
-
-Do not let shadcn dictate the visual identity.
-
-Do not add TanStack Query / React Query unless current implementation proves native fetch + small client state insufficient.
-
-Do not add a heavy animation library unless CSS/Tailwind cannot meet an approved interaction requirement.
-
-Any new package must have a concrete Stage 05 need.
+Do not create artificial server/client boundaries merely to use advanced Next.js features.
 
 ---
 
-# 12. Shared UI Components Direction
+# 9. Stage 05 Sprint Breakdown
 
-Likely reusable components:
+## Sprint 05.1 — Frontend Design Foundation & App Shell
 
-```text
-AppHeader
-MobileNavigation
-PageContainer
-SectionHeader
+**Status: Accepted / Completed**
 
-FeaturedMovieHero
+### Accepted Outcome
 
-MovieCard
-MovieRow
-MovieGrid
+Sprint 05.1 established:
 
-GenreChips
+- Manrope
+- global background / typography foundation
+- lightweight design-token direction
+- reusable page/layout primitives
+- primary/secondary interaction treatments
+- desktop application header structure
+- mobile navigation structure
+- reduced-motion / accessibility baseline
+- preserved API-client direction
 
-SearchBar
-DiscoverFilters
+Later reference-driven visual adaptation is allowed under the preservation rule in Section 3.1.
 
-WatchlistButton
-
-MovieDetailsHero
-CastRow
-SimilarMovies
-
-PickForm
-PickResult
-
-MovieCardSkeleton
-HeroSkeleton
-DetailsSkeleton
-
-ErrorState
-EmptyState
-```
-
-This is directional.
-
-Do not create component explosion.
-
-Do not create one component per trivial wrapper.
+Do not re-execute Sprint 05.1.
 
 ---
 
-# 13. Movie Card Contract
+# 10. Sprint 05.2 — Discover Home Experience
 
-`MovieCard` is a core reusable component.
+**Status: In Progress**
 
-Primary data:
+## Goal
 
-```text
-Poster
-Title
-Year
-Rating
-```
+Build the complete reference-driven MovieNight Discover / Home experience using real MovieNight backend data.
 
-Possible interaction state:
+Sprint 05.2 remains one project sprint, but execution is intentionally split into four smaller work packages:
 
 ```text
-Saved / not saved
+05.2-H1 → Shell Adaptation + Featured Hero
+05.2-H2 → Trending + Popular + Movie Rails
+05.2-H3 → Genre Discovery + Pick CTA + Watchlist Preview
+05.2-H4 → Home States + Responsive Polish + Visual QA
 ```
 
-Approved hover behavior:
+A work package is not a new roadmap Sprint.
 
-```text
-small poster zoom
-small lift
-soft overlay reveal
-watchlist affordance
-details affordance
-```
+Sprint 05.2 is complete only after H1–H4 are accepted.
 
-Card design must remain image-first.
+## 10.1 Sprint 05.2 Shared Context Rules
 
-Do not overload cards with:
+For every 05.2-Hx task:
 
-- full overview
-- large metadata tables
-- persistent action toolbars
-- heavy borders
+Read:
+
+- applicable `AGENTS.md`
+- `frontend/AGENTS.md`
+- `STATUS.md`
+- only the active 05.2-Hx subsection from this file
+- `$movienight-ui`
+- only the active Hx reference assets
+- only frontend files required for the active scope
+- only backend/API contracts required for the active scope
+
+Do not:
+
+- load all Home references for every work package
+- re-read the entire Stage 05 file when the active subsection is sufficient
+- derive the visual design from the current frontend
+- implement a later Hx work package
+- start Sprint 05.3
+- commit automatically
+
+Use the previous 05.2 implementation only as a source of valid non-visual integration/data-flow logic.
 
 ---
 
-# 14. Discover / Home Experience
+## 10.2 Sprint 05.2-H1 — Shell Adaptation + Featured Hero
 
-Route:
+### Goal
 
-```text
-/
-```
+Adapt the accepted 05.1 shell to the approved Home references and build the complete Featured Hero experience.
 
-Recommended section order:
+### Required Context
 
-```text
-Header
+Use:
 
-Featured Hero
+- `$movienight-ui`
+- this H1 subsection
+- current accepted 05.1 shell primitives
+- only Home API/Watchlist contracts needed by Header/Hero
+- any valid existing non-visual 05.2 logic required by the Hero
 
-Genre Chips
-
-Trending Now
-
-Popular Movies
-
-Pick for Me Feature CTA
-
-Watchlist Preview / CTA
-```
-
-Exact ordering may be refined during Sprint 05.2 if the approved visual balance improves.
-
----
-
-## 14.1 Featured Hero
-
-Recommended hero source:
+### Visual References
 
 ```text
-top item from current Trending results
+.agents/skills/movienight-ui/assets/home/h1-desktop.png
+.agents/skills/movienight-ui/assets/home/h1-mobile.png
 ```
 
-Do not use Pick for Me for the hero.
+The full-page references may be inspected only when H1 needs surrounding composition context:
 
-Hero should remain visually stable enough that a normal refresh does not radically change product identity.
+```text
+.agents/skills/movienight-ui/assets/home/home-desktop-full.png
+.agents/skills/movienight-ui/assets/home/home-mobile-full.png
+```
 
-Hero content should use only real backend data.
+### Scope
 
-Expected hero data:
-
-- backdrop
+- adapt AppHeader visual treatment to the approved Home reference
+- desktop primary navigation:
+  - Discover
+  - Pick for Me
+  - Watchlist
+  - Search access
+- compact mobile top bar for MovieNight identity/search
+- mobile bottom navigation:
+  - Discover
+  - Pick
+  - Watchlist
+- Featured Hero using real MovieNight backend data
+- six-movie carousel sourced from the approved real Home dataset
+- strong artwork prominence
 - title
-- release year/date
-- rating
-- genres where available
-- overview
-- Details CTA
-- Watchlist CTA
+- compact metadata
+- short overview
+- View Details
+- Add/Remove Watchlist
+- previous / next controls
+- slide indicators
+- approximately seven-second auto-advance
+- pause/resume behavior
+- pause during relevant hover/focus interaction
+- `prefers-reduced-motion` handling
+- intentional desktop / tablet / mobile Hero composition
 
-Do not add fake:
+Do not add a Watch Movie / Play Movie CTA.
 
-- trailer
-- director
-- streaming provider
-- review score
+### Acceptance Criteria
 
-unless a backend contract exists.
+- [ ] 05.1 foundation is preserved unless a visual adaptation is required.
+- [ ] Header contains only real MovieNight destinations/actions.
+- [ ] mobile navigation uses Discover / Pick / Watchlist.
+- [ ] Hero uses real backend-backed movie data.
+- [ ] Hero visually follows the approved H1 references.
+- [ ] Hero contains no fake trailer/provider/director/review data.
+- [ ] Hero carousel supports the required controls and motion behavior.
+- [ ] Watchlist Hero action uses valid existing Watchlist integration.
+- [ ] desktop, tablet, and mobile compositions are intentional.
+- [ ] keyboard/focus behavior is usable.
+- [ ] reduced-motion behavior is respected.
+
+### Verification
+
+Run:
+
+```text
+npm run lint
+npm run build
+git diff --check
+```
+
+Live-check with the real backend.
+
+Visually verify representative widths:
+
+```text
+1440
+768
+390
+```
+
+### Stop Boundary
+
+Do not implement:
+
+- Trending rail
+- Popular rail
+- Genre Discover section
+- Pick for Me promotional section
+- Watchlist preview
+- final Home-wide loading/error/empty polish
+
+Do not start 05.2-H2 automatically.
 
 ---
 
-## 14.2 Genre Chips
+## 10.3 Sprint 05.2-H2 — Trending + Popular + Movie Rails
 
-Genre chips are functional.
+### Goal
 
-Use backend genre data.
+Build the reusable Movie card/rail system and implement the independent Trending and Popular Home sections.
 
-Active/inactive states should follow the approved visual rules.
-
-Genre interaction may feed Discover behavior.
-
-Do not show hard-coded genres when backend genres are available.
-
----
-
-## 14.3 Trending
+### Required Context
 
 Use:
 
-```http
-GET /api/movies/trending
-```
+- `$movienight-ui`
+- this H2 subsection
+- accepted H1 output
+- existing Movie API adapters/contracts required for Trending/Popular
+- existing Watchlist saved-state logic where valid
 
-Recommended layout:
+### Visual References
 
 ```text
-horizontal movie row
+.agents/skills/movienight-ui/assets/home/h2-desktop.png
+.agents/skills/movienight-ui/assets/home/h2-mobile.png
 ```
 
-Use reusable Movie cards.
+### Scope
+
+- reusable `MovieCard`
+- reusable horizontal `MovieRow` / rail
+- Trending Now
+- Popular Movies
+- compact integrated Watchlist affordance
+- Details navigation
+- section heading / continuation affordance
+- responsive poster density
+- intentional horizontal scrolling/swiping on smaller widths
+
+Trending and Popular remain independent of Genre selection.
+
+### Acceptance Criteria
+
+- [ ] MovieCard is reusable and image-first.
+- [ ] Trending uses real Trending backend data.
+- [ ] Popular uses real Popular backend data.
+- [ ] Trending and Popular remain independent.
+- [ ] Watchlist saved state is consistent.
+- [ ] card/rail visuals follow the H2 references.
+- [ ] mobile does not shrink a desktop row to fit all cards.
+- [ ] touch and keyboard interactions remain usable.
+- [ ] no unrelated Home feature is implemented.
+
+### Verification
+
+Run:
+
+```text
+npm run lint
+npm run build
+git diff --check
+```
+
+Live-check with the real backend.
+
+Verify at:
+
+```text
+1440
+768
+390
+```
+
+### Stop Boundary
+
+Do not implement:
+
+- functional Genre Discover section
+- Pick for Me promotional CTA
+- Watchlist preview
+- H4 Home-wide states/polish
+
+Do not start 05.2-H3 automatically.
 
 ---
 
-## 14.4 Popular
+## 10.4 Sprint 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview
+
+### Goal
+
+Complete the MovieNight-specific Home discovery/support sections while reusing the accepted H2 card/rail system.
+
+### Required Context
 
 Use:
 
-```http
-GET /api/movies/popular
-```
+- `$movienight-ui`
+- this H3 subsection
+- accepted H1/H2 output
+- current Genre/Discover contracts
+- Pick route/product contract
+- current Watchlist contract/state logic
 
-Recommended desktop layout may be:
-
-```text
-movie row or compact grid
-+
-optional small side feature card
-```
-
-Avoid visual over-density.
-
----
-
-## 14.5 Pick for Me CTA
-
-Home may include a small supporting feature card encouraging the user to visit `/pick`.
-
-This is one of the approved asymmetric sidebar/feature-card uses.
-
-Keep it compact.
-
-Do not implement the entire Pick interaction inside Home.
-
----
-
-## 14.6 Watchlist Preview / CTA
-
-Home may include a compact Watchlist preview or CTA.
-
-If the Watchlist is empty:
+### Visual References
 
 ```text
-simple callout
+.agents/skills/movienight-ui/assets/home/h3-desktop.png
+.agents/skills/movienight-ui/assets/home/h3-mobile.png
 ```
 
-If non-empty:
+The H3 reference contains template features that are **visual references only**.
+
+Do not copy template semantics for:
+
+- Series
+- Pricing
+- subscription plans
+- Collection accounts
+
+Use them only to understand visual rhythm, card language, controls, and promotional-section composition.
+
+### Scope
+
+- backend-driven Genre controls
+- horizontal Genre control behavior
+- selected Genre state
+- independent Genre Discover results
+- Genre selection changes only the dedicated Discover result section
+- Pick for Me promotional CTA linking to `/pick`
+- lightweight Watchlist preview / CTA
+- reuse established MovieCard/MovieRow where appropriate
+
+### Acceptance Criteria
+
+- [ ] Genres are backend-driven.
+- [ ] Genre selection changes only the dedicated Discover result area.
+- [ ] Trending remains unchanged.
+- [ ] Popular remains unchanged.
+- [ ] Pick CTA uses MovieNight semantics rather than template award/pricing semantics.
+- [ ] Watchlist preview remains lightweight and browser-private.
+- [ ] no Series/Pricing/subscription feature is introduced.
+- [ ] H3 follows approved desktop/mobile visual language.
+- [ ] mobile Genre controls remain touch-friendly and horizontally usable.
+
+### Verification
+
+Run:
 
 ```text
-small preview of a few saved movies
+npm run lint
+npm run build
+git diff --check
 ```
 
-Do not turn it into analytics/dashboard content.
+Live-check Genre, Pick navigation, and Watchlist preview against real APIs.
 
----
-
-# 15. Search & Discover Experience
-
-Search and Discover are visually unified.
-
-The user should not need to understand backend endpoint distinctions.
-
-Expected controls:
+Verify at:
 
 ```text
-Search query
-Genre
-Year
-Minimum Rating
+1440
+768
+390
 ```
 
-Behavior:
+### Stop Boundary
 
-- text query → Search endpoint
-- filter-driven browse → Discover endpoint
+Do not start Sprint 05.3.
 
-The exact UI behavior must avoid conflicting simultaneous modes.
+Do not perform final Home-wide visual acceptance until H4.
 
-Sprint 05.3 must define a simple rule for switching between Search and Discover based on current user input.
-
----
-
-## 15.1 Search UI
-
-Use a prominent rounded Search control.
-
-Do not display raw backend validation language.
-
-Empty queries must not trigger movie-search requests.
+Do not start 05.2-H4 automatically.
 
 ---
 
-## 15.2 Discover Filters
+## 10.5 Sprint 05.2-H4 — Home States + Responsive Polish + Visual QA
+
+### Goal
+
+Complete Home-specific states and perform final responsive/visual acceptance for Sprint 05.2.
+
+H4 is Home-specific.
+
+It does **not** replace Sprint 05.7, which performs cross-product responsive, interaction, and accessibility polish after all Stage 05 feature pages are complete.
+
+### Required Context
 
 Use:
 
-- Genre
-- Year
-- Minimum Rating
+- `$movienight-ui`
+- this H4 subsection
+- completed H1–H3 Home implementation
+- only Home-related frontend/backend contracts
 
-Do not expose arbitrary sort controls.
+Use `$web-design-guidelines` for final QA after implementation-level visual correction.
 
-Backend owns the fixed Discover sort.
+### Full Home References
+
+```text
+.agents/skills/movienight-ui/assets/home/home-desktop-full.png
+.agents/skills/movienight-ui/assets/home/home-mobile-full.png
+```
+
+### Scope
+
+- Home loading state
+- Home error state
+- Home empty/no-content states where applicable
+- final desktop composition
+- final tablet composition
+- final mobile composition
+- spacing/hierarchy consistency
+- typography consistency
+- image prominence
+- responsive section density
+- hover / focus-visible / active / selected states
+- touch target review
+- reduced-motion review
+- final Home accessibility review
+- final visual comparison with full approved references
+- remove visual drift introduced across H1–H3
+
+### Required Viewports
+
+```text
+Desktop: 1440px
+Tablet:  768px
+Mobile:  390px
+```
+
+### Acceptance Criteria
+
+- [ ] H1–H3 functionality remains intact.
+- [ ] Home has required loading/error/empty behavior.
+- [ ] desktop/tablet/mobile feel intentionally composed.
+- [ ] mobile is not a scaled-down desktop.
+- [ ] navigation remains usable.
+- [ ] Hero remains usable at all required widths.
+- [ ] rails and Genre controls behave correctly.
+- [ ] Pick CTA and Watchlist preview fit the overall rhythm.
+- [ ] focus-visible and keyboard behavior are usable.
+- [ ] touch targets are reasonable.
+- [ ] reduced-motion behavior is correct.
+- [ ] final Home closely follows the approved reference language.
+- [ ] no forbidden template/product feature has leaked into MovieNight.
+
+### Verification
+
+Run:
+
+```text
+npm run lint
+npm run build
+git diff --check
+```
+
+Live-check Home against the real backend.
+
+Capture/inspect representative browser screenshots at:
+
+```text
+1440
+768
+390
+```
+
+Use visual comparison against the full Home references.
+
+### Sprint 05.2 Completion Rule
+
+Sprint 05.2 may be marked complete only when H1, H2, H3, and H4 have all been accepted.
+
+### Stop Boundary
+
+Do not start Sprint 05.3 automatically.
 
 ---
 
-## 15.3 Results
+# 11. Sprint 05.3 — Search & Discover Experience
 
-Use a responsive Movie grid.
+## Goal
 
-Provide:
+Create a unified Search/Discover interaction over the existing backend Search and Discover operations.
 
-- loading skeletons
+Search remains part of the Home product experience; do not create a separate public Search route unless explicitly approved later.
+
+## Required Context
+
+Read only:
+
+- applicable `AGENTS.md`
+- `frontend/AGENTS.md`
+- `STATUS.md`
+- this Sprint 05.3 section
+- `$movienight-ui`
+- current Home shared components required by Search/Discover
+- current Search/Discover backend contracts
+- approved Search/Discover references when supplied
+
+## Scope
+
+- prominent Search input
+- Genre / Year / Minimum Rating filters where the approved UX requires them
+- clear Search-vs-Discover mode rule
+- no empty Search requests
+- responsive results grid
+- backend paging/navigation
+- loading
+- validation-safe state
 - no-results state
-- safe error state
-- paging/navigation consistent with backend result shape
+- safe upstream error state
+- MovieCard / Watchlist saved-state reuse
+- no arbitrary public sort selector
 
-Do not load unlimited pages automatically unless an explicit decision is made.
+## Acceptance Criteria
+
+- [ ] users do not need to understand backend Search vs Discover distinctions.
+- [ ] empty Search does not trigger a Search request.
+- [ ] filters use backend-supported values only.
+- [ ] no unsupported sort contract is exposed.
+- [ ] results/paging work.
+- [ ] saved state works on result cards.
+- [ ] validation/error/empty/loading states are user-friendly.
+- [ ] mobile filter UX is intentional.
+- [ ] approved references are followed when available.
+
+## Verification
+
+```text
+npm run lint
+npm run build
+git diff --check
+```
+
+Live-check representative Search and Discover flows.
+
+## Stop Boundary
+
+Do not implement Movie Details.
+
+Do not start Sprint 05.4 automatically.
 
 ---
 
-# 16. Movie Details Experience
+# 12. Sprint 05.4 — Movie Details Experience
 
-Route:
+## Goal
 
-```text
-/movies/[id]
-```
+Build a polished Movie Details page using only the current MovieNight Movie Details contract and approved visual references.
 
-Use:
-
-```http
-GET /api/movies/{id}
-```
-
-Expected sections:
-
-```text
-Movie Details Hero
-Overview / metadata
-Watchlist CTA
-Cast
-Similar Movies
-```
-
-Use only current backend contract fields.
-
-Do not fake:
-
-- director
-- writers
-- reviews
-- trailer
-- availability
-- IMDb-specific score
-- production studio
-
-unless these become actual backend fields later.
-
----
-
-## 16.1 Movie Details Hero
+## Required Context
 
 Use:
 
+- applicable `AGENTS.md`
+- `frontend/AGENTS.md`
+- `STATUS.md`
+- this Sprint 05.4 section
+- `$movienight-ui`
+- current shared Movie components
+- current Movie Details backend contract
+- approved Movie Details references supplied by the Tech Lead
+
+Analyze/lock the reference adaptation before substantial implementation if the page references have not yet been reviewed.
+
+## Scope
+
+- `/movies/[id]`
+- cinematic Movie Details Hero
 - backdrop
 - poster
 - title
@@ -956,611 +834,45 @@ Use:
 - genres
 - overview
 - Watchlist CTA
-
-Blend the backdrop into the page background with gradients.
-
-Avoid wrapping the entire hero in heavy bordered panels.
-
----
-
-## 16.2 Cast
-
-Use current Cast DTO data.
-
-Recommended layout:
-
-```text
-horizontal row
-```
-
-Portraits may be circular or soft-rounded.
-
-Display:
-
-- actor name
-- character name where available
-
----
-
-## 16.3 Similar Movies
-
-Use reusable MovieCard.
-
-Recommended layout:
-
-```text
-horizontal row
-```
-
----
-
-# 17. Pick for Me Experience
-
-Route:
-
-```text
-/pick
-```
-
-This is a signature MovieNight feature.
-
-The page may use slightly stronger interaction glow/motion than other pages while staying within the global design rules.
-
-Expected flow:
-
-```text
-Intro
-↓
-Genre / Year / Minimum Rating
-↓
-Pick action
-↓
-Loading
-↓
-Single result spotlight
-```
-
-Result actions:
-
-```text
-View Details
-Add/Remove Watchlist
-Pick Again
-```
-
-Do not add fake AI personalization language implying an LLM or personal-profile model.
-
-The backend currently performs rule-based random selection.
-
-UI language should communicate:
-
-```text
-surprise / recommendation / discover
-```
-
-without falsely claiming machine-learning personalization.
-
----
-
-# 18. Anonymous Watchlist Experience
-
-Route:
-
-```text
-/watchlist
-```
-
-Expected layout:
-
-```text
-Your Watchlist
-
-Saved privately in this browser.
-
-Movie grid
-```
-
-No Watchlist analytics dashboard.
-
-Do not add:
-
-```text
-Total runtime
-Most watched genre
-Watchlist score
-Profile
-Sync account
-```
-
-unless data and requirements exist.
-
----
-
-## 18.1 Watchlist Card Behavior
-
-Use the shared MovieCard where possible.
-
-Watchlist-specific action:
-
-```text
-Remove
-```
-
-Users should also be able to open Movie Details.
-
-Removal should give immediate visual feedback.
-
----
-
-## 18.2 Empty State
-
-Required:
-
-```text
-Your watchlist is empty.
-
-Start discovering movies and save the ones
-you want to watch later.
-
-[ Discover Movies ]
-```
-
-Wording may be refined but meaning must remain.
-
----
-
-## 18.3 Privacy Note
-
-Required concept:
-
-```text
-Saved privately in this browser.
-No account required.
-```
-
-Optional small clarification:
-
-```text
-Clearing browser data may remove access to this watchlist.
-```
-
-Do not show internal identity/cookie details.
-
----
-
-# 19. Loading States
-
-Prefer skeletons over global spinners.
-
-Expected reusable states:
-
-```text
-HeroSkeleton
-MovieCardSkeleton
-DetailsSkeleton
-```
-
-Pick for Me may use a small dedicated loading animation because it represents one explicit user action.
-
----
-
-# 20. Error States
-
-Do not show raw:
-
-```text
-HTTP 502
-ProblemDetails JSON
-backend exception text
-```
-
-User-facing error examples:
-
-```text
-We couldn't load movies right now.
-Try again.
-```
-
-Search:
-
-```text
-No movies found for "<query>".
-```
-
-Discover:
-
-```text
-No movies match these filters.
-```
-
-Pick:
-
-```text
-We couldn't find a movie matching those filters.
-Try different filters.
-```
-
-Backend Problem Details may be logged/used internally for development where appropriate.
-
----
-
-# 21. Responsive Design
-
-Responsive behavior is a product requirement, not optional polish.
-
-## Desktop
-
-- large visual hero
-- multi-card rows/grids
-- approved occasional side feature card
-- comfortable whitespace
-
-## Tablet
-
-- reduced columns
-- compact hero
-- preserved image hierarchy
-
-## Mobile
-
-- intentional stacked hero
-- approximately 2-column movie grid where practical
-- touch-friendly controls
-- filters may become horizontal scroll or a Sheet
-- mobile navigation must remain easy to reach
-
-Do not merely shrink the desktop layout.
-
----
-
-# 22. Accessibility Baseline
-
-Stage 05 must include a reasonable accessibility baseline:
-
-- semantic navigation
-- useful alt text
-- visible keyboard focus
-- keyboard-operable controls
-- acceptable color contrast
-- buttons/links with meaningful labels
-- touch targets appropriate for mobile
-
-Motion should respect reduced-motion preferences where practical.
-
-Do not sacrifice accessibility for glow/glass styling.
-
----
-
-# 23. In Scope
-
-Stage 05 includes:
-
-- design tokens and visual foundation
-- final font selection
-- global background and typography
-- desktop header
-- mobile navigation
-- shared Movie UI components
-- Discover/Home
-- search/discover filters/results
-- Movie Details
 - Cast
 - Similar Movies
-- Pick for Me
-- Anonymous Watchlist
-- Watchlist saved-state UX
-- loading states
-- empty states
-- error states
-- responsive layout
-- subtle interaction motion
-- selective glow/glass
-- frontend API integration
-- credential-aware Watchlist requests
-- frontend accessibility baseline
-- final frontend verification/handoff
+- reusable MovieCard
+- loading
+- error
+- not-found
 
----
+Do not invent unsupported:
 
-# 24. Out of Scope
-
-Do not implement:
-
-- authentication
-- registration
-- login
-- profile
-- account settings
-- watchlist sync between devices
-- public shared watchlists
-- multiple named watchlists
-- collections
-- streaming playback
-- trailer integration
-- provider availability
+- director
+- writer
+- trailer
 - reviews
-- recommendations based on user profiles
-- LLM recommendation
-- direct TMDB frontend access
-- frontend dominant-color extraction
-- large animation frameworks without approval
-- production deployment
-- Stage 06 cache hardening
-- Stage 06 full-stack runtime hardening
+- provider availability
+- IMDb-specific data
+- production studio data
 
----
+## Acceptance Criteria
 
-# 25. Stage 05 Sprint Breakdown
-
-## Sprint 05.1 — Frontend Design Foundation & App Shell
-
-### Goal
-
-Establish the approved MovieNight visual system and reusable application shell before feature pages are built.
-
-### Required Context
-
-Read:
-
-- applicable `AGENTS.md`
-- `frontend/AGENTS.md`
-- `STATUS.md`
-- only Sprint 05.1 and Locked Visual Direction from this document
-- existing frontend structure/configuration
-
-Inspect backend only if needed to preserve current API-client/config behavior.
-
-### Tasks
-
-1. Review the current frontend baseline and remove only obsolete temporary UI where required.
-2. Select the exact approved font from:
-   - Manrope
-   - Plus Jakarta Sans
-   - DM Sans
-   - Outfit
-3. Configure typography centrally.
-4. Define lightweight design tokens for:
-   - background
-   - surfaces
-   - text
-   - accent
-   - radius
-   - shadow
-   - glow
-   - transitions
-5. Implement the non-pure-black global background.
-6. Implement reusable:
-   - page container
-   - section heading
-   - primary/secondary button treatment
-   - common rounded controls
-7. Implement desktop AppHeader.
-8. Establish mobile navigation structure without overbuilding later feature pages.
-9. Confirm responsive shell behavior.
-10. Preserve existing API-client behavior.
-11. Do not implement Discover feature content yet.
-
-### Acceptance Criteria
-
-- [ ] exact font is selected and documented.
-- [ ] background is not pure black.
-- [ ] teal/cyan is not overused as a permanent global fill.
-- [ ] radius treatment is consistent.
-- [ ] no global bordered-dashboard composition exists.
-- [ ] primary/secondary interaction styles are reusable.
-- [ ] AppHeader contains only real product navigation.
-- [ ] mobile navigation direction exists and is responsive.
-- [ ] glass/glow usage remains selective.
-- [ ] no feature page is implemented prematurely.
-- [ ] current frontend build/lint pass.
-
-### Verification
-
-```text
-npm run build
-npm run lint
-git diff --check
-```
-
-Perform visual checks at representative desktop and mobile widths.
-
-### Stop Boundary
-
-Do not build Discover page content.
-
-Do not start Sprint 05.2 automatically.
-
----
-
-## Sprint 05.2 — Discover Home Experience
-
-### Goal
-
-Build the complete visual Discover/Home experience using real MovieNight backend data.
-
-### Required Context
-
-Read:
-
-- applicable `AGENTS.md`
-- `frontend/AGENTS.md`
-- `STATUS.md`
-- Sprint 05.2 from this file
-- current design foundation/components
-- only current backend Movie API contracts required for Home
-
-### Tasks
-
-1. Build Featured Movie Hero from Trending data.
-2. Implement image gradient blending.
-3. Implement real genre chips.
-4. Implement Trending row.
-5. Implement Popular section.
-6. Implement reusable MovieCard/Row behavior.
-7. Add compact Pick for Me feature CTA.
-8. Add compact Watchlist preview/CTA.
-9. Integrate Watchlist saved-state feedback.
-10. Add Home loading/error/empty states.
-11. Use the approved asymmetric layout only where visually useful.
-12. Keep sections visually open and avoid bordered container stacking.
-
-### Acceptance Criteria
-
-- [ ] Hero uses real Trending backend data.
-- [ ] no fake movie capability/data is shown.
-- [ ] artwork provides substantial visual color.
-- [ ] Hero blends naturally into the page.
-- [ ] genres are backend-driven.
-- [ ] Trending works.
-- [ ] Popular works.
-- [ ] MovieCard is reusable.
-- [ ] Pick CTA is compact and non-dashboard-like.
-- [ ] Watchlist preview/CTA works.
-- [ ] saved states are consistent.
-- [ ] loading/error/empty states exist.
-- [ ] desktop/mobile visual hierarchy is intentional.
-
-### Verification
-
-```text
-npm run build
-npm run lint
-git diff --check
-```
-
-Live-check Home against the real backend.
-
-### Stop Boundary
-
-Do not implement the full Search/Discover result workflow.
-
-Do not start Sprint 05.3 automatically.
-
----
-
-## Sprint 05.3 — Search & Discover Experience
-
-### Goal
-
-Create a unified Search/Discover interaction over the existing backend endpoints.
-
-### Required Context
-
-Read:
-
-- applicable `AGENTS.md`
-- `frontend/AGENTS.md`
-- `STATUS.md`
-- Sprint 05.3 from this file
-- current Home components
-- Search/Discover backend contracts
-
-### Tasks
-
-1. Implement prominent search input.
-2. Implement genre/year/min-rating filters.
-3. Define and implement a simple Search-vs-Discover mode rule.
-4. Do not send empty Search requests.
-5. Implement responsive results grid.
-6. Implement backend paging/navigation.
-7. Add loading states.
-8. Add validation-safe states.
-9. Add no-results state.
-10. Add safe upstream error state.
-11. Preserve reusable MovieCard and Watchlist behavior.
-12. Keep arbitrary sort controls out of UI.
-
-### Acceptance Criteria
-
-- [ ] user does not need to understand backend Search vs Discover distinction.
-- [ ] empty query does not trigger Search.
-- [ ] filters use backend-supported values only.
-- [ ] no arbitrary sort selector exists.
-- [ ] results grid works.
-- [ ] pagination/navigation works.
-- [ ] saved Watchlist state works on result cards.
-- [ ] validation errors are user-friendly.
-- [ ] empty/error/loading states are present.
-- [ ] mobile filter UX is intentional.
-
-### Verification
-
-```text
-npm run build
-npm run lint
-git diff --check
-```
-
-Live-check representative Search and Discover flows.
-
-### Stop Boundary
-
-Do not implement Movie Details.
-
-Do not start Sprint 05.4 automatically.
-
----
-
-## Sprint 05.4 — Movie Details Experience
-
-### Goal
-
-Build a polished Movie Details page using only the current backend Movie Details contract.
-
-### Required Context
-
-Read:
-
-- applicable `AGENTS.md`
-- `frontend/AGENTS.md`
-- `STATUS.md`
-- Sprint 05.4 from this file
-- current shared Movie components
-- current Movie Details backend contract
-
-### Tasks
-
-1. Implement `/movies/[id]`.
-2. Build Movie Details Hero.
-3. Blend backdrop into page background.
-4. Show:
-   - poster
-   - title
-   - release date/year
-   - runtime
-   - rating
-   - genres
-   - overview
-5. Add Watchlist CTA.
-6. Build Cast row.
-7. Build Similar Movies row.
-8. Reuse MovieCard.
-9. Add loading/error/not-found states.
-10. Do not invent unsupported metadata.
-
-### Acceptance Criteria
-
-- [ ] Details route loads real backend data.
+- [ ] route uses real backend data.
 - [ ] page uses current backend contract only.
-- [ ] backdrop/artwork drives page color.
-- [ ] no fake director/trailer/reviews/provider data exists.
-- [ ] Watchlist CTA works.
-- [ ] Cast renders correctly.
-- [ ] Similar Movies renders correctly.
-- [ ] loading/error/404 states exist.
-- [ ] mobile layout remains intentional.
+- [ ] approved visual references define appearance.
+- [ ] Watchlist works.
+- [ ] Cast works.
+- [ ] Similar Movies works.
+- [ ] loading/error/not-found states exist.
+- [ ] mobile/tablet/desktop compositions are intentional.
 
-### Verification
+## Verification
 
 ```text
-npm run build
 npm run lint
+npm run build
 git diff --check
 ```
 
-Live-check a known and unknown Movie ID.
+Live-check known and unknown Movie IDs.
 
-### Stop Boundary
+## Stop Boundary
 
 Do not implement Pick for Me page.
 
@@ -1568,66 +880,66 @@ Do not start Sprint 05.5 automatically.
 
 ---
 
-## Sprint 05.5 — Pick for Me Experience
+# 13. Sprint 05.5 — Pick for Me Experience
 
-### Goal
+## Goal
 
-Build the signature Pick for Me frontend experience.
+Build the signature Pick for Me frontend experience using the backend rule-based picker and approved references.
 
-### Required Context
+## Required Context
 
-Read:
+Use:
 
 - applicable `AGENTS.md`
 - `frontend/AGENTS.md`
 - `STATUS.md`
-- Sprint 05.5 from this file
+- this Sprint 05.5 section
+- `$movienight-ui`
 - current shared controls/cards
 - Pick backend contract
+- approved Pick references supplied by the Tech Lead
 
-### Tasks
+Analyze/lock the reference adaptation before substantial implementation if the page references have not yet been reviewed.
 
-1. Implement `/pick`.
-2. Add page intro.
-3. Add:
-   - Genre
-   - Year
-   - Minimum Rating
-4. Implement Pick action.
-5. Implement a small functional loading animation/state.
-6. Render one result spotlight.
-7. Add:
-   - View Details
-   - Add/Remove Watchlist
-   - Pick Again
-8. Use slightly stronger but still restrained glow/motion for the primary Pick interaction.
-9. Add no-match/error states.
-10. Avoid false AI/personalization claims.
+## Scope
 
-### Acceptance Criteria
+- `/pick`
+- intro
+- Genre / Year / Minimum Rating
+- Pick action
+- functional loading state
+- one spotlight result
+- View Details
+- Add/Remove Watchlist
+- Pick Again
+- no-match state
+- safe error state
 
-- [ ] Pick filters map correctly to backend.
-- [ ] Pick action returns one Movie.
-- [ ] result is visually spotlighted.
-- [ ] View Details works.
-- [ ] Watchlist interaction works.
+Do not claim LLM/AI personalization that does not exist.
+
+## Acceptance Criteria
+
+- [ ] filters map correctly to backend.
+- [ ] Pick returns one Movie.
+- [ ] result feels intentionally spotlighted.
+- [ ] Details works.
+- [ ] Watchlist works.
 - [ ] Pick Again works.
-- [ ] loading state is polished.
-- [ ] no-result state is clear.
-- [ ] upstream error state is safe.
-- [ ] copy does not claim LLM/AI personalization that does not exist.
+- [ ] loading/no-match/error states are polished.
+- [ ] copy remains accurate to rule-based behavior.
+- [ ] approved references define appearance.
 
-### Verification
+## Verification
 
 ```text
-npm run build
 npm run lint
+npm run build
 git diff --check
 ```
 
-Live-check unfiltered and filtered Pick flows.
+Live-check filtered and unfiltered Pick flows.
 
-### Stop Boundary
+## Stop Boundary
 
 Do not implement Watchlist page.
 
@@ -1635,155 +947,177 @@ Do not start Sprint 05.6 automatically.
 
 ---
 
-## Sprint 05.6 — Anonymous Watchlist Experience
+# 14. Sprint 05.6 — Anonymous Watchlist Experience
 
-### Goal
+## Goal
 
-Build the complete browser-private Watchlist page.
+Build the complete browser-private Watchlist page using the current anonymous Watchlist backend and approved references.
 
-### Required Context
+## Required Context
 
-Read:
+Use:
 
 - applicable `AGENTS.md`
 - `frontend/AGENTS.md`
 - `STATUS.md`
-- Sprint 05.6 from this file
+- this Sprint 05.6 section
+- `$movienight-ui`
 - current Watchlist backend contract
-- current MovieCard and saved-state behavior
+- current MovieCard / saved-state behavior
+- approved Watchlist references supplied by the Tech Lead
 
-### Tasks
+Analyze/lock the reference adaptation before substantial implementation if the page references have not yet been reviewed.
 
-1. Implement `/watchlist`.
-2. Load real browser-private Watchlist.
-3. Show required privacy note.
-4. Render Watchlist Movie grid.
-5. Add Remove interaction.
-6. Add View Details interaction.
-7. Keep UI free from anonymous identity internals.
-8. Build empty Watchlist state.
-9. Add loading/error states.
-10. Ensure Watchlist requests preserve browser credentials.
-11. Keep page visually focused and non-dashboard-like.
+## Scope
 
-### Acceptance Criteria
+- `/watchlist`
+- browser-private Watchlist load
+- privacy note
+- saved Movie grid
+- Remove
+- View Details
+- empty state
+- loading
+- error
+- credential-preserving Watchlist requests
+
+Do not expose anonymous identity/cookie internals.
+
+Do not invent:
+
+- analytics
+- profile
+- cloud sync
+- named collections
+- public sharing
+
+## Acceptance Criteria
 
 - [ ] Watchlist loads current browser data.
-- [ ] requests preserve credentials.
-- [ ] remove is immediate and reliable.
+- [ ] browser credentials are preserved.
+- [ ] remove works reliably.
 - [ ] Details navigation works.
 - [ ] empty state works.
 - [ ] privacy note is clear.
-- [ ] no anonymous Guid/cookie internals are displayed.
-- [ ] no analytics/dashboard content is invented.
-- [ ] mobile Watchlist grid is usable.
+- [ ] no identity internals are shown.
+- [ ] no dashboard/analytics content is invented.
+- [ ] mobile grid is usable.
+- [ ] approved references define appearance.
 
-### Verification
+## Verification
 
 ```text
-npm run build
 npm run lint
+npm run build
 git diff --check
 ```
 
-Live-check add-from-Discover → Watchlist → remove.
+Live-check add → Watchlist → remove.
 
-### Stop Boundary
+## Stop Boundary
 
-Do not begin broad responsive/polish sprint automatically.
+Do not begin broad Stage 05 polish automatically.
 
 Do not start Sprint 05.7 automatically.
 
 ---
 
-## Sprint 05.7 — Responsive, Interaction & UX Polish
+# 15. Sprint 05.7 — Responsive, Interaction & UX Polish
 
-### Goal
+## Goal
 
-Polish the completed frontend across viewport sizes, interaction states, and accessibility.
+Polish the completed Stage 05 frontend across all feature pages, viewport sizes, interaction states, and accessibility.
 
-### Required Context
+This is a **cross-product** polish sprint.
 
-Read:
+It is broader than Home-specific 05.2-H4.
+
+## Required Context
+
+Use:
 
 - applicable `AGENTS.md`
 - `frontend/AGENTS.md`
 - `STATUS.md`
-- Sprint 05.7 from this file
-- completed Stage 05 UI only
+- this Sprint 05.7 section
+- `$movienight-ui`
+- completed Stage 05 frontend only
+- page-specific approved references already used by completed sprints
+- `$web-design-guidelines` for final UI/UX review
 
-### Tasks
+## Scope
 
-1. Verify all pages at representative:
-   - desktop
-   - tablet
-   - mobile
-2. Finalize mobile navigation.
-3. Finalize responsive Hero behavior.
-4. Finalize mobile filter UX.
-5. Improve touch targets.
-6. Review:
-   - hover
-   - focus
-   - keyboard
-   - active
-   - disabled
-7. Review glow usage and remove excess.
-8. Review glass usage and remove excess.
-9. Review section borders/boxes and remove dashboard-like composition.
-10. Review typography consistency.
-11. Review spacing/radius consistency.
-12. Add/refine reduced-motion handling where useful.
-13. Verify loading/error/empty states across pages.
-14. Fix only genuine frontend UX/polish issues.
-
-### Acceptance Criteria
-
-- [ ] desktop/tablet/mobile layouts feel intentionally designed.
-- [ ] no desktop-only layout simply shrinks on mobile.
-- [ ] navigation is usable on mobile.
-- [ ] filters are usable on mobile.
-- [ ] touch targets are reasonable.
-- [ ] keyboard focus is visible.
-- [ ] animation is subtle and functional.
-- [ ] glow is not excessive.
-- [ ] glass is not excessive.
-- [ ] pure black is not used as main background.
-- [ ] sections are not boxed unnecessarily.
-- [ ] typography is consistent.
-- [ ] loading/error/empty states are consistent.
-
-### Verification
+Verify all completed pages at representative:
 
 ```text
-npm run build
+1440
+768
+390
+```
+
+Review/finalize:
+
+- navigation
+- Hero behavior
+- Search/filter usability
+- grids/rails
+- touch targets
+- hover
+- focus-visible
+- keyboard behavior
+- active/selected/disabled states
+- typography consistency
+- spacing/radius consistency
+- effect restraint
+- reduced-motion handling
+- loading/error/empty states
+- cross-page visual consistency
+
+Fix only genuine frontend UX/polish issues.
+
+## Acceptance Criteria
+
+- [ ] all pages feel intentionally designed at desktop/tablet/mobile.
+- [ ] navigation is usable across devices.
+- [ ] filters/actions are usable on mobile.
+- [ ] keyboard focus is visible.
+- [ ] touch targets are reasonable.
+- [ ] motion remains functional and restrained.
+- [ ] typography/spacing/radius are consistent.
+- [ ] page references remain respected.
+- [ ] no dashboard/template drift has accumulated.
+
+## Verification
+
+```text
 npm run lint
+npm run build
 git diff --check
 ```
 
-Perform manual visual checks at representative viewport widths.
+Perform manual/browser visual checks at required representative widths.
 
-### Stop Boundary
+## Stop Boundary
 
-Do not start final Stage 05 handoff until polish blockers are resolved.
+Do not start final Stage handoff until polish blockers are resolved.
 
 Do not start Sprint 05.8 automatically.
 
 ---
 
-## Sprint 05.8 — Stage 05 Verification & Handoff
+# 16. Sprint 05.8 — Stage 05 Verification & Handoff
 
-### Goal
+## Goal
 
-Verify the completed frontend as one coherent product experience and prepare the repository for Stage 06.
+Verify the completed frontend as one coherent product and prepare the repository for Stage 06.
 
 Do not add new product features.
 
-### Product Verification
+## Product Verification
 
 Verify:
 
-- Discover/Home
+- Discover / Home
 - Search
 - Discover filters
 - Movie Details
@@ -1791,75 +1125,51 @@ Verify:
 - Similar Movies
 - Pick for Me
 - Watchlist
-- Watchlist saved state
+- saved-state behavior
 - Watchlist add/remove
-- loading states
-- error states
-- empty states
+- loading
+- error
+- empty
+- not-found where applicable
 
-### Design Verification
+## Visual / Responsive Verification
 
 Confirm:
 
+- approved visual references are respected
+- MovieNight remains cinematic and image-first
 - background is not pure black
-- typography matches approved modern rounded/geometric direction
-- artwork drives much of the visual color
-- gradients blend movie artwork naturally
-- radius usage is consistent
-- sections are not boxed unnecessarily
-- glass is selective
-- glow is selective
-- motion is subtle/functional
-- no dashboard-style page composition
-- no fake profile/login/account UI
-- no fake backend capabilities
+- no dashboard-style composition has accumulated
+- no forbidden account/streaming/template semantics exist
+- responsive layouts are intentional at desktop/tablet/mobile
+- typography, spacing, radius, and interaction language are coherent
 
-### Responsive Verification
-
-Check representative:
-
-- desktop
-- tablet
-- mobile
-
-Confirm:
-
-- navigation
-- Hero
-- Movie grids
-- Search
-- filters
-- Details
-- Pick
-- Watchlist
-
-all remain usable.
-
-### Data / Integration Verification
+## Integration Verification
 
 Confirm:
 
 - frontend calls only MovieNight backend
-- no frontend TMDB URLs/API usage exist
-- Watchlist requests preserve credentials
-- anonymous cookie internals are not exposed
+- no direct TMDB frontend calls exist
+- Watchlist credentials are preserved
+- anonymous identity internals are hidden
 - saved-state behavior is consistent
-- backend Problem Details are not dumped directly into normal UI
+- raw backend Problem Details are not dumped into normal UI
 
-### Build / Dependency Verification
+## Build / Dependency Verification
 
 Run:
 
 ```text
-npm run build
 npm run lint
+npm run build
+git diff --check
 ```
 
-Run additional project-defined frontend tests if they exist.
+Run additional existing frontend tests if present.
 
-Review added npm packages and confirm each is required.
+Review new npm dependencies and confirm each is required.
 
-### Documentation Verification
+## Documentation Verification
 
 Check relevant consistency among:
 
@@ -1869,59 +1179,55 @@ Check relevant consistency among:
 - `STATUS.md`
 - `docs/ROADMAP.md`
 - this Stage 05 file
-- `AGENTS.md`
-- `frontend/AGENTS.md`
+- applicable `AGENTS.md`
+- `$movienight-ui`
 
 Fix only genuine Stage 05 inconsistencies.
 
-### Stage 05 Definition of Done
+## Stage 05 Definition of Done
 
-- [ ] all Sprint 05.1–05.8 acceptance criteria are satisfied.
-- [ ] frontend build passes.
+- [ ] Sprint 05.1 is accepted.
+- [ ] Sprint 05.2 H1–H4 are accepted.
+- [ ] Sprint 05.3 is accepted.
+- [ ] Sprint 05.4 is accepted.
+- [ ] Sprint 05.5 is accepted.
+- [ ] Sprint 05.6 is accepted.
+- [ ] Sprint 05.7 is accepted.
 - [ ] frontend lint passes.
-- [ ] Discover/Home is complete.
+- [ ] frontend build passes.
+- [ ] all four public frontend routes are complete.
 - [ ] Search/Discover is complete.
-- [ ] Movie Details is complete.
-- [ ] Pick for Me is complete.
-- [ ] Watchlist frontend is complete.
-- [ ] anonymous Watchlist behavior works.
-- [ ] loading/error/empty states exist.
+- [ ] Watchlist anonymous/browser-private behavior works.
+- [ ] required UI states exist.
 - [ ] responsive layouts are intentional.
-- [ ] approved visual direction is implemented.
-- [ ] no pure-black main background.
-- [ ] no dashboard-style section boxing.
-- [ ] no excessive teal/cyan.
-- [ ] no excessive glass/glow.
-- [ ] typography follows approved direction.
-- [ ] no fake account/profile features.
-- [ ] no fake backend capabilities.
-- [ ] no direct frontend-to-TMDB calls.
-- [ ] no Stage 06 hardening work is started.
+- [ ] approved reference-driven visual workflow has been followed.
+- [ ] no fake account/profile/streaming/backend capabilities exist.
+- [ ] no direct frontend-to-TMDB calls exist.
+- [ ] Stage 06 hardening has not been started.
 - [ ] `STATUS.md` marks Stage 05 complete only after all checks pass.
 - [ ] Stage 06 is marked next.
-- [ ] Stage 06 has not started.
 
-### Completion Report
+## Completion Report
 
 Return:
 
 1. Stage result: PASS or BLOCKED
-2. Visual/design verification
+2. visual/design verification
 3. Discover/Home verification
 4. Search/Discover verification
 5. Movie Details verification
 6. Pick for Me verification
 7. Watchlist verification
-8. Responsive/accessibility verification
-9. Frontend/backend integration verification
-10. Build/lint/dependency verification
-11. Documentation consistency
-12. Files changed during handoff, if any
-13. Remaining issues
+8. responsive/accessibility verification
+9. integration verification
+10. build/lint/dependency verification
+11. documentation consistency
+12. files changed during handoff, if any
+13. remaining issues
 14. STATUS update
-15. Explicit confirmation Stage 06 was not started
+15. explicit confirmation Stage 06 was not started
 
-### Stop Boundary
+## Stop Boundary
 
 **Hard stop.**
 
@@ -1929,203 +1235,213 @@ Do not start Stage 06.
 
 ---
 
-# 26. Stage 05 Technical Constraints
+# 17. Stage 05 In Scope
 
-- Keep one Next.js frontend application.
-- Frontend calls only MovieNight backend.
-- Do not call TMDB directly.
-- Preserve the centralized API-client direction.
-- Keep architecture feature-oriented and simple.
-- Do not introduce state-management frameworks without proven need.
-- Do not add query/data libraries without proven need.
-- Do not add heavy animation libraries without approval.
-- Use shadcn only as primitive support.
-- Do not let component libraries define the product identity.
-- Use real backend capabilities only.
-- Preserve current localhost frontend/backend ports unless explicitly changed.
-- Preserve current CORS behavior.
-- Keep Watchlist cookie browser-managed.
-- Avoid secrets in frontend environment/config.
-- Do not broaden Stage 05 into production deployment.
+Stage 05 includes:
+
+- existing 05.1 design/app-shell foundation
+- reference-driven frontend redesign/adaptation
+- Home / Discover
+- Search / filters/results
+- Movie Details
+- Cast
+- Similar Movies
+- Pick for Me
+- Anonymous Watchlist
+- saved-state UX
+- loading / error / empty / not-found states
+- responsive composition
+- interaction states
+- restrained motion
+- accessibility baseline
+- frontend API integration
+- credential-aware Watchlist behavior
+- final frontend verification/handoff
+- project-local Agent/Skill/reference workflow for frontend execution
 
 ---
 
-# 27. Stage 05 Context / Token Strategy
+# 18. Stage 05 Out of Scope
 
-The project intentionally optimizes Codex context usage.
+Do not implement:
 
-## Per-Sprint Thread Rule
+- authentication
+- registration
+- login
+- profile
+- account settings
+- device/account Watchlist sync
+- public shared watchlists
+- multiple named watchlists
+- collections as a product capability
+- streaming playback
+- Continue Watching
+- trailer integration
+- provider availability
+- reviews
+- profile-based recommendations
+- LLM recommendation claims
+- direct TMDB frontend access
+- production deployment
+- Stage 06 cache hardening
+- Stage 06 full-stack runtime hardening
 
-Use a fresh Codex thread for each new Sprint 05.x.
+---
 
-Same-sprint corrections stay in the same thread.
+# 19. Context / Token Strategy
 
-Do not carry the entire Stage 05 conversation into every implementation sprint.
+Stage 05 intentionally minimizes Codex context usage.
 
-## Required Context
+## 19.1 Fresh Task Rule
 
-For most frontend sprints, Codex should usually read:
+Use a fresh Codex task/thread for:
+
+- every new Sprint 05.x
+- every Sprint 05.2-Hx work package
+
+Keep same-task corrections in the same thread.
+
+## 19.2 Active-Scope Context Rule
+
+For most tasks, load only:
 
 - applicable `AGENTS.md`
 - `frontend/AGENTS.md`
 - `STATUS.md`
-- only the active Sprint 05.x section
-- current relevant frontend files
-- only required backend contracts
+- active Sprint/work-package subsection
+- `$movienight-ui`
+- active reference assets
+- relevant frontend files
+- required backend contracts
 
-Do not read the entire backend implementation unless required.
+Do not automatically load:
 
-Do not read every prior stage file by default.
+- every prior Stage file
+- all Stage 05 prose
+- all page references
+- the entire frontend
+- the entire backend
+- every installed design skill
 
-## Model Guidance
+## 19.3 Skill Roles
 
-Recommended:
+Implementation:
 
 ```text
-05.1 Design Foundation
-→ Terra / Medium
-
-05.2 Discover Home
-→ Sol / Medium
-
-05.3 Search & Discover
-→ Terra / Medium
-  switch to Sol / Medium if state/data-flow complexity becomes non-trivial
-
-05.4 Movie Details
-→ Terra / Medium
-
-05.5 Pick for Me
-→ Terra / Medium
-
-05.6 Watchlist
-→ Terra / Medium
-
-05.7 Responsive / UX Polish
-→ Sol / Medium
-
-05.8 Verification / Handoff
-→ Sol / Medium
+$movienight-ui
+$frontend-app-builder
+$ui-ux-pro-max
 ```
 
-Use Light only for small same-sprint corrections.
+Roles:
 
-Avoid High unless a genuinely difficult issue appears.
+```text
+$movienight-ui
+→ MovieNight product + visual + responsive contract
+
+$frontend-app-builder
+→ section-based implementation + browser visual iteration
+
+$ui-ux-pro-max
+→ supporting UX / responsive / accessibility guidance
+```
+
+Final QA:
+
+```text
+$movienight-ui
+$web-design-guidelines
+```
+
+Supporting skills must not override MovieNight requirements or approved references.
+
+## 19.4 Reference Rule
+
+Use only reference assets relevant to the active work package.
+
+Full-page references are mainly for page-wide visual acceptance and surrounding context.
+
+Do not repeatedly attach/read every reference image.
 
 ---
 
-# 28. Standard Codex Prompt — Sprint 05.1
+# 20. Standard Execution Prompt Shape
+
+Later Codex prompts should remain compact because durable context now lives in repository docs and skills.
+
+Conceptual template:
 
 ```text
-Execute only Sprint 05.1 — Frontend Design Foundation & App Shell from
-`docs/stages/05-frontend-product-experience.md`.
+Use $movienight-ui, $frontend-app-builder, and $ui-ux-pro-max.
 
-Context:
-- Read applicable `AGENTS.md`.
-- Read `frontend/AGENTS.md`.
-- Read `STATUS.md`.
-- Read only the Locked Visual Direction and Sprint 05.1 from the Stage 05 document.
-- Inspect only the current frontend structure/configuration required for this sprint.
+Execute only <active Sprint/work package> from:
+docs/stages/05-frontend-product-experience.md
 
-Requirements:
-- Follow all locked Stage 05 visual/product decisions.
-- Select one approved font and document the choice.
-- Establish the non-pure-black cinematic design foundation.
-- Implement the reusable app shell/header/mobile-navigation direction and lightweight design tokens.
-- Keep teal/cyan restrained.
-- Do not create bordered dashboard composition.
-- Do not add excessive glass/glow.
-- Do not implement Discover feature content yet.
-- Do not start Sprint 05.2.
-- Do not commit automatically.
+Read:
+- applicable AGENTS.md
+- frontend/AGENTS.md
+- STATUS.md
+- only the active section
+- only backend contracts required by the active scope
 
-When done:
-- run Sprint 05.1 verification;
-- visually check desktop and mobile shell behavior;
-- review the diff;
-- update `STATUS.md` only if genuinely complete;
-- return the standard sprint completion report;
-- stop.
+Use only the approved reference assets named in the active section.
+
+Preserve valid existing API/data-flow logic.
+Do not derive the visual design from the existing frontend.
+Do not start the next work package/sprint.
+Do not commit automatically.
+
+Run the active verification and stop.
 ```
+
+Do not duplicate the full MovieNight visual/product contract inside every prompt.
 
 ---
 
-# 29. Standard Codex Prompt Template — Later Stage 05 Sprints
+# 21. Sprint Completion Report Standard
 
-```text
-Execute only Sprint <05.X — name> from
-`docs/stages/05-frontend-product-experience.md`.
+For Sprint 05.2-H1 through 05.2-H4 and Sprint 05.3–05.7, report:
 
-Context:
-- Read applicable `AGENTS.md`.
-- Read `frontend/AGENTS.md`.
-- Read `STATUS.md`.
-- Read only the active Sprint 05.X section.
-- Inspect only the relevant frontend code and backend contracts required for this sprint.
-
-Requirements:
-- Follow the sprint scope, locked Stage 05 product/design rules, acceptance criteria, and stop boundary.
-- Use only real MovieNight backend capabilities.
-- Do not call TMDB directly.
-- Do not implement later Sprint 05 work.
-- Do not start Stage 06.
-- Do not commit automatically.
-
-When done:
-- run the sprint verification;
-- perform the required live/visual checks;
-- review the diff;
-- update `STATUS.md` only if genuinely complete;
-- return the standard sprint completion report;
-- stop.
-```
-
----
-
-# 30. Sprint Completion Report Standard
-
-For Sprint 05.1–05.7, report:
-
-1. What changed
-2. Files changed
-3. Dependencies added/changed and why
-4. Design decisions made during the sprint
+1. what changed
+2. files changed
+3. dependencies added/changed and why
+4. design/implementation decisions required by the active scope
 5. API/integration impact
-6. Commands/tests executed
-7. Visual/responsive verification
-8. Accessibility/state verification where applicable
-9. Assumptions
-10. Remaining issues
+6. commands/tests executed
+7. visual/responsive verification
+8. accessibility/state verification where applicable
+9. assumptions
+10. remaining issues
 11. `STATUS.md` update
-12. Explicit confirmation the next sprint was not started
+12. explicit confirmation the next work package/sprint was not started
 
-Sprint 05.8 uses the broader Stage handoff report defined in that sprint.
+Sprint 05.8 uses the broader Stage handoff report defined above.
 
 ---
 
-# 31. Plan-Mode Rule
+# 22. Plan-Mode Rule
 
-Use Plan mode only when the current sprint exposes a genuine unresolved ambiguity.
+Use Plan mode only when the active task exposes a genuine unresolved ambiguity.
 
 Examples:
 
-- App Router/server-client boundary creates a real architecture decision.
-- the existing frontend bootstrap conflicts materially with the approved design system.
-- current Watchlist cookie behavior cannot work cleanly through the existing frontend request boundary.
-- a requested visual behavior requires a package/framework decision with non-trivial consequences.
+- server/client boundary creates a real architecture decision
+- existing API boundary cannot support the approved frontend behavior cleanly
+- anonymous Watchlist cookie behavior conflicts with the current request path
+- a visual behavior requires a non-trivial dependency/package choice
 
-Do not use Plan mode merely to restate the active sprint.
+Do not use Plan mode merely to restate the active work package.
 
 If Plan mode is used:
 
-- plan only the active sprint;
-- identify the exact ambiguity;
-- do not implement later work;
-- stop for Tech Lead review if a locked design/product decision would change.
+- plan only the active scope
+- identify the exact ambiguity
+- do not implement later work
+- stop for Tech Lead review if a locked product/visual decision would change
 
 ---
 
-# 32. Stage 05 Final Boundary
+# 23. Stage 05 Final Boundary
 
 Stage 05 ends with:
 
@@ -2134,7 +1450,7 @@ completed Movie backend
         +
 anonymous Watchlist backend
         +
-polished cinematic Next.js frontend
+reference-driven polished Next.js frontend
         +
 responsive product UX
         +
@@ -2143,16 +1459,15 @@ real MovieNight feature integration
 complete user-facing product ready for Stage 06 hardening
 ```
 
-Stage 05 must **not** become:
+Stage 05 must not become:
 
 ```text
 authentication frontend
 profile system
 streaming player
-Netflix clone
-dashboard template
+subscription product
+generic dashboard/template clone
 direct TMDB client
-heavy frontend framework stack
 production deployment stage
 cache-hardening stage
 ```

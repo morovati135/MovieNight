@@ -36,7 +36,7 @@ public sealed class TmdbMovieMapperTests
         var movie = Assert.Single(result.Results);
         Assert.Equal(12, movie.Id);
         Assert.Equal(new[] { 18, 878 }, movie.GenreIds);
-        Assert.Equal("https://image.tmdb.org/t/p/w500/poster.jpg", movie.PosterUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w780/poster.jpg", movie.PosterUrl);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public sealed class TmdbMovieMapperTests
 
         Assert.Equal("Action", Assert.Single(result.Genres).Name);
         Assert.Equal(123, result.RuntimeMinutes);
-        Assert.Equal("https://image.tmdb.org/t/p/w500/poster.jpg", result.PosterUrl);
-        Assert.Equal("https://image.tmdb.org/t/p/w780/backdrop.jpg", result.BackdropUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w780/poster.jpg", result.PosterUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/original/backdrop.jpg", result.BackdropUrl);
         Assert.Collection(
             result.Cast,
             cast =>
@@ -81,7 +81,7 @@ public sealed class TmdbMovieMapperTests
             cast => Assert.Equal("Second", cast.Name));
         var similarMovie = Assert.Single(result.SimilarMovies);
         Assert.Equal(3, similarMovie.Id);
-        Assert.Equal("https://image.tmdb.org/t/p/w500/similar.jpg", similarMovie.PosterUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w780/similar.jpg", similarMovie.PosterUrl);
     }
 
     [Fact]

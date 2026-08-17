@@ -8,6 +8,6 @@ function getApiBaseUrl(): string {
   return apiBaseUrl.replace(/\/$/, "");
 }
 
-export async function apiFetch(path: string): Promise<Response> {
-  return fetch(`${getApiBaseUrl()}${path}`);
+export async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+  return fetch(`${getApiBaseUrl()}${path}`, init);
 }

@@ -99,13 +99,19 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(circle at top, oklch(0.27 0.035 250 / 45%), transparent 38rem),
-      linear-gradient(180deg, oklch(0.205 0.022 260), var(--background) 24rem);
+    overflow-x: clip;
+    background-image: radial-gradient(
+      ellipse 72rem 34rem at 50% -15rem,
+      oklch(0.27 0.035 250 / 32%),
+      transparent 74%
+    );
     font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+    -webkit-tap-highlight-color: oklch(0.75 0.105 205 / 18%);
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
+    touch-action: manipulation;
   }
 
   ::selection {
@@ -121,5 +127,51 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+@keyframes hero-reveal {
+  from {
+    opacity: 0.55;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-copy-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ambient-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-image-scrim {
+  background:
+    linear-gradient(to bottom, rgb(2 11 27 / 4%) 42%, rgb(2 11 27 / 74%) 68%, #020b1b 92%),
+    linear-gradient(to right, rgb(2 11 27 / 34%), transparent 62%);
+}
+
+@media (min-width: 768px) {
+  .hero-image-scrim {
+    background:
+      linear-gradient(to top, rgb(2 11 27 / 78%) 0%, transparent 48%),
+      linear-gradient(to right, #020b1b 0%, rgb(2 11 27 / 90%) 24%, rgb(2 11 27 / 28%) 59%, transparent 82%),
+      linear-gradient(to bottom, rgb(2 11 27 / 24%), transparent 34%);
   }
 }

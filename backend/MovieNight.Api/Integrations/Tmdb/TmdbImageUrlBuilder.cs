@@ -4,9 +4,9 @@ internal static class TmdbImageUrlBuilder
 {
     private const string BaseUrl = "https://image.tmdb.org/t/p/";
 
-    public static string? BuildPosterUrl(string? imagePath) => BuildUrl("w500", imagePath);
+    public static string? BuildPosterUrl(string? imagePath) => BuildUrl("w780", imagePath);
 
-    public static string? BuildBackdropUrl(string? imagePath) => BuildUrl("w780", imagePath);
+    public static string? BuildBackdropUrl(string? imagePath) => BuildUrl("original", imagePath);
 
     public static string? BuildProfileUrl(string? imagePath) => BuildUrl("w185", imagePath);
 

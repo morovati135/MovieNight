@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "skills": {
+    "frontend-app-builder": {
+      "source": "openai/plugins",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "plugins/build-web-apps/skills/frontend-app-builder/SKILL.md",
+      "computedHash": "fb858547c70087aa30255fb9bef11b2bb5beb02ce41c44541fa64b5655858d83"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    }
+  }
+}
