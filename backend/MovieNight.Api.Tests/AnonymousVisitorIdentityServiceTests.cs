@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using MovieNight.Api.Features.Watchlists;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace MovieNight.Api.Tests;
@@ -27,7 +28,8 @@ public sealed class AnonymousVisitorIdentityServiceTests
         Assert.Contains("samesite=lax", setCookie, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("secure", setCookie, StringComparison.OrdinalIgnoreCase);
         var expirationValue = Regex.Match(setCookie, @"expires=([^;]+)", RegexOptions.IgnoreCase).Groups[1].Value;
-        Assert.InRange(DateTimeOffset.Parse(expirationValue), beforeCreation.AddDays(364), beforeCreation.AddDays(366));
+        var expiration = DateTimeOffset.ParseExact(expirationValue, "r", CultureInfo.InvariantCulture);
+        Assert.InRange(expiration, beforeCreation.AddDays(364), beforeCreation.AddDays(366));
     }
 
     [Fact]
