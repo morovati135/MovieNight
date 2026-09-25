@@ -160,7 +160,7 @@ This file records decisions that future agent sessions must preserve unless expl
 
 **Decision:** Each implementation sprint should receive only the stable documents, current stage document, status file, and relevant code.
 
-**Reason:** Avoid wasting Cursor context on unrelated files and historical conversations.
+**Reason:** Avoid wasting coding-agent context on unrelated files and historical conversations.
 
 
 ---

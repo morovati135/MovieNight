@@ -1,7 +1,8 @@
-# MovieNight — Codex Project Instructions
+# MovieNight — Coding Agent Project Instructions
 
 ## Role and working model
-The human acts as Tech Lead and reviewer. Codex performs implementation work.
+The human acts as Tech Lead and reviewer.
+The coding agent performs implementation work.
 Work in small, explicitly requested sprints. Do not continue into a later sprint automatically.
 
 ## Canonical project context
