@@ -40,14 +40,23 @@ Do not introduce:
 
 ## Anonymous Watchlist
 
-Watchlist is intentionally anonymous.
+Watchlist is intentionally anonymous. There is no login or account.
 
-It is private to the current browser/device storage.
+Each browser has one private Watchlist:
+- the MovieNight backend identifies the browser with a protected, persistent, HttpOnly anonymous cookie that it creates and owns;
+- Watchlist items are persisted server-side by the backend;
+- the backend Watchlist API is the only source of truth for Watchlist contents.
+
+Frontend Watchlist requests go through the centralized frontend API layer under `src/lib/api/` and must send browser credentials so the cookie is included.
 
 Do not:
 - require login
 - prompt the user to create an account
-- imply cloud synchronization
+- use `localStorage`, `sessionStorage`, IndexedDB, or frontend-managed cookies to store Watchlist contents or as the Watchlist source of truth
+- read, display, create, or store the anonymous identity in frontend code
+- imply cross-device or account-based synchronization; clearing browser data or using another browser starts a different Watchlist
+
+Short-lived in-memory UI state, such as saved movie IDs derived from the current Watchlist response, is allowed for the active page.
 
 ## Home features
 
