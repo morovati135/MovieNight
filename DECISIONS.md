@@ -194,3 +194,18 @@ This file records decisions that future agent sessions must preserve unless expl
 **Decision:** Project bootstrap is not complete until the frontend successfully calls the backend health endpoint.
 
 **Reason:** Validate the full-stack boundary before introducing domain features such as TMDB and Watchlists.
+
+
+---
+
+## D025 — Same-Origin Forwarding for Watchlist Requests
+
+**Decision:** Frontend Watchlist requests use the same-origin paths `/backend/watchlist` and `/backend/watchlist/{movieId}`, which `frontend/next.config.ts` rewrites to the backend `/api/watchlist` endpoints. Movie requests keep using the normal API client (`apiFetch`), which calls the backend directly through `NEXT_PUBLIC_API_BASE_URL`.
+
+**Reason:** The anonymous Watchlist identity is a backend-issued, protected HttpOnly cookie (D007, D008). Keeping Watchlist requests same-origin lets the browser send and receive that cookie on first-party requests made with `credentials: "include"`. The backend CORS policy allows the frontend origin but does not allow credentialed cross-origin requests, so direct browser-to-backend Watchlist calls do not fit the current credential/CORS model. Movie endpoints are public and cookie-free, so they do not need forwarding.
+
+**Rules:**
+
+- This split between the Watchlist and Movie request paths is intentional, not accidental duplication of the API client.
+- The forwarding rules exist only when `NEXT_PUBLIC_API_BASE_URL` is set when the Next.js configuration loads (dev server start or build). If it is missing, no rewrites are registered and Watchlist requests fail with 404.
+- Do not replace this with `localStorage`/`sessionStorage` Watchlist storage or with direct cross-origin Watchlist calls without an explicit architecture change recorded in this file.
