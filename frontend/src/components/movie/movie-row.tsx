@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
+import Link from "next/link";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { MovieSummary } from "@/types/movie";
@@ -14,10 +16,16 @@ type MovieRowProps = {
   savedMovieIds: Set<number>;
   updatingMovieIds: Set<number>;
   onWatchlistToggle: (movie: MovieSummary) => void;
+  headingMode?: "visible" | "sr-only";
+  moreHref?: string;
+  moreLabel?: string;
 };
 
 export function MovieRow({
   movies,
+  headingMode = "visible",
+  moreHref,
+  moreLabel = "View all",
   onWatchlistToggle,
   savedMovieIds,
   title,
@@ -27,7 +35,7 @@ export function MovieRow({
   const railRef = useRef<HTMLDivElement>(null);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [canScrollPrevious, setCanScrollPrevious] = useState(false);
-  const controlLabel = title.replace(/ (Now|Movies)$/, "");
+  const controlLabel = title.replace(/ (Now|Movies)$/i, "");
 
   const updateScrollState = useCallback(() => {
     const rail = railRef.current;
@@ -94,32 +102,51 @@ export function MovieRow({
 
   return (
     <section aria-labelledby={`${railId}-heading`} className="movie-rail-section relative isolate">
-      <div className="relative z-10 mb-4 flex items-center justify-between gap-5 sm:mb-7">
+      <div
+        className={
+          headingMode === "visible"
+            ? "relative z-10 mb-4 flex items-center justify-between gap-5 sm:mb-7"
+            : "sr-only"
+        }
+      >
         <h2
           className="text-2xl font-extrabold tracking-[-0.035em] text-white sm:text-3xl lg:text-5xl"
           id={`${railId}-heading`}
         >
           {title}
         </h2>
-        <button
-          aria-controls={railId}
-          aria-label={`Show more ${controlLabel} movies`}
-          className="group/more flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-1 text-sm font-semibold text-[#21aaf5] outline-none transition-colors hover:text-[#67c9ff] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-40 md:hidden"
-          disabled={!canScrollNext}
-          onClick={() => scrollRail(1)}
-          type="button"
-        >
-          See More
-          <ChevronRight
-            aria-hidden="true"
-            className="size-4 transition-transform duration-200 motion-safe:group-hover/more:translate-x-0.5"
-          />
-        </button>
+        {moreHref ? (
+          <Link
+            className="group/more flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-1 text-sm font-semibold text-[#21aaf5] outline-none transition-colors hover:text-[#67c9ff] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            href={moreHref}
+          >
+            {moreLabel}
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-200 motion-safe:group-hover/more:translate-x-0.5"
+            />
+          </Link>
+        ) : headingMode === "sr-only" ? null : (
+          <button
+            aria-controls={railId}
+            aria-label={`Show more ${controlLabel} movies`}
+            className="group/more flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-1 text-sm font-semibold text-[#21aaf5] outline-none transition-colors hover:text-[#67c9ff] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-40 md:hidden"
+            disabled={!canScrollNext}
+            onClick={() => scrollRail(1)}
+            type="button"
+          >
+            See More
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-200 motion-safe:group-hover/more:translate-x-0.5"
+            />
+          </button>
+        )}
       </div>
 
       <div className="relative z-10">
         <div
-          aria-label={`${title} movies`}
+          aria-label={`${controlLabel} movies`}
           className="-mx-5 overflow-x-auto overscroll-x-contain pb-5 outline-none [scroll-padding-inline-start:1.25rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] [touch-action:pan-x_pan-y] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden"
           id={railId}
           onScroll={updateScrollState}

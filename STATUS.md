@@ -16,8 +16,17 @@ Sprint 05.2 — Discover Home Experience (in progress)
 
 - [x] 05.2-H1 — Shell Adaptation + Featured Hero
 - [x] 05.2-H2 — Trending + Popular + Movie Rails
-- [ ] 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview
+- [x] 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview
 - [ ] 05.2-H4 — Home States + Responsive Polish + Visual QA
+
+05.2-H3 accepted by the Tech Lead. Final accepted state:
+
+- Backend-driven Genre discovery with a horizontal chip row, mouse-accessible previous/next controls from tablet width up, and an independent result rail; a failed genre request clears the result rail instead of showing the previous genre's movies.
+- Watchlist, genre list, and genre results load independently of the critical Home path (Hero / Trending / Popular); each failure is contained to its own section with a local retry.
+- Anonymous Watchlist preview integrated with the shared saved-state logic.
+- Pick for Me CTA redesigned as a responsive cinema ticket (perforation notches, divider, stub) linking to `/pick`; copy reflects genre / release year / minimum rating.
+- CSS-only travelling edge glow on the CTA: one light source on the ticket outline (edge-shaped hotspot, short rim highlight, local outer halo, shallow inner bleed) that follows corners without rotation, scaled for mobile / tablet / desktop, 35s lap; hidden under reduced motion.
+- Verified: lint, build, `git diff --check`, live backend checks, and 1440 / 768 / 390 screenshots in `docs/screenshots/05.2-H3-*`.
 
 Sprint 05.2 is complete only after H1–H4 are accepted.
 
@@ -82,6 +91,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 - Sprint 05.1 — Frontend Design Foundation & App Shell (Manrope selected)
 - 05.2-H1 — Shell Adaptation + Featured Hero
 - 05.2-H2 — Trending + Popular + Movie Rails
+- 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
@@ -180,9 +190,7 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Execute and review 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview.
-2. Start 05.2-H4 only after H3 acceptance.
-3. Continue H3 → H4 sequentially with Tech Lead review between work packages.
-4. Mark Sprint 05.2 complete only after H4 acceptance.
-5. Do not start Sprint 05.3 before Sprint 05.2 is accepted.
-6. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.
+1. Execute and review 05.2-H4 — Home States + Responsive Polish + Visual QA.
+2. Mark Sprint 05.2 complete only after H4 acceptance.
+3. Do not start Sprint 05.3 before Sprint 05.2 is accepted.
+4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

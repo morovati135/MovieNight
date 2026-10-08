@@ -161,6 +161,329 @@
   }
 }
 
+/*
+ * Pick for Me ticket: perforation notches are cut from the whole ticket with a mask.
+ * Glow layers that extend past the ticket reuse the same notches through .pick-glow-notched,
+ * whose box is grown by --pick-mask-pad on every side.
+ */
+.pick-ticket,
+.pick-glow-notched {
+  --pick-notch: 1.125rem;
+  --pick-stub: 9.5rem;
+  --pick-notch-y: calc(100% - var(--pick-mask-pad) - var(--pick-stub));
+  -webkit-mask:
+    radial-gradient(circle at var(--pick-mask-pad) var(--pick-notch-y), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px)),
+    radial-gradient(circle at calc(100% - var(--pick-mask-pad)) var(--pick-notch-y), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px));
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle at var(--pick-mask-pad) var(--pick-notch-y), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px)),
+    radial-gradient(circle at calc(100% - var(--pick-mask-pad)) var(--pick-notch-y), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px));
+  mask-composite: intersect;
+}
+
+.pick-ticket {
+  --pick-mask-pad: 0px;
+}
+
+@media (min-width: 48rem) {
+  .pick-ticket,
+  .pick-glow-notched {
+    --pick-notch: 1.375rem;
+    --pick-stub: 15rem;
+    --pick-notch-x: calc(100% - var(--pick-mask-pad) - var(--pick-stub));
+    -webkit-mask:
+      radial-gradient(circle at var(--pick-notch-x) var(--pick-mask-pad), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px)),
+      radial-gradient(circle at var(--pick-notch-x) calc(100% - var(--pick-mask-pad)), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px));
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(circle at var(--pick-notch-x) var(--pick-mask-pad), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px)),
+      radial-gradient(circle at var(--pick-notch-x) calc(100% - var(--pick-mask-pad)), #0000 var(--pick-notch), #000 calc(var(--pick-notch) + 0.5px));
+    mask-composite: intersect;
+  }
+}
+
+@media (min-width: 64rem) {
+  .pick-ticket,
+  .pick-glow-notched {
+    --pick-stub: 21rem;
+  }
+}
+
+/*
+ * Pick for Me travelling light: one edge light riding the ticket perimeter.
+ *
+ * Every layer draws the same moving point: a circular spot whose centre rides the ticket
+ * outline (with the ticket's own corner radius). Each layer reveals that spot through a band
+ * centred on, or just inside, the edge. The band clips the spot into a piece of the edge itself,
+ * so the light is elongated along the border, keeps its centre on the border, and on corners
+ * bends with the curve. Its orientation follows the outline continuously; nothing rotates or snaps.
+ *   core  - spot through a band straddling the edge, softly blurred, above the ticket:
+ *           the elongated hotspot (about 3x longer than it is thick)
+ *   rim   - spot through the 1.5px border ring: the short brightened stretch of border
+ *   halo  - larger spot through a wider band, behind the ticket, blurred: only its outer half
+ *           shows, so it fades outward from the edge
+ *   bleed - spot through a narrow band inside the edge, blurred and clipped by the ticket
+ */
+@property --pick-glow-distance {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+@property --pick-glow-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(62 195 255);
+}
+
+@keyframes pick-glow-orbit {
+  to {
+    --pick-glow-distance: 100%;
+  }
+}
+
+@keyframes pick-glow-tint {
+  0%,
+  100% {
+    --pick-glow-color: rgb(62 195 255);
+  }
+  30% {
+    --pick-glow-color: rgb(78 130 255);
+  }
+  55% {
+    --pick-glow-color: rgb(140 112 255);
+  }
+  78% {
+    --pick-glow-color: rgb(214 92 178);
+  }
+}
+
+.pick-glow {
+  /* Matches the ticket corner radius (rounded-[1.75rem] lg:rounded-[2rem]). */
+  --pick-radius: 1.75rem;
+  animation:
+    pick-glow-orbit 35s linear infinite,
+    pick-glow-tint 52s ease-in-out infinite;
+}
+
+.pick-glow-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pick-glow-notched {
+  --pick-mask-pad: 2rem;
+  position: absolute;
+  inset: calc(-1 * var(--pick-mask-pad));
+}
+
+/* A band reaching --pick-ring-out past the ticket edge, --pick-ring-width wide in total. */
+.pick-glow-ring {
+  position: absolute;
+  inset: calc(var(--pick-mask-pad, 0px) - var(--pick-ring-out));
+  border-radius: calc(var(--pick-radius) + var(--pick-ring-out));
+  padding: var(--pick-ring-width);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* The ring box is the ticket box grown by --pick-ring-out, so this path is the ticket outline. */
+.pick-glow-spot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--pick-spot);
+  height: var(--pick-spot);
+  border-radius: 50%;
+  offset-path: inset(var(--pick-ring-out) round var(--pick-radius));
+  offset-distance: var(--pick-glow-distance);
+  offset-rotate: 0deg;
+  offset-anchor: center;
+}
+
+.pick-glow-core {
+  --pick-ring-out: 6px;
+  --pick-ring-width: 12px;
+  --pick-spot: 4.25rem;
+  --pick-core-blur: 4px;
+  z-index: 25;
+  mix-blend-mode: screen;
+  filter: blur(var(--pick-core-blur));
+}
+
+/* Small near-white centre only; most of the hotspot keeps the travelling colour. */
+.pick-glow-core .pick-glow-spot {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, color-mix(in oklab, var(--pick-glow-color) 80%, white) 88%, transparent) 0%,
+    color-mix(in oklab, var(--pick-glow-color) 77%, transparent) 14%,
+    color-mix(in oklab, var(--pick-glow-color) 48%, transparent) 34%,
+    color-mix(in oklab, var(--pick-glow-color) 18%, transparent) 60%,
+    color-mix(in oklab, var(--pick-glow-color) 5%, transparent) 82%,
+    transparent 100%
+  );
+}
+
+.pick-glow-halo {
+  --pick-ring-out: 9px;
+  --pick-ring-width: 18px;
+  --pick-spot: 6.5rem;
+  filter: blur(7px);
+}
+
+.pick-glow-halo .pick-glow-spot {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--pick-glow-color) 60%, transparent) 0%,
+    color-mix(in oklab, var(--pick-glow-color) 31%, transparent) 30%,
+    color-mix(in oklab, var(--pick-glow-color) 10%, transparent) 60%,
+    transparent 100%
+  );
+}
+
+.pick-glow-bleed {
+  --pick-ring-out: 0px;
+  --pick-ring-width: 0.5rem;
+  --pick-spot: 4.5rem;
+  z-index: 5;
+  mix-blend-mode: screen;
+  filter: blur(5px);
+}
+
+.pick-glow-bleed .pick-glow-spot {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--pick-glow-color) 16%, transparent) 0%,
+    color-mix(in oklab, var(--pick-glow-color) 6%, transparent) 55%,
+    transparent 100%
+  );
+}
+
+/* Rim: a faint static border; only the short stretch under the light brightens. */
+.pick-ticket-frame {
+  --pick-ring-out: 0px;
+  --pick-spot: 4.25rem;
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: rgb(255 255 255 / 7%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* Bright only near the centre, so at a corner the falloff follows the curve without lighting all of it. */
+.pick-ticket-frame .pick-glow-spot {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--pick-glow-color) 70%, white) 0%,
+    color-mix(in oklab, var(--pick-glow-color) 92%, white) 14%,
+    color-mix(in oklab, var(--pick-glow-color) 60%, transparent) 36%,
+    color-mix(in oklab, var(--pick-glow-color) 16%, transparent) 64%,
+    transparent 100%
+  );
+}
+
+@media (min-width: 48rem) {
+  .pick-glow-core {
+    --pick-ring-out: 8px;
+    --pick-ring-width: 16px;
+    --pick-spot: 5.5rem;
+    --pick-core-blur: 5px;
+  }
+
+  .pick-glow-halo {
+    --pick-ring-out: 13px;
+    --pick-ring-width: 26px;
+    --pick-spot: 9rem;
+    filter: blur(11px);
+  }
+
+  .pick-glow-bleed {
+    --pick-ring-width: 0.625rem;
+    --pick-spot: 6rem;
+  }
+
+  .pick-ticket-frame {
+    --pick-spot: 5.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .pick-glow {
+    --pick-radius: 2rem;
+  }
+
+  .pick-glow-core {
+    --pick-ring-out: 9px;
+    --pick-ring-width: 18px;
+    --pick-spot: 6.75rem;
+    --pick-core-blur: 6px;
+  }
+
+  .pick-glow-halo {
+    --pick-ring-out: 16px;
+    --pick-ring-width: 32px;
+    --pick-spot: 11rem;
+    filter: blur(14px);
+  }
+
+  .pick-glow-bleed {
+    --pick-spot: 7rem;
+  }
+
+  .pick-ticket-frame {
+    --pick-spot: 6.75rem;
+  }
+}
+
+@keyframes pick-beam-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.pick-ticket-beam {
+  animation: pick-beam-breathe 10s ease-in-out infinite;
+}
+
+.pick-ticket-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pick-glow,
+  .pick-ticket-beam {
+    animation: none !important;
+  }
+
+  /* No travelling light: keep only the static ambient glow and the faint rim. */
+  .pick-glow-spot {
+    display: none;
+  }
+}
+
 .hero-image-scrim {
   background:
     linear-gradient(to bottom, rgb(3 10 27 / 4%) 42%, rgb(3 10 27 / 74%) 68%, var(--background) 92%),

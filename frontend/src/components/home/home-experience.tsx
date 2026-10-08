@@ -9,27 +9,31 @@ import { getMovieDetails, getPopularMovies, getTrendingMovies } from "@/lib/api/
 import { addToWatchlist, getWatchlist, removeFromWatchlist } from "@/lib/api/watchlist";
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
 
+import { GenreDiscovery } from "./genre-discovery";
 import { HomeEmpty, HomeError, HomeLoading } from "./home-states";
+import { PickForMeCta } from "./pick-for-me-cta";
+import { WatchlistPreview, type WatchlistState } from "./watchlist-preview";
 
 type HomeData = {
   featured: FeaturedMovie[];
   popular: MovieSummary[];
   trending: MovieSummary[];
-  watchlist: MovieSummary[];
 };
 
 export function HomeExperience() {
   const [data, setData] = useState<HomeData | null>(null);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [watchlist, setWatchlist] = useState<WatchlistState>({ status: "loading" });
   const [updatingMovieIds, setUpdatingMovieIds] = useState<Set<number>>(new Set());
   const [statusMessage, setStatusMessage] = useState("");
+  const [watchlistReloadKey, setWatchlistReloadKey] = useState(0);
 
   useEffect(() => {
     let isCurrent = true;
 
-    Promise.all([getTrendingMovies(), getPopularMovies(), getWatchlist()])
-      .then(async ([trending, popular, watchlist]) => {
+    Promise.all([getTrendingMovies(), getPopularMovies()])
+      .then(async ([trending, popular]) => {
         const featuredSummaries = trending.results.slice(0, 6);
         const detailResults = await Promise.allSettled(
           featuredSummaries.map((movie) => getMovieDetails(movie.id)),
@@ -55,7 +59,6 @@ export function HomeExperience() {
             featured,
             popular: popular.results,
             trending: trending.results,
-            watchlist,
           });
         }
       })
@@ -70,9 +73,34 @@ export function HomeExperience() {
     };
   }, [reloadKey]);
 
+  // The Watchlist loads independently so a failure only affects saved state and the preview.
+  useEffect(() => {
+    let isCurrent = true;
+
+    getWatchlist()
+      .then((movies) => {
+        if (isCurrent) {
+          setWatchlist({ movies, status: "ready" });
+        }
+      })
+      .catch(() => {
+        if (isCurrent) {
+          setWatchlist({ status: "error" });
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [watchlistReloadKey]);
+
+  const reloadWatchlist = useCallback(() => {
+    setWatchlistReloadKey((current) => current + 1);
+  }, []);
+
   const savedMovieIds = useMemo(
-    () => new Set(data?.watchlist.map((movie) => movie.id) ?? []),
-    [data?.watchlist],
+    () => new Set(watchlist.status === "ready" ? watchlist.movies.map((movie) => movie.id) : []),
+    [watchlist],
   );
 
   const handleRetry = () => {
@@ -81,9 +109,14 @@ export function HomeExperience() {
     setReloadKey((current) => current + 1);
   };
 
+  const handleWatchlistRetry = () => {
+    setWatchlist({ status: "loading" });
+    reloadWatchlist();
+  };
+
   const handleWatchlistToggle = useCallback(
     async (movie: MovieSummary) => {
-      if (!data || updatingMovieIds.has(movie.id)) {
+      if (updatingMovieIds.has(movie.id)) {
         return;
       }
 
@@ -98,16 +131,22 @@ export function HomeExperience() {
           await addToWatchlist(movie.id);
         }
 
-        setData((current) =>
-          current
-            ? {
-                ...current,
-                watchlist: wasSaved
-                  ? current.watchlist.filter((savedMovie) => savedMovie.id !== movie.id)
-                  : [movie, ...current.watchlist],
-              }
-            : current,
-        );
+        if (watchlist.status === "ready") {
+          setWatchlist((current) =>
+            current.status === "ready"
+              ? {
+                  movies: wasSaved
+                    ? current.movies.filter((savedMovie) => savedMovie.id !== movie.id)
+                    : [movie, ...current.movies],
+                  status: "ready",
+                }
+              : current,
+          );
+        } else {
+          // Saved state was unknown, so rehydrate from the backend instead of guessing.
+          reloadWatchlist();
+        }
+
         setStatusMessage(
           wasSaved
             ? `${movie.title} removed from your watchlist.`
@@ -123,7 +162,7 @@ export function HomeExperience() {
         });
       }
     },
-    [data, savedMovieIds, updatingMovieIds],
+    [reloadWatchlist, savedMovieIds, updatingMovieIds, watchlist.status],
   );
 
   if (!data && !error) {
@@ -168,6 +207,21 @@ export function HomeExperience() {
           savedMovieIds={savedMovieIds}
           title="Popular Movies"
           updatingMovieIds={updatingMovieIds}
+        />
+        <GenreDiscovery
+          onWatchlistToggle={handleWatchlistToggle}
+          savedMovieIds={savedMovieIds}
+          updatingMovieIds={updatingMovieIds}
+        />
+        <div className="pt-10 sm:pt-4">
+          <PickForMeCta />
+        </div>
+        <WatchlistPreview
+          onRetry={handleWatchlistRetry}
+          onWatchlistToggle={handleWatchlistToggle}
+          savedMovieIds={savedMovieIds}
+          updatingMovieIds={updatingMovieIds}
+          watchlist={watchlist}
         />
       </div>
       <p aria-live="polite" className="sr-only" role="status">
