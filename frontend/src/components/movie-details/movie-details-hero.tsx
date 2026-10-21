@@ -14,6 +14,22 @@ type MovieDetailsHeroProps = {
   onWatchlistToggle: () => void;
 };
 
+const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+/** Up to two production countries by name, e.g. "Germany, United States". */
+function formatCountries(codes: string[]) {
+  return codes
+    .slice(0, 2)
+    .map((code) => {
+      try {
+        return regionNames.of(code) ?? code;
+      } catch {
+        return code;
+      }
+    })
+    .join(", ");
+}
+
 export function formatRuntime(minutes: number) {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
@@ -23,6 +39,7 @@ export function formatRuntime(minutes: number) {
 
 export function MovieDetailsHero({ isSaved, isUpdating, movie, onWatchlistToggle }: MovieDetailsHeroProps) {
   const year = movie.releaseDate?.slice(0, 4);
+  const countries = formatCountries(movie.productionCountryCodes);
   // Without a backdrop, a softened poster keeps the hero cinematic instead of an empty panel.
   const artwork = movie.backdropUrl ?? movie.posterUrl;
 
@@ -81,8 +98,12 @@ export function MovieDetailsHero({ isSaved, isUpdating, movie, onWatchlistToggle
                   {formatRuntime(movie.runtimeMinutes)}
                 </span>
               ) : null}
+              {countries ? (
+                <span className="before:mr-3 before:text-white/30 before:content-['•']">{countries}</span>
+              ) : null}
               {movie.voteAverage > 0 ? (
-                <span className="before:mr-3 before:text-white/30 before:content-['•']">
+                // On phones the rating takes its own line, so no separator dot is left dangling at a line start.
+                <span className="w-full before:mr-3 before:hidden before:text-white/30 before:content-['•'] sm:w-auto sm:before:inline">
                   <RatingStars voteAverage={movie.voteAverage} />
                 </span>
               ) : null}

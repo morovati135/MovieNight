@@ -234,7 +234,7 @@ Major capabilities:
 05.4 — Movie Details Experience
        Status: In Progress
        Execution:
-       05.4-D1 → 05.4-D2 → 05.4-D3
+       05.4-D1 → 05.4-D2 → 05.4-D2b → 05.4-D3
 
 05.5 — Pick for Me Experience
        Status: Not Started

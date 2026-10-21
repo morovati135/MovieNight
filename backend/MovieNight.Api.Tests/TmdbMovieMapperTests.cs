@@ -40,7 +40,7 @@ public sealed class TmdbMovieMapperTests
     }
 
     [Fact]
-    public void ToMovieDetails_maps_genres_cast_in_order_similar_movies_and_image_urls()
+    public void ToMovieDetails_maps_genres_cast_in_order_recommendations_and_image_urls()
     {
         var movie = new TmdbMovie
         {
@@ -59,7 +59,7 @@ public sealed class TmdbMovieMapperTests
                     new TmdbCastMember { Id = 1, Name = "First", Character = "A", Order = 0, ProfilePath = "/profile.jpg" }
                 ]
             },
-            Similar = new TmdbMoviePage
+            Recommendations = new TmdbMoviePage
             {
                 Results = [new TmdbMovie { Id = 3, Title = "Similar", PosterPath = "/similar.jpg" }]
             }
@@ -85,7 +85,7 @@ public sealed class TmdbMovieMapperTests
     }
 
     [Fact]
-    public void ToMovieDetails_limits_cast_and_similar_results_and_allows_missing_images()
+    public void ToMovieDetails_limits_cast_and_recommendations_and_allows_missing_images()
     {
         var movie = new TmdbMovie
         {
@@ -100,7 +100,7 @@ public sealed class TmdbMovieMapperTests
                     Order = index
                 }).ToArray()
             },
-            Similar = new TmdbMoviePage
+            Recommendations = new TmdbMoviePage
             {
                 Results = Enumerable.Range(0, 13).Select(index => new TmdbMovie { Id = index + 10, Title = $"Similar {index}" }).ToArray()
             }
@@ -113,6 +113,61 @@ public sealed class TmdbMovieMapperTests
         Assert.Null(result.Cast[0].ProfileUrl);
         Assert.Equal(TmdbMovieMapper.SimilarMoviesLimit, result.SimilarMovies.Count);
         Assert.Null(result.SimilarMovies[0].PosterUrl);
+    }
+
+    [Fact]
+    public void ToMovieDetails_maps_directors_production_countries_and_scene_images()
+    {
+        var movie = new TmdbMovie
+        {
+            Id = 1,
+            Title = "The Movie",
+            BackdropPath = "/hero.jpg",
+            ProductionCountries = [new TmdbProductionCountry { Code = "US" }, new TmdbProductionCountry { Code = "DE" }],
+            Credits = new TmdbMovieCredits
+            {
+                Crew =
+                [
+                    new TmdbCrewMember { Id = 5, Name = "Director", Job = "Director", ProfilePath = "/director.jpg" },
+                    new TmdbCrewMember { Id = 6, Name = "Writer", Job = "Screenplay" },
+                    new TmdbCrewMember { Id = 5, Name = "Director", Job = "Director" }
+                ]
+            },
+            Images = new TmdbMovieImages
+            {
+                Backdrops = [new TmdbImage { FilePath = "/hero.jpg" }, new TmdbImage { FilePath = "/scene-1.jpg" }, new TmdbImage { FilePath = "/scene-2.jpg" }]
+            }
+        };
+
+        var result = TmdbMovieMapper.ToMovieDetails(movie);
+
+        var director = Assert.Single(result.Directors);
+        Assert.Equal("Director", director.Name);
+        Assert.Equal("https://image.tmdb.org/t/p/w185/director.jpg", director.ProfileUrl);
+        Assert.Equal(["US", "DE"], result.ProductionCountryCodes);
+        Assert.Equal(
+            ["https://image.tmdb.org/t/p/original/scene-1.jpg", "https://image.tmdb.org/t/p/original/scene-2.jpg"],
+            result.SceneImageUrls);
+    }
+
+    [Fact]
+    public void ToMovieDetails_limits_scene_images_and_allows_missing_extras()
+    {
+        var movie = new TmdbMovie
+        {
+            Id = 1,
+            Title = "The Movie",
+            Images = new TmdbMovieImages
+            {
+                Backdrops = Enumerable.Range(0, 12).Select(index => new TmdbImage { FilePath = $"/scene-{index}.jpg" }).ToArray()
+            }
+        };
+
+        var result = TmdbMovieMapper.ToMovieDetails(movie);
+
+        Assert.Equal(TmdbMovieMapper.SceneImagesLimit, result.SceneImageUrls.Count);
+        Assert.Empty(result.Directors);
+        Assert.Empty(result.ProductionCountryCodes);
     }
 
     [Fact]

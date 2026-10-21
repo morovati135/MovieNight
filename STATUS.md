@@ -15,10 +15,31 @@ Sprint 05.4 — Movie Details Experience (in progress; plan approved 2026-10-22)
 ### Sprint 05.4 Work Packages
 
 - [x] 05.4-D1 — Route + Hero + About (accepted by the Tech Lead on 2026-10-22)
-- [ ] 05.4-D2 — Cast + More like this
+- [x] 05.4-D2 — Cast + More like this (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.4-D2b — Details enrichment (accepted by the Tech Lead on 2026-10-22)
 - [ ] 05.4-D3 — Responsive polish + visual QA
 
 Reference adaptation, dropped reference elements (country, like/dislike, Watch Now / Preview, scene stills, Director, Comments, footer links) and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§12.1). Work happens on branch `feature/movie-details-05.4`. Plan decisions: rating as five stars filled to the TMDB score plus the number; genre pills link to the Home Search view (`/?genre={id}`).
+
+05.4-D2b accepted state (Tech Lead request 2026-10-22 after reviewing D2 as "a little empty"):
+
+- Research: TMDB's existing details response already carries directors, production countries, text-free scene images and recommendations. Offered also: trailer, tagline, age rating, collection; not selected. Out of scope: reviews/comments, likes, watch providers, IMDb, studios (PROJECT.md non-goals / Stage 05 scope).
+- Backend (D027): `MovieDetailsDto` adds `directors`, `productionCountryCodes`, `sceneImageUrls` (max 10, hero backdrop excluded); `similarMovies` now comes from TMDB recommendations. Still one TMDB request (`append_to_response=credits,recommendations,images&include_image_language=null`). Tests updated and added (76 passing).
+- Frontend: scene gallery directly under the hero after `movie-details/Section_1` (16:9 rounded scenes, exactly five across at 1440, glass arrows, peeking on smaller screens); Director section with portraits after Cast (`movie-details/Section_2`); production countries by name in the hero metadata; the Cast portrait is a shared `PersonPortrait`.
+- Mobile hero metadata: the rating moves to its own line on phones so no separator dot dangles at a line start.
+- Full-size scene viewer (Tech Lead request 2026-10-22): each scene tile is a button that opens a full-screen dialog (Base UI Dialog, already a dependency) showing the original-quality TMDB file, not the resized thumbnail; previous / next buttons and arrow keys (wrapping), "Scene N of 10" title, Escape / close button / backdrop click to close, focus kept inside while open and returned to the tile afterwards. The backend now returns scene URLs at TMDB original size; thumbnails still go through the Next.js image resizer. Verified at 1440 / 390: original 3600×2025 file loaded, keyboard open / navigate / close, reduced motion.
+- Fixed the desktop colour line between Cast and Director reported by the Tech Lead (with screenshots): the global body glow (radial gradient at the top of the page) repeated once per viewport height because `html` is one viewport tall and backgrounds repeat by default, painting a faint glow with a hard top edge at every multiple of the window height (between Cast and Director at a 950px-tall window). `body` now uses `background-repeat: no-repeat`; measured on the production build at 1920×1080 and 1920×950, the background is flat across the former boundaries (RGB sum 40 → 40, previously 40 → 48.6). Home's top glow is unchanged.
+- Verified on the production build against the real backend at 1440 / 768 / 390: "2023 · 2h 50m · Germany, United States · 7.7", 10 scenes with 5 fully visible at 1440 and arrows paging, Director Chad Stahelski, "More like" led by John Wick: Chapter 2 and 3, missing scenes / directors / countries hide cleanly, no horizontal overflow; D1 and D2 QA re-run. `dotnet test` (76), `npm run lint`, `npm run build`, `git diff --check`. Screenshots in `docs/screenshots/05.4-D2b-*`.
+- Data note: TMDB sometimes stores near-identical uploads of the same artwork; exact duplicates and the hero backdrop are removed, visually identical files under different paths cannot be detected.
+- Local setup: the 05.4 worktree database was migrated with `dotnet ef database update`; the backend now runs from the 05.4 worktree.
+
+05.4-D2 accepted state:
+
+- Cast after `movie-details/Section_2`: circular portraits with the actor name and character underneath, in a horizontal rail with glass previous/next controls from tablet width up (centred on the portraits) and a peeking next portrait on smaller screens; initials when a photo is missing.
+- More like {title} after `movie-details/Section_3` / `movie-covers/Covers_Type_1`: the shared MovieCard rail with Watchlist saved state; a card opens that movie's details page at the top.
+- Section order follows the reference: About, Genres, Cast, More like this. Cast and More like this are hidden when the backend returns none.
+- Shared code: MovieRow's rail scrolling moved unchanged into `useRailScroll`, used by MovieRow and the Cast rail.
+- Verified on the production build against the real backend at 1440 / 768 / 390: 12 cast members with photos ("Keanu Reeves · John Wick"), cast arrows page and enable/disable correctly, 12 similar cards, Watchlist toggle on a similar card and back, similar card navigation, initials fallback, empty cast / similar hide their sections, Home Trending rail still pages, no horizontal overflow. `npm run lint`, `npm run build`, `git diff --check`. Screenshots in `docs/screenshots/05.4-D2-*`.
 
 05.4-D1 accepted state:
 
@@ -181,7 +202,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- Sprint 05.4 — Movie Details Experience (D1 accepted; D2 in progress)
+- Sprint 05.4 — Movie Details Experience (D1, D2, D2b accepted; D3 next)
 
 ---
 
@@ -272,6 +293,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Execute and review 05.4-D2 — Cast + More like this.
-2. Then D3, each after the previous work package is accepted; do not start Sprint 05.5 before Sprint 05.4 is accepted.
+1. Execute and review 05.4-D3 — Responsive polish + visual QA.
+2. Then mark Sprint 05.4 complete, each after the previous work package is accepted; do not start Sprint 05.5 before Sprint 05.4 is accepted.
 4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

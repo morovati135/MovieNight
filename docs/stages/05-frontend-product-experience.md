@@ -904,22 +904,23 @@ Reference → MovieNight adaptation:
 | Reference element | Decision |
 |---|---|
 | Full-bleed backdrop hero, title bottom-left (Section 1) | Keep. Backdrop with readability gradients; poster thumbnail beside the title as in `movie-covers/Movie_single_Cover_slider`. Falls back to the poster when no backdrop exists. |
-| "2h 49m - 2023-USA" + 5 stars | Keep runtime and year (each hidden when missing). Country is not in the contract → dropped. Rating from the vote average. |
+| "2h 49m - 2023-USA" + 5 stars | Keep runtime, year and (from D2b) production countries by name, each hidden when missing. Rating from the vote average. |
 | Bookmark circle / "Watch Later" pill (`icons/book_Mark`) | Keep as the Watchlist CTA, outline when not saved and filled when saved, labelled "Add to Watchlist" / "In Watchlist" (product wording). |
 | Like / dislike buttons (`icons/Like_DisLike`) | Dropped: no backend rating capability. |
 | Watch Now / Preview | Dropped: MovieNight is not a streaming player and has no trailer data. |
-| Row of five scene stills | Dropped: the contract has one backdrop, no image gallery. |
+| Row of five scene stills | Kept from D2b: text-free TMDB backdrops as a scene gallery under the hero (contract extended, D027). |
 | "about {title}" + text | Keep as an About section with the overview only (the second reference paragraph is not in the contract). |
 | Genres pink pills | Keep, in the Home genre-chip style. |
 | "Charactors" circular avatars | Keep as **Cast**: circular photos with name and character, initials fallback, horizontal rail. |
-| Director | Dropped: not in the contract (Stage scope forbids inventing it). |
+| Director | Kept from D2b: directors from TMDB credits, shown as portraits after Cast (contract extended, D027). |
 | Suggestion like "…" poster cards (`movie-covers/Covers_Type_1`) | Keep as **More like {title}** using the existing MovieCard rail with Watchlist saved state. Landscape cards (`Covers_Type_2`, `Cards`) need backdrops, which similar movies do not have → not used. |
 | Comments, OMNI footer / social links, Collections | Dropped: no backend capability / out of scope. |
 
 Work packages (each ends with a screenshot review checkpoint):
 
 - [x] 05.4-D1 — Route + Hero + About: `/movies/[id]` with real backend data, backdrop hero (poster, title, year · runtime · rating, Watchlist CTA), genres, About/overview, loading / error / not-found states, Watchlist saved state shared with Home.
-- [ ] 05.4-D2 — Cast + More like this: circular Cast rail and Similar Movies MovieCard rail, empty handling.
+- [x] 05.4-D2 — Cast + More like this: circular Cast rail and Similar Movies MovieCard rail, empty handling.
+- [x] 05.4-D2b — Details enrichment (Tech Lead request 2026-10-22): backend contract adds directors, production country codes and text-free scene images and sources "More like" from TMDB recommendations (D027); frontend adds the scene gallery, Director section and countries.
 - [ ] 05.4-D3 — Responsive polish + visual QA: 1440 / 768 / 390 compositions, keyboard and reduced-motion checks, screenshots in `docs/screenshots/05.4-*`.
 
 Sprint 05.4 is complete only after D1–D3 are accepted.

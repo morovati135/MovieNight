@@ -82,7 +82,7 @@ public sealed class TmdbClientTests
         await client.GetMovieDetailsAsync(1, CancellationToken.None);
 
         Assert.Equal("/3/movie/1", handler.RequestUri?.AbsolutePath);
-        Assert.Equal("append_to_response=credits,similar", handler.RequestUri?.Query.TrimStart('?'));
+        Assert.Equal("append_to_response=credits,recommendations,images&include_image_language=null", handler.RequestUri?.Query.TrimStart('?'));
     }
 
     [Fact]

@@ -23,7 +23,8 @@ public sealed class TmdbClient(HttpClient httpClient)
 
     internal Task<TmdbMovie> GetMovieDetailsAsync(int movieId, CancellationToken cancellationToken) =>
         GetFromTmdbAsync<TmdbMovie>(
-            $"movie/{movieId}?append_to_response=credits,similar",
+            // One request: credits (cast + directors), recommendations, and text-free images for the scene gallery.
+            $"movie/{movieId}?append_to_response=credits,recommendations,images&include_image_language=null",
             "movie details",
             cancellationToken);
 

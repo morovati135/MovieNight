@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useId, useRef } from "react";
 
 import Link from "next/link";
 
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { MovieSummary } from "@/types/movie";
 
 import { MovieCard } from "./movie-card";
+import { useRailScroll } from "./use-rail-scroll";
 
 type MovieRowProps = {
   title: string;
@@ -36,72 +37,8 @@ export function MovieRow({
 }: MovieRowProps) {
   const railId = useId();
   const railRef = useRef<HTMLDivElement>(null);
-  const [canScrollNext, setCanScrollNext] = useState(false);
-  const [canScrollPrevious, setCanScrollPrevious] = useState(false);
   const controlLabel = title.replace(/ (Now|Movies)$/i, "");
-
-  const updateScrollState = useCallback(() => {
-    const rail = railRef.current;
-
-    if (!rail) {
-      return;
-    }
-
-    const maximumScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
-    const edgeTolerance = 2;
-
-    setCanScrollPrevious(rail.scrollLeft > edgeTolerance);
-    setCanScrollNext(rail.scrollLeft < maximumScroll - edgeTolerance);
-  }, []);
-
-  useEffect(() => {
-    const rail = railRef.current;
-
-    if (!rail) {
-      return;
-    }
-
-    const frame = window.requestAnimationFrame(updateScrollState);
-    const resizeObserver = new ResizeObserver(updateScrollState);
-
-    resizeObserver.observe(rail);
-
-    if (rail.firstElementChild) {
-      resizeObserver.observe(rail.firstElementChild);
-    }
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      resizeObserver.disconnect();
-    };
-  }, [movies.length, updateScrollState]);
-
-  const scrollRail = (direction: -1 | 1) => {
-    const rail = railRef.current;
-    const track = rail?.firstElementChild;
-
-    if (!rail || !(track instanceof HTMLElement)) {
-      return;
-    }
-
-    const firstCard = track.children.item(0);
-    const secondCard = track.children.item(1);
-    let scrollDistance = rail.clientWidth * 0.78;
-
-    if (firstCard instanceof HTMLElement && secondCard instanceof HTMLElement) {
-      const cardStep = secondCard.offsetLeft - firstCard.offsetLeft;
-      const visibleCardCount = Math.max(1, Math.floor(rail.clientWidth / cardStep));
-
-      scrollDistance = cardStep * Math.max(1, visibleCardCount - 1);
-    }
-
-    rail.scrollBy({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth",
-      left: direction * scrollDistance,
-    });
-  };
+  const { canScrollNext, canScrollPrevious, scrollRail, updateScrollState } = useRailScroll(railRef, movies.length);
 
   return (
     <section aria-labelledby={`${railId}-heading`} className="movie-rail-section relative isolate">

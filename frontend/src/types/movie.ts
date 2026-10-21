@@ -25,6 +25,15 @@ export type MovieDetails = Omit<MovieSummary, "genreIds"> & {
     profileUrl: string | null;
   }>;
   similarMovies: MovieSummary[];
+  directors: Array<{
+    id: number;
+    name: string;
+    profileUrl: string | null;
+  }>;
+  /** ISO 3166-1 codes, e.g. "US". */
+  productionCountryCodes: string[];
+  /** Text-free scene images (TMDB backdrops), excluding the hero backdrop. */
+  sceneImageUrls: string[];
 };
 
 export type FeaturedMovie = MovieSummary & {

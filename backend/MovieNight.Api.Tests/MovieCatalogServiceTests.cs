@@ -158,7 +158,7 @@ public sealed class MovieCatalogServiceTests
     public async Task GetDetailsAsync_uses_a_cache_key_per_movie_id()
     {
         var handler = new GenreHttpMessageHandler("""
-            { "id": 7, "title": "Movie", "credits": { "cast": [] }, "similar": { "results": [] } }
+            { "id": 7, "title": "Movie", "credits": { "cast": [] }, "recommendations": { "results": [] } }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
         using var cache = new MemoryCache(new MemoryCacheOptions());

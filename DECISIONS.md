@@ -219,3 +219,14 @@ This file records decisions that future agent sessions must preserve unless expl
 
 - The frontend sends `year` with a title query; genre and minimum rating with a title still narrow the loaded title matches in the browser.
 - Do not emulate genre or rating filtering for title Search on the backend by scanning multiple TMDB pages without a separate decision (request cost and caching belong to Stage 06).
+
+## D027 — Movie Details Enrichment from the Existing TMDB Request
+
+**Decision:** `GET /api/movies/{id}` additionally returns `directors` (from TMDB credits crew, job "Director"), `productionCountryCodes` (ISO 3166-1) and `sceneImageUrls` (up to 10 text-free TMDB backdrops, excluding the hero backdrop). `similarMovies` keeps its name but is now sourced from TMDB recommendations instead of TMDB "similar". All of it comes from the single existing TMDB details request (`append_to_response=credits,recommendations,images&include_image_language=null`).
+
+**Reason:** The Tech Lead asked for a richer Movie Details page (Sprint 05.4). The supplied reference shows a director, a country and a row of scene images, all of which TMDB already provides for the request MovieNight makes. TMDB has no separate "screenshot" type for movies; text-free backdrops are its scene images. TMDB "similar" results are keyword-based and often unrelated (for John Wick: Chapter 4 they included Barton Fink); recommendations are markedly more relevant (John Wick: Chapter 2 and 3 first).
+
+**Rules:**
+
+- Keep this to one TMDB request per movie; cap list sizes in the mapper.
+- Still out of scope (PROJECT.md non-goals / Stage 05 scope): reviews and comments, likes and user ratings, watch providers, IMDb data, production studios. Trailers, tagline, age rating and collections were offered and not selected; adding them needs a new decision.

@@ -70,8 +70,32 @@ internal sealed class TmdbMovie
     [JsonPropertyName("credits")]
     public TmdbMovieCredits Credits { get; init; } = new();
 
-    [JsonPropertyName("similar")]
-    public TmdbMoviePage Similar { get; init; } = new();
+    [JsonPropertyName("production_countries")]
+    public IReadOnlyList<TmdbProductionCountry> ProductionCountries { get; init; } = [];
+
+    [JsonPropertyName("recommendations")]
+    public TmdbMoviePage Recommendations { get; init; } = new();
+
+    [JsonPropertyName("images")]
+    public TmdbMovieImages Images { get; init; } = new();
+}
+
+internal sealed class TmdbProductionCountry
+{
+    [JsonPropertyName("iso_3166_1")]
+    public string Code { get; init; } = string.Empty;
+}
+
+internal sealed class TmdbMovieImages
+{
+    [JsonPropertyName("backdrops")]
+    public IReadOnlyList<TmdbImage> Backdrops { get; init; } = [];
+}
+
+internal sealed class TmdbImage
+{
+    [JsonPropertyName("file_path")]
+    public string FilePath { get; init; } = string.Empty;
 }
 
 internal sealed class TmdbNullableDateOnlyJsonConverter : JsonConverter<DateOnly?>
@@ -115,6 +139,24 @@ internal sealed class TmdbMovieCredits
 {
     [JsonPropertyName("cast")]
     public IReadOnlyList<TmdbCastMember> Cast { get; init; } = [];
+
+    [JsonPropertyName("crew")]
+    public IReadOnlyList<TmdbCrewMember> Crew { get; init; } = [];
+}
+
+internal sealed class TmdbCrewMember
+{
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonPropertyName("job")]
+    public string? Job { get; init; }
+
+    [JsonPropertyName("profile_path")]
+    public string? ProfilePath { get; init; }
 }
 
 internal sealed class TmdbCastMember

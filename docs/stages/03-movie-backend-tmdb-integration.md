@@ -297,7 +297,8 @@ Likely information:
 - poster URL
 - backdrop URL
 - cast subset
-- similar-movie summaries
+- similar-movie summaries (sourced from TMDB recommendations since Sprint 05.4, see D027)
+- directors, production country codes, and up to 10 text-free scene images (added in Sprint 05.4, see D027)
 
 Do not pass raw TMDB transport objects through controllers.
 

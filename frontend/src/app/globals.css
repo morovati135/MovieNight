@@ -118,6 +118,9 @@
       oklch(0.27 0.035 250 / 32%),
       transparent 74%
     );
+    /* The glow lights the top of the page only. html is one viewport tall, so a repeating body background
+       would paint the glow again (with a hard top edge) at every multiple of the viewport height. */
+    background-repeat: no-repeat;
     font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
     -webkit-tap-highlight-color: oklch(0.75 0.105 205 / 18%);
   }

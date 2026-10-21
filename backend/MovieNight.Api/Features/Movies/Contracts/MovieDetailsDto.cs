@@ -11,4 +11,7 @@ public sealed record MovieDetailsDto(
     string? BackdropUrl,
     double VoteAverage,
     IReadOnlyList<CastDto> Cast,
-    IReadOnlyList<MovieSummaryDto> SimilarMovies);
+    IReadOnlyList<MovieSummaryDto> SimilarMovies,
+    IReadOnlyList<PersonDto> Directors,
+    IReadOnlyList<string> ProductionCountryCodes,
+    IReadOnlyList<string> SceneImageUrls);

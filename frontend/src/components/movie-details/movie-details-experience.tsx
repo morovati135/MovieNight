@@ -8,6 +8,7 @@ import { ChevronLeft, RotateCcw } from "lucide-react";
 
 import { PageNotice } from "@/components/home/home-states";
 import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { MovieRow } from "@/components/movie/movie-row";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { primaryActionClassName } from "@/components/ui/controls";
 import { useWatchlist } from "@/components/watchlist/use-watchlist";
@@ -15,7 +16,10 @@ import { getMovieDetails, MovieNotFoundError } from "@/lib/api/movies";
 import { cn } from "@/lib/utils";
 import type { MovieDetails, MovieSummary } from "@/types/movie";
 
+import { CastRail } from "./cast-rail";
 import { MovieDetailsHero } from "./movie-details-hero";
+import { PersonPortrait } from "./person-portrait";
+import { SceneGallery } from "./scene-gallery";
 
 type MovieDetailsState = { movieId: number; attempt: number } & (
   | { status: "error" }
@@ -160,6 +164,8 @@ export function MovieDetailsExperience({ movieId }: { movieId: number | null }) 
       />
 
       <div className="flex w-full flex-col gap-10 px-4 pt-10 pb-12 sm:gap-14 sm:px-8 sm:pt-14 sm:pb-20 lg:gap-16 lg:px-12 lg:pt-16 lg:pb-24">
+        {movie.sceneImageUrls.length > 0 ? <SceneGallery imageUrls={movie.sceneImageUrls} title={movie.title} /> : null}
+
         <section aria-labelledby="movie-about-heading" className="max-w-5xl space-y-4 sm:space-y-5">
           <h2 className={sectionTitleClassName} id="movie-about-heading">
             About {movie.title}
@@ -189,6 +195,33 @@ export function MovieDetailsExperience({ movieId }: { movieId: number | null }) 
               ))}
             </ul>
           </section>
+        ) : null}
+
+        {movie.cast.length > 0 ? <CastRail cast={movie.cast} titleClassName={subsectionTitleClassName} /> : null}
+
+        {movie.directors.length > 0 ? (
+          <section aria-labelledby="movie-directors-heading">
+            <h2 className={cn(subsectionTitleClassName, "mb-4 sm:mb-6")} id="movie-directors-heading">
+              {movie.directors.length > 1 ? "Directors" : "Director"}
+            </h2>
+            <ul className="flex flex-wrap gap-4 sm:gap-6 lg:gap-8">
+              {movie.directors.map((director) => (
+                <li className="w-24 sm:w-28 lg:w-[7.5rem]" key={director.id}>
+                  <PersonPortrait name={director.name} profileUrl={director.profileUrl} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {movie.similarMovies.length > 0 ? (
+          <MovieRow
+            movies={movie.similarMovies}
+            onWatchlistToggle={(similarMovie) => void toggle(similarMovie)}
+            savedMovieIds={savedMovieIds}
+            title={`More like ${movie.title}`}
+            updatingMovieIds={updatingMovieIds}
+          />
         ) : null}
       </div>
 
