@@ -28,6 +28,12 @@ export function getPopularMovies(): Promise<PagedMovieResult> {
   return getJson("/api/movies/popular", "Popular movies could not be loaded.");
 }
 
+export function searchMovies(query: string): Promise<PagedMovieResult> {
+  const parameters = new URLSearchParams({ query });
+
+  return getJson(`/api/movies/search?${parameters}`, "Movies could not be searched.");
+}
+
 export function discoverMoviesByGenre(genreId: number): Promise<PagedMovieResult> {
   const parameters = new URLSearchParams({ genreId: genreId.toString() });
 

@@ -10,7 +10,25 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.3 — Search & Discover Experience (next; not started)
+Sprint 05.3 — Search & Discover Experience (in progress)
+
+### Sprint 05.3 Work Packages
+
+- [x] 05.3-S1 — Search entry + title Search results (accepted by the Tech Lead on 2026-10-21)
+- [ ] 05.3-S2 — Discover filters + mode rule
+- [ ] 05.3-S3 — Paging + responsive polish + visual QA
+
+No approved Search/Discover references exist; by Tech Lead decision (2026-10-21) Sprint 05.3 derives its appearance from the accepted Home visual language. The interaction model and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§11.1). Work happens on branch `feature/search-discover-05.3`.
+
+05.3-S1 accepted state:
+
+- The header Search control (`/?search=open`) opens a Search view on `/` in place of the Home sections; Close returns to the Home sections. No new public route.
+- Prominent glass Search input (auto-focused, clear button, `role="search"` form). Typing is debounced (350ms) and trimmed into the `q` URL parameter, so reload and Back/Forward keep the query; Enter searches immediately.
+- A blank or whitespace-only query never sends a Search request; the view shows a short prompt instead.
+- Title results use a responsive MovieCard grid (6 / 4 / 2 columns at 1440 / 768 / 390) with a result count; first page only (paging is S3).
+- Loading skeleton grid, no-results message, and a contained error message with retry; results for an older query or attempt are never shown.
+- Result cards share the Home Watchlist saved state and add/remove behaviour.
+- Verified: `npm run lint`, `npm run build`, `git diff --check`; live checks against the real backend at 1440 / 768 / 390 (header opens Search with focus, blank input sends 0 requests, typing "batman" sends exactly 1 request and updates the URL, saved state toggles and restores on a result card, reload / Close / Back, no-results, error via request interception and retry, no horizontal overflow); screenshots in `docs/screenshots/05.3-S1-*`.
 
 Sprint 05.2 — Discover Home Experience is accepted and complete (H1–H4 accepted by the Tech Lead on 2026-10-21).
 
@@ -118,7 +136,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- None. Sprint 05.3 is next and has not started.
+- Sprint 05.3 — Search & Discover Experience (S1 accepted; S2 in progress)
 
 ---
 
@@ -196,7 +214,7 @@ Sprint 05.2 is intentionally executed as small work packages to reduce context u
 
 None currently blocking.
 
-Sprint 05.3 note: no approved Search/Discover reference images exist yet under `.agents/skills/movienight-ui/assets/` (only Home references).
+Sprint 05.3 note: no approved Search/Discover reference images exist under `.agents/skills/movienight-ui/assets/`; Sprint 05.3 follows the accepted Home visual language by Tech Lead decision.
 
 Home footer note: the UI skill's Home section order lists a minimal footer with TMDB attribution; it is not assigned to any sprint yet.
 
@@ -210,7 +228,7 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Checkpoint the accepted Sprint 05.2 work in Git before starting a new sprint.
-2. Execute Sprint 05.3 — Search & Discover Experience.
+1. Execute and review 05.3-S2 — Discover filters + mode rule.
+2. Execute 05.3-S3 after 05.3-S2 is accepted.
 3. Do not start Sprint 05.4 before Sprint 05.3 is accepted.
 4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

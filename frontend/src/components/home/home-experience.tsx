@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useSearchParams } from "next/navigation";
+
 import { FeaturedMovieHero } from "@/components/movie/featured-movie-hero";
 import { MovieRow } from "@/components/movie/movie-row";
+import { SearchExperience } from "@/components/search/search-experience";
 import { getMovieDetails, getPopularMovies, getTrendingMovies } from "@/lib/api/movies";
 import { addToWatchlist, getWatchlist, removeFromWatchlist } from "@/lib/api/watchlist";
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
@@ -20,6 +23,9 @@ type HomeData = {
 };
 
 export function HomeExperience() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q")?.trim() ?? "";
+  const isSearchOpen = searchParams.has("search") || searchQuery !== "";
   const [data, setData] = useState<HomeData | null>(null);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -164,6 +170,27 @@ export function HomeExperience() {
     [reloadWatchlist, savedMovieIds, updatingMovieIds, watchlist.status],
   );
 
+  const watchlistStatus = (
+    <p aria-live="polite" className="sr-only" role="status">
+      {statusMessage}
+    </p>
+  );
+
+  // Search replaces the Home sections but shares their Watchlist saved state.
+  if (isSearchOpen) {
+    return (
+      <>
+        <SearchExperience
+          onWatchlistToggle={handleWatchlistToggle}
+          query={searchQuery}
+          savedMovieIds={savedMovieIds}
+          updatingMovieIds={updatingMovieIds}
+        />
+        {watchlistStatus}
+      </>
+    );
+  }
+
   if (!data && !error) {
     return <HomeLoading />;
   }
@@ -215,9 +242,7 @@ export function HomeExperience() {
           watchlist={watchlist}
         />
       </div>
-      <p aria-live="polite" className="sr-only" role="status">
-        {statusMessage}
-      </p>
+      {watchlistStatus}
     </>
   );
 }
