@@ -232,7 +232,9 @@ Major capabilities:
        05.3-S1 → 05.3-S2 → 05.3-S3
 
 05.4 — Movie Details Experience
-       Status: Not Started
+       Status: In Progress
+       Execution:
+       05.4-D1 → 05.4-D2 → 05.4-D3
 
 05.5 — Pick for Me Experience
        Status: Not Started

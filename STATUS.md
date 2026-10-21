@@ -10,7 +10,25 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.4 — Movie Details Experience (next; not started)
+Sprint 05.4 — Movie Details Experience (in progress; plan approved 2026-10-22)
+
+### Sprint 05.4 Work Packages
+
+- [x] 05.4-D1 — Route + Hero + About (accepted by the Tech Lead on 2026-10-22)
+- [ ] 05.4-D2 — Cast + More like this
+- [ ] 05.4-D3 — Responsive polish + visual QA
+
+Reference adaptation, dropped reference elements (country, like/dislike, Watch Now / Preview, scene stills, Director, Comments, footer links) and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§12.1). Work happens on branch `feature/movie-details-05.4`. Plan decisions: rating as five stars filled to the TMDB score plus the number; genre pills link to the Home Search view (`/?genre={id}`).
+
+05.4-D1 accepted state:
+
+- `/movies/[id]` renders real backend data. Positive whole-number IDs only; anything else shows the not-found page without a request. The browser tab title becomes `{title} · MovieNight`.
+- Cinematic hero after `movie-details/Section_1`: full-bleed backdrop with the Home readability gradients (a softened, blurred poster when there is no backdrop), poster beside the title as in `movie-covers/Movie_single_Cover_slider`, year · runtime (e.g. 2h 50m) · rating (stars + number), each hidden when missing.
+- Watchlist CTA after `icons/book_Mark`: blue-outlined pill, outline bookmark "Add to Watchlist" → filled bookmark "In Watchlist" (new `details` appearance of the shared WatchlistButton; existing appearances unchanged).
+- About section with the overview (fallback text when missing) and pink Genre pills linking to `/?genre={id}`.
+- States: loading skeleton mirroring the hero and About; "We couldn’t find that movie." with Back to Discover for 404 / invalid IDs; "We couldn’t load this movie right now." with Try again for other failures.
+- Shared code: Home's Watchlist logic moved unchanged into `useWatchlist` (used by Home and Movie Details); the API layer throws `MovieNotFoundError` on 404; Home's full-page notice is exported as `PageNotice`.
+- Verified on the production build against the real backend at 1440 / 768 / 390: John Wick: Chapter 4 renders title, 2023 · 2h 50m · 7.7, overview and Action / Thriller / Crime links; Watchlist toggles to the filled "In Watchlist" state and back; a genre pill opens Search with "20,001 movies match Action"; a Home card opens its details page; unknown ID → not-found, `abc` → not-found with no request; error via request interception and retry; loading skeleton; missing backdrop / runtime / genres / overview handled; 48px Watchlist target; no horizontal overflow; Home Search and saved-state regression re-run. `npm run lint`, `npm run build`, `git diff --check`. Screenshots in `docs/screenshots/05.4-D1-*`.
 
 Sprint 05.3 — Search & Discover Experience is accepted and complete (S1–S3 accepted by the Tech Lead on 2026-10-22).
 
@@ -163,7 +181,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- None. Sprint 05.4 is next and has not started.
+- Sprint 05.4 — Movie Details Experience (D1 accepted; D2 in progress)
 
 ---
 
@@ -240,7 +258,7 @@ Sprint 05.2 is intentionally executed as small work packages to reduce context u
 
 None currently blocking.
 
-Sprint 05.4 note: the Tech Lead supplied Movie Details reference images in the main checkout under `.agents/skills/movienight-ui/assets/Movies Deatils/` (with `Movie Covers/` and `Icons/`); they are not yet committed to the repository.
+Sprint 05.4 note: Movie Details references are committed under `.agents/skills/movienight-ui/assets/movie-details/`, `movie-covers/` and `icons/`.
 
 Home footer note: the UI skill's Home section order lists a minimal footer with TMDB attribution; it is not assigned to any sprint yet.
 
@@ -254,6 +272,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Plan Sprint 05.4 — Movie Details Experience against the supplied Movie Details references (work packages with review checkpoints, as in 05.2 / 05.3).
-2. Execute 05.4 only after the plan is agreed; do not start Sprint 05.5 before Sprint 05.4 is accepted.
+1. Execute and review 05.4-D2 — Cast + More like this.
+2. Then D3, each after the previous work package is accepted; do not start Sprint 05.5 before Sprint 05.4 is accepted.
 4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

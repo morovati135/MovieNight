@@ -2,8 +2,15 @@ import type { Genre, MovieDetails, PagedMovieResult } from "@/types/movie";
 
 import { apiFetch } from "./client";
 
+/** The backend answered 404: the requested movie does not exist. */
+export class MovieNotFoundError extends Error {}
+
 async function getJson<T>(path: string, errorMessage: string): Promise<T> {
   const response = await apiFetch(path);
+
+  if (response.status === 404) {
+    throw new MovieNotFoundError(errorMessage);
+  }
 
   if (!response.ok) {
     throw new Error(errorMessage);

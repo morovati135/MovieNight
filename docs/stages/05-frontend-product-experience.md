@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Next work is Sprint 05.4 — Movie Details Experience.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Current work is Sprint 05.4 — Movie Details Experience.
 
 ---
 
@@ -884,6 +884,45 @@ Do not invent unsupported:
 - [ ] Similar Movies works.
 - [ ] loading/error/not-found states exist.
 - [ ] mobile/tablet/desktop compositions are intentional.
+
+## 12.1 Sprint 05.4 Reference Adaptation and Execution Plan
+
+**Status: In Progress** — plan approved by the Tech Lead on 2026-10-22, with: rating shown as five stars filled to the TMDB score plus the number (e.g. ★★★★☆ 7.7); genre pills link to the Home Search view browsing that genre (`/?genre={id}`).
+
+Approved references (supplied by the Tech Lead, committed 2026-10-22):
+
+```text
+.agents/skills/movienight-ui/assets/movie-details/Section_1–4.png   page sections
+.agents/skills/movienight-ui/assets/movie-covers/*.png             card / cover / slider variants
+.agents/skills/movienight-ui/assets/icons/*.png                    Watchlist and like/dislike icon states
+```
+
+Backend contract (`GET /api/movies/{id}`): title, overview, release date, genres, runtime minutes, poster, backdrop, vote average, cast (name, character, profile image; up to 12), similar movies (MovieSummary; up to 12). Unknown IDs return 404.
+
+Reference → MovieNight adaptation:
+
+| Reference element | Decision |
+|---|---|
+| Full-bleed backdrop hero, title bottom-left (Section 1) | Keep. Backdrop with readability gradients; poster thumbnail beside the title as in `movie-covers/Movie_single_Cover_slider`. Falls back to the poster when no backdrop exists. |
+| "2h 49m - 2023-USA" + 5 stars | Keep runtime and year (each hidden when missing). Country is not in the contract → dropped. Rating from the vote average. |
+| Bookmark circle / "Watch Later" pill (`icons/book_Mark`) | Keep as the Watchlist CTA, outline when not saved and filled when saved, labelled "Add to Watchlist" / "In Watchlist" (product wording). |
+| Like / dislike buttons (`icons/Like_DisLike`) | Dropped: no backend rating capability. |
+| Watch Now / Preview | Dropped: MovieNight is not a streaming player and has no trailer data. |
+| Row of five scene stills | Dropped: the contract has one backdrop, no image gallery. |
+| "about {title}" + text | Keep as an About section with the overview only (the second reference paragraph is not in the contract). |
+| Genres pink pills | Keep, in the Home genre-chip style. |
+| "Charactors" circular avatars | Keep as **Cast**: circular photos with name and character, initials fallback, horizontal rail. |
+| Director | Dropped: not in the contract (Stage scope forbids inventing it). |
+| Suggestion like "…" poster cards (`movie-covers/Covers_Type_1`) | Keep as **More like {title}** using the existing MovieCard rail with Watchlist saved state. Landscape cards (`Covers_Type_2`, `Cards`) need backdrops, which similar movies do not have → not used. |
+| Comments, OMNI footer / social links, Collections | Dropped: no backend capability / out of scope. |
+
+Work packages (each ends with a screenshot review checkpoint):
+
+- [x] 05.4-D1 — Route + Hero + About: `/movies/[id]` with real backend data, backdrop hero (poster, title, year · runtime · rating, Watchlist CTA), genres, About/overview, loading / error / not-found states, Watchlist saved state shared with Home.
+- [ ] 05.4-D2 — Cast + More like this: circular Cast rail and Similar Movies MovieCard rail, empty handling.
+- [ ] 05.4-D3 — Responsive polish + visual QA: 1440 / 768 / 390 compositions, keyboard and reduced-motion checks, screenshots in `docs/screenshots/05.4-*`.
+
+Sprint 05.4 is complete only after D1–D3 are accepted.
 
 ## Verification
 

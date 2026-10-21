@@ -1,13 +1,9 @@
 import { sectionTitleClassName } from "@/components/layout/section-heading";
 import { MovieRow } from "@/components/movie/movie-row";
+import type { WatchlistState } from "@/components/watchlist/use-watchlist";
 import type { MovieSummary } from "@/types/movie";
 
 import { SectionNotice } from "./home-states";
-
-export type WatchlistState =
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "ready"; movies: MovieSummary[] };
 
 type WatchlistPreviewProps = {
   watchlist: WatchlistState;

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type WatchlistButtonProps = {
-  appearance?: "default" | "poster";
+  appearance?: "default" | "poster" | "details";
   isSaved: boolean;
   isUpdating: boolean;
   label?: "full" | "icon";
@@ -24,7 +24,8 @@ export function WatchlistButton({
   onToggle,
   title,
 }: WatchlistButtonProps) {
-  const Icon = isSaved ? Check : appearance === "poster" ? Plus : Bookmark;
+  // The details page follows the bookmark reference: the bookmark itself fills in when saved.
+  const Icon = isSaved && appearance !== "details" ? Check : appearance === "poster" ? Plus : Bookmark;
   const action = isSaved ? "Remove from watchlist" : "Add to watchlist";
   const icon = (
     <Icon
@@ -33,6 +34,8 @@ export function WatchlistButton({
         isUpdating && "animate-pulse",
         appearance === "poster" &&
           "size-5 drop-shadow-[0_1px_3px_rgb(0_0_0/72%)] sm:size-7 lg:size-8",
+        appearance === "details" && "size-5",
+        appearance === "details" && isSaved && "fill-current",
       )}
     />
   );
@@ -42,12 +45,14 @@ export function WatchlistButton({
       aria-label={label === "icon" ? `${action}: ${title}` : undefined}
       aria-pressed={isSaved}
       className={cn(
-        isSaved && "bg-accent text-accent-foreground hover:bg-accent/90",
+        isSaved && appearance !== "details" && "bg-accent text-accent-foreground hover:bg-accent/90",
         label === "icon" &&
           "size-10 rounded-full border-white/15 bg-background/75 p-0 text-foreground shadow-lg backdrop-blur-md hover:bg-background/90",
         // The hit area stays a comfortable touch target; the glass island is drawn separately below.
         appearance === "poster" &&
           "relative size-11 rounded-xl border-0 bg-transparent p-0 text-white shadow-none backdrop-blur-none hover:bg-transparent hover:shadow-none focus-visible:ring-0 sm:size-12 lg:size-16",
+        appearance === "details" &&
+          "min-h-12 gap-2.5 rounded-full border-brand-blue bg-[#020a1b]/80 px-6 text-sm font-semibold text-white backdrop-blur-md hover:bg-brand-blue/16 sm:text-base",
         className,
       )}
       disabled={isUpdating}
@@ -73,7 +78,15 @@ export function WatchlistButton({
       ) : (
         icon
       )}
-      {label === "full" ? (isSaved ? "Remove" : "Add to watchlist") : null}
+      {label === "full"
+        ? appearance === "details"
+          ? isSaved
+            ? "In Watchlist"
+            : "Add to Watchlist"
+          : isSaved
+            ? "Remove"
+            : "Add to watchlist"
+        : null}
     </Button>
   );
 }

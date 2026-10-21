@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 
@@ -8,14 +8,14 @@ import { FeaturedMovieHero } from "@/components/movie/featured-movie-hero";
 import { MovieRow } from "@/components/movie/movie-row";
 import { SearchExperience } from "@/components/search/search-experience";
 import { parseSearchState } from "@/components/search/search-state";
+import { useWatchlist } from "@/components/watchlist/use-watchlist";
 import { getMovieDetails, getPopularMovies, getTrendingMovies } from "@/lib/api/movies";
-import { addToWatchlist, getWatchlist, removeFromWatchlist } from "@/lib/api/watchlist";
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
 
 import { GenreDiscovery } from "./genre-discovery";
 import { HomeEmpty, HomeError, HomeLoading, homeSectionsClassName } from "./home-states";
 import { PickForMeCta } from "./pick-for-me-cta";
-import { WatchlistPreview, type WatchlistState } from "./watchlist-preview";
+import { WatchlistPreview } from "./watchlist-preview";
 
 type HomeData = {
   featured: FeaturedMovie[];
@@ -29,10 +29,15 @@ export function HomeExperience() {
   const [data, setData] = useState<HomeData | null>(null);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const [watchlist, setWatchlist] = useState<WatchlistState>({ status: "loading" });
-  const [updatingMovieIds, setUpdatingMovieIds] = useState<Set<number>>(new Set());
-  const [statusMessage, setStatusMessage] = useState("");
-  const [watchlistReloadKey, setWatchlistReloadKey] = useState(0);
+  // The Watchlist loads independently so a failure only affects saved state and the preview.
+  const {
+    retry: handleWatchlistRetry,
+    savedMovieIds,
+    statusMessage,
+    toggle: handleWatchlistToggle,
+    updatingMovieIds,
+    watchlist,
+  } = useWatchlist();
 
   useEffect(() => {
     let isCurrent = true;
@@ -78,97 +83,11 @@ export function HomeExperience() {
     };
   }, [reloadKey]);
 
-  // The Watchlist loads independently so a failure only affects saved state and the preview.
-  useEffect(() => {
-    let isCurrent = true;
-
-    getWatchlist()
-      .then((movies) => {
-        if (isCurrent) {
-          setWatchlist({ movies, status: "ready" });
-        }
-      })
-      .catch(() => {
-        if (isCurrent) {
-          setWatchlist({ status: "error" });
-        }
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [watchlistReloadKey]);
-
-  const reloadWatchlist = useCallback(() => {
-    setWatchlistReloadKey((current) => current + 1);
-  }, []);
-
-  const savedMovieIds = useMemo(
-    () => new Set(watchlist.status === "ready" ? watchlist.movies.map((movie) => movie.id) : []),
-    [watchlist],
-  );
-
   const handleRetry = () => {
     setError(false);
     setData(null);
     setReloadKey((current) => current + 1);
   };
-
-  const handleWatchlistRetry = () => {
-    setWatchlist({ status: "loading" });
-    reloadWatchlist();
-  };
-
-  const handleWatchlistToggle = useCallback(
-    async (movie: MovieSummary) => {
-      if (updatingMovieIds.has(movie.id)) {
-        return;
-      }
-
-      const wasSaved = savedMovieIds.has(movie.id);
-      setUpdatingMovieIds((current) => new Set(current).add(movie.id));
-      setStatusMessage("");
-
-      try {
-        if (wasSaved) {
-          await removeFromWatchlist(movie.id);
-        } else {
-          await addToWatchlist(movie.id);
-        }
-
-        if (watchlist.status === "ready") {
-          setWatchlist((current) =>
-            current.status === "ready"
-              ? {
-                  movies: wasSaved
-                    ? current.movies.filter((savedMovie) => savedMovie.id !== movie.id)
-                    : [movie, ...current.movies],
-                  status: "ready",
-                }
-              : current,
-          );
-        } else {
-          // Saved state was unknown, so rehydrate from the backend instead of guessing.
-          reloadWatchlist();
-        }
-
-        setStatusMessage(
-          wasSaved
-            ? `${movie.title} removed from your watchlist.`
-            : `${movie.title} added to your watchlist.`,
-        );
-      } catch {
-        setStatusMessage("We couldn't update your watchlist. Please try again.");
-      } finally {
-        setUpdatingMovieIds((current) => {
-          const next = new Set(current);
-          next.delete(movie.id);
-          return next;
-        });
-      }
-    },
-    [reloadWatchlist, savedMovieIds, updatingMovieIds, watchlist.status],
-  );
 
   const watchlistStatus = (
     <p aria-live="polite" className="sr-only" role="status">

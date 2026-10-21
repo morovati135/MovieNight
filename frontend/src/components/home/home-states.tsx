@@ -103,14 +103,15 @@ export function HomeLoading() {
   );
 }
 
-type HomeNoticeProps = {
+type PageNoticeProps = {
   action?: ReactNode;
   children: ReactNode;
   role?: "alert" | "status";
   title: string;
 };
 
-function HomeNotice({ action, children, role, title }: HomeNoticeProps) {
+/** Full-page message for page-level failures, empty pages and not-found pages. */
+export function PageNotice({ action, children, role, title }: PageNoticeProps) {
   return (
     <div
       className="flex flex-1 flex-col items-center justify-center px-6 pt-28 pb-16 text-center md:pt-32"
@@ -128,7 +129,7 @@ function HomeNotice({ action, children, role, title }: HomeNoticeProps) {
 
 export function HomeError({ onRetry }: { onRetry: () => void }) {
   return (
-    <HomeNotice
+    <PageNotice
       action={
         <Button className={primaryActionClassName} onClick={onRetry} type="button">
           <RotateCcw aria-hidden="true" />
@@ -139,13 +140,13 @@ export function HomeError({ onRetry }: { onRetry: () => void }) {
       title="We couldn’t load movies right now."
     >
       The cinema is taking an intermission. Try again in a moment.
-    </HomeNotice>
+    </PageNotice>
   );
 }
 
 export function HomeEmpty({ onRetry }: { onRetry: () => void }) {
   return (
-    <HomeNotice
+    <PageNotice
       action={
         <Button
           className="min-h-12 rounded-full border-white/25 bg-glass/65 px-6 text-white hover:bg-white/10"
@@ -161,7 +162,7 @@ export function HomeEmpty({ onRetry }: { onRetry: () => void }) {
       title="Nothing is showing yet."
     >
       There are no trending movies to feature right now.
-    </HomeNotice>
+    </PageNotice>
   );
 }
 
