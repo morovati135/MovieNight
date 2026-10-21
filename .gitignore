@@ -26,3 +26,8 @@ backend/MovieNight.Api/App_Data/
 # Local .NET CLI state
 .dotnet-cli/
 **/.dotnet-cli/
+
+# Local Claude configuration
+.claude/launch.json
+.claude/settings.local.json
+.claude/worktrees/
