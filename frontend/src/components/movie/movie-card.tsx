@@ -17,6 +17,11 @@ type MovieCardProps = {
   onWatchlistToggle: (movie: MovieSummary) => void;
 };
 
+// Silhouette of the card: a rounded poster with a notch in the top-left corner for the Watchlist island.
+// Shared by the clip path and the keyboard focus outline so they always match.
+const cardOutlinePath =
+  "M .403 0 H .904 Q 1 0 1 .068 V .932 Q 1 1 .904 1 H .096 Q 0 1 0 .932 V .284 Q 0 .216 .096 .216 H .211 Q .307 .216 .307 .148 V .068 Q .307 0 .403 0 Z";
+
 export function MovieCard({
   isSaved,
   isUpdating,
@@ -27,23 +32,23 @@ export function MovieCard({
 
   return (
     <article className="group min-w-0 snap-start">
-      <div className="relative aspect-[7/10] drop-shadow-[0_22px_18px_rgb(0_0_0/32%)] transition-[filter] duration-200 ease-out group-hover:drop-shadow-[0_24px_21px_rgb(0_0_0/38%)]">
+      <div className="relative aspect-[7/10] [container-type:inline-size] drop-shadow-[0_22px_18px_rgb(0_0_0/32%)] transition-[filter] duration-200 ease-out group-hover:drop-shadow-[0_24px_21px_rgb(0_0_0/38%)]">
         <svg aria-hidden="true" className="absolute size-0">
           <defs>
             <clipPath clipPathUnits="objectBoundingBox" id={clipPathId}>
-              <path d="M .403 0 H .904 Q 1 0 1 .068 V .932 Q 1 1 .904 1 H .096 Q 0 1 0 .932 V .284 Q 0 .216 .096 .216 H .211 Q .307 .216 .307 .148 V .068 Q .307 0 .403 0 Z" />
+              <path d={cardOutlinePath} />
               <rect height=".189" rx=".058" ry=".041" width=".269" />
             </clipPath>
           </defs>
         </svg>
 
         <div
-          className="absolute inset-0 overflow-hidden bg-surface ring-1 ring-white/7 transition-[filter,ring-color] duration-200 ease-out group-hover:ring-white/16 group-focus-within:ring-accent/70"
+          className="absolute inset-0 overflow-hidden bg-surface"
           style={{ clipPath: `url(#${clipPathId})` }}
         >
           <Link
             aria-label={`View details for ${movie.title}`}
-            className="absolute inset-0 z-10 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className="group/link absolute inset-0 z-10 outline-none"
             href={`/movies/${movie.id}`}
           >
             {movie.posterUrl ? (
@@ -61,6 +66,21 @@ export function MovieCard({
               </span>
             )}
             <span className="absolute inset-0 bg-gradient-to-t from-background/18 via-transparent to-transparent" />
+            {/* Keyboard focus outline: drawn above the artwork and follows the notched silhouette. */}
+            <svg
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 size-full opacity-0 transition-opacity duration-150 group-focus-visible/link:opacity-100"
+              preserveAspectRatio="none"
+              viewBox="0 0 1 1"
+            >
+              <path
+                d={cardOutlinePath}
+                fill="none"
+                stroke="var(--ring)"
+                strokeWidth="5"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
           </Link>
         </div>
         <WatchlistButton

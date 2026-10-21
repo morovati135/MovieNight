@@ -26,6 +26,16 @@ export function WatchlistButton({
 }: WatchlistButtonProps) {
   const Icon = isSaved ? Check : appearance === "poster" ? Plus : Bookmark;
   const action = isSaved ? "Remove from watchlist" : "Add to watchlist";
+  const icon = (
+    <Icon
+      aria-hidden="true"
+      className={cn(
+        isUpdating && "animate-pulse",
+        appearance === "poster" &&
+          "size-5 drop-shadow-[0_1px_3px_rgb(0_0_0/72%)] sm:size-7 lg:size-8",
+      )}
+    />
+  );
 
   return (
     <Button
@@ -35,11 +45,9 @@ export function WatchlistButton({
         isSaved && "bg-accent text-accent-foreground hover:bg-accent/90",
         label === "icon" &&
           "size-10 rounded-full border-white/15 bg-background/75 p-0 text-foreground shadow-lg backdrop-blur-md hover:bg-background/90",
+        // The hit area stays a comfortable touch target; the glass island is drawn separately below.
         appearance === "poster" &&
-          "relative size-11 rounded-xl border-0 bg-transparent p-0 text-white shadow-none backdrop-blur-none before:pointer-events-none before:absolute before:top-0 before:left-0 before:size-[1.875rem] before:rounded-[0.4rem] before:border before:border-white/14 before:bg-[#030a1b]/24 before:shadow-[inset_0_1px_0_rgb(255_255_255/18%),0_7px_18px_rgb(0_0_0/22%)] before:backdrop-blur-[5px] after:pointer-events-none after:absolute after:top-0 after:left-0 after:size-[1.875rem] after:rounded-[0.4rem] after:bg-gradient-to-br after:from-white/16 after:via-transparent after:to-[#229ee5]/8 hover:bg-transparent hover:shadow-none hover:before:bg-[#071426]/30 focus-visible:ring-offset-0 sm:size-12 sm:rounded-[0.9rem] sm:before:size-[2.8125rem] sm:before:rounded-[0.625rem] sm:after:size-[2.8125rem] sm:after:rounded-[0.625rem] lg:size-16 lg:rounded-[1.35rem] lg:before:size-14 lg:before:rounded-[0.75rem] lg:after:size-14 lg:after:rounded-[0.75rem] [&_svg]:absolute [&_svg]:top-[0.3125rem] [&_svg]:left-[0.3125rem] [&_svg]:z-10 [&_svg]:!size-5 [&_svg]:drop-shadow-[0_1px_3px_rgb(0_0_0/72%)] sm:[&_svg]:top-[0.53125rem] sm:[&_svg]:left-[0.53125rem] sm:[&_svg]:!size-7 lg:[&_svg]:top-[0.75rem] lg:[&_svg]:left-[0.75rem] lg:[&_svg]:!size-8",
-        appearance === "poster" &&
-          isSaved &&
-          "text-white before:border-[#8bd8ff]/28 before:bg-[#229ee5]/24 after:from-white/20 after:to-[#e5228d]/10 hover:before:bg-[#229ee5]/34",
+          "relative size-11 rounded-xl border-0 bg-transparent p-0 text-white shadow-none backdrop-blur-none hover:bg-transparent hover:shadow-none focus-visible:ring-0 sm:size-12 lg:size-16",
         className,
       )}
       disabled={isUpdating}
@@ -48,7 +56,23 @@ export function WatchlistButton({
       type="button"
       variant={isSaved ? "default" : "outline"}
     >
-      <Icon aria-hidden="true" className={cn(isUpdating && "animate-pulse")} />
+      {appearance === "poster" ? (
+        <span
+          aria-hidden="true"
+          className={cn(
+            // Same geometry as the card's notch island (see the clip path in MovieCard):
+            // 26.9% of the card width, corner radius 5.8%. Sized from the card so the glass
+            // always fills the whole notch at every breakpoint.
+            "pointer-events-none absolute top-0 left-0 grid size-[26.9cqw] place-items-center rounded-[5.8cqw] border border-white/14 bg-[#030a1b]/24 bg-gradient-to-br from-white/16 via-transparent to-[#229ee5]/8 shadow-[inset_0_1px_0_rgb(255_255_255/18%),0_7px_18px_rgb(0_0_0/22%)] backdrop-blur-[5px] transition-colors group-hover/button:bg-[#071426]/30 group-focus-visible/button:ring-2 group-focus-visible/button:ring-ring",
+            isSaved &&
+              "border-[#8bd8ff]/28 bg-[#229ee5]/24 from-white/20 to-[#e5228d]/10 group-hover/button:bg-[#229ee5]/34",
+          )}
+        >
+          {icon}
+        </span>
+      ) : (
+        icon
+      )}
       {label === "full" ? (isSaved ? "Remove" : "Add to watchlist") : null}
     </Button>
   );

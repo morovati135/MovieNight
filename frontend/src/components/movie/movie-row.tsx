@@ -6,6 +6,9 @@ import Link from "next/link";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { glassControlClassName, inlineLinkClassName } from "@/components/ui/controls";
+import { cn } from "@/lib/utils";
 import type { MovieSummary } from "@/types/movie";
 
 import { MovieCard } from "./movie-card";
@@ -105,21 +108,15 @@ export function MovieRow({
       <div
         className={
           headingMode === "visible"
-            ? "relative z-10 mb-4 flex items-center justify-between gap-5 sm:mb-7"
+            ? "relative z-10 mb-4 flex min-h-11 items-center justify-between gap-5 sm:mb-7"
             : "sr-only"
         }
       >
-        <h2
-          className="text-2xl font-extrabold tracking-[-0.035em] text-white sm:text-3xl lg:text-5xl"
-          id={`${railId}-heading`}
-        >
+        <h2 className={sectionTitleClassName} id={`${railId}-heading`}>
           {title}
         </h2>
         {moreHref ? (
-          <Link
-            className="group/more flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-1 text-sm font-semibold text-[#21aaf5] outline-none transition-colors hover:text-[#67c9ff] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            href={moreHref}
-          >
+          <Link className={inlineLinkClassName} href={moreHref}>
             {moreLabel}
             <ChevronRight
               aria-hidden="true"
@@ -130,7 +127,7 @@ export function MovieRow({
           <button
             aria-controls={railId}
             aria-label={`Show more ${controlLabel} movies`}
-            className="group/more flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-1 text-sm font-semibold text-[#21aaf5] outline-none transition-colors hover:text-[#67c9ff] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-40 md:hidden"
+            className={cn(inlineLinkClassName, "md:hidden disabled:pointer-events-none disabled:opacity-0")}
             disabled={!canScrollNext}
             onClick={() => scrollRail(1)}
             type="button"
@@ -147,7 +144,7 @@ export function MovieRow({
       <div className="relative z-10">
         <div
           aria-label={`${controlLabel} movies`}
-          className="-mx-5 overflow-x-auto overscroll-x-contain pb-5 outline-none [scroll-padding-inline-start:1.25rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] [touch-action:pan-x_pan-y] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden"
+          className="-mx-5 overflow-x-auto overscroll-x-contain pb-5 outline-none [scroll-padding-inline-start:1.25rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] [touch-action:pan-x_pan-y] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ring sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden"
           id={railId}
           onScroll={updateScrollState}
           ref={railRef}
@@ -170,7 +167,10 @@ export function MovieRow({
         <button
           aria-controls={railId}
           aria-label={`Previous ${controlLabel} movies`}
-          className="absolute top-[calc(50%_-_0.625rem)] left-1 z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/14 bg-[#061126]/76 text-white/85 shadow-[0_10px_28px_rgb(0_0_0/32%)] outline-none backdrop-blur-md transition-[background-color,border-color,color,opacity] hover:border-white/30 hover:bg-[#0b1a34]/92 hover:text-white focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-20 disabled:hover:border-white/14 disabled:hover:bg-[#061126]/76 disabled:hover:text-white/85 md:flex lg:-left-5"
+          className={cn(
+            glassControlClassName,
+            "absolute top-[calc(50%_-_0.625rem)] left-1 z-20 hidden size-10 -translate-y-1/2 shadow-[0_10px_28px_rgb(0_0_0/32%)] md:flex lg:-left-5 lg:size-11",
+          )}
           disabled={!canScrollPrevious}
           onClick={() => scrollRail(-1)}
           type="button"
@@ -180,7 +180,10 @@ export function MovieRow({
         <button
           aria-controls={railId}
           aria-label={`Next ${controlLabel} movies`}
-          className="absolute top-[calc(50%_-_0.625rem)] right-1 z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/14 bg-[#061126]/76 text-white/85 shadow-[0_10px_28px_rgb(0_0_0/32%)] outline-none backdrop-blur-md transition-[background-color,border-color,color,opacity] hover:border-white/30 hover:bg-[#0b1a34]/92 hover:text-white focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-20 disabled:hover:border-white/14 disabled:hover:bg-[#061126]/76 disabled:hover:text-white/85 md:flex lg:-right-5"
+          className={cn(
+            glassControlClassName,
+            "absolute top-[calc(50%_-_0.625rem)] right-1 z-20 hidden size-10 -translate-y-1/2 shadow-[0_10px_28px_rgb(0_0_0/32%)] md:flex lg:-right-5 lg:size-11",
+          )}
           disabled={!canScrollNext}
           onClick={() => scrollRail(1)}
           type="button"

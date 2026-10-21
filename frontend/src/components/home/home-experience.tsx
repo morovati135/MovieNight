@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { PageContainer } from "@/components/layout/page-container";
 import { FeaturedMovieHero } from "@/components/movie/featured-movie-hero";
 import { MovieRow } from "@/components/movie/movie-row";
 import { getMovieDetails, getPopularMovies, getTrendingMovies } from "@/lib/api/movies";
@@ -10,7 +9,7 @@ import { addToWatchlist, getWatchlist, removeFromWatchlist } from "@/lib/api/wat
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
 
 import { GenreDiscovery } from "./genre-discovery";
-import { HomeEmpty, HomeError, HomeLoading } from "./home-states";
+import { HomeEmpty, HomeError, HomeLoading, homeSectionsClassName } from "./home-states";
 import { PickForMeCta } from "./pick-for-me-cta";
 import { WatchlistPreview, type WatchlistState } from "./watchlist-preview";
 
@@ -170,19 +169,11 @@ export function HomeExperience() {
   }
 
   if (error || !data) {
-    return (
-      <PageContainer>
-        <HomeError onRetry={handleRetry} />
-      </PageContainer>
-    );
+    return <HomeError onRetry={handleRetry} />;
   }
 
   if (data.featured.length === 0) {
-    return (
-      <PageContainer>
-        <HomeEmpty />
-      </PageContainer>
-    );
+    return <HomeEmpty onRetry={handleRetry} />;
   }
 
   return (
@@ -193,7 +184,7 @@ export function HomeExperience() {
         savedMovieIds={savedMovieIds}
         updatingMovieIds={updatingMovieIds}
       />
-      <div className="h2-rails-ambient w-full space-y-4 overflow-x-clip px-4 pt-10 pb-14 sm:space-y-20 sm:px-8 sm:pt-16 sm:pb-20 lg:space-y-24 lg:px-12 lg:pt-20 lg:pb-24">
+      <div className={homeSectionsClassName}>
         <MovieRow
           movies={data.trending}
           onWatchlistToggle={handleWatchlistToggle}
@@ -201,21 +192,21 @@ export function HomeExperience() {
           title="Trending Now"
           updatingMovieIds={updatingMovieIds}
         />
-        <MovieRow
-          movies={data.popular}
-          onWatchlistToggle={handleWatchlistToggle}
-          savedMovieIds={savedMovieIds}
-          title="Popular Movies"
-          updatingMovieIds={updatingMovieIds}
-        />
+        {data.popular.length > 0 ? (
+          <MovieRow
+            movies={data.popular}
+            onWatchlistToggle={handleWatchlistToggle}
+            savedMovieIds={savedMovieIds}
+            title="Popular Movies"
+            updatingMovieIds={updatingMovieIds}
+          />
+        ) : null}
         <GenreDiscovery
           onWatchlistToggle={handleWatchlistToggle}
           savedMovieIds={savedMovieIds}
           updatingMovieIds={updatingMovieIds}
         />
-        <div className="pt-10 sm:pt-4">
-          <PickForMeCta />
-        </div>
+        <PickForMeCta />
         <WatchlistPreview
           onRetry={handleWatchlistRetry}
           onWatchlistToggle={handleWatchlistToggle}

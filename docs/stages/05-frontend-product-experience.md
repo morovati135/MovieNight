@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Current work is Sprint 05.2 — Discover Home Experience.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Next work is Sprint 05.3 — Search & Discover Experience.
 
 ---
 
@@ -304,7 +304,7 @@ Do not re-execute Sprint 05.1.
 
 # 10. Sprint 05.2 — Discover Home Experience
 
-**Status: In Progress**
+**Status: Completed / Accepted**
 
 ## Goal
 

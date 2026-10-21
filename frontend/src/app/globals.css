@@ -9,6 +9,12 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+  --color-glass: var(--glass);
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-hover: var(--brand-blue-hover);
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-heading: var(--font-sans);
@@ -78,6 +84,13 @@
   --radius: 0.875rem;
   --surface: oklch(0.225 0.02 260);
   --surface-raised: oklch(0.28 0.024 260);
+  /* Shared glass / link / brand tokens for floating controls and inline actions. */
+  --glass: #061126;
+  --link: #21aaf5;
+  --link-hover: #67c9ff;
+  --brand-pink: #e84c9d;
+  --brand-blue: #149dec;
+  --brand-blue-hover: #27aaf7;
   --shadow-soft: 0 16px 44px oklch(0.07 0.015 260 / 24%);
   --shadow-button: 0 8px 20px oklch(0.07 0.015 260 / 20%);
   --glow-accent: 0 0 0 1px oklch(0.75 0.105 205 / 20%), 0 8px 26px oklch(0.75 0.105 205 / 18%);

@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { sectionTitleClassName } from "@/components/layout/section-heading";
 import { GenreChips } from "@/components/movie/genre-chips";
 import { MovieRow } from "@/components/movie/movie-row";
 import { discoverMoviesByGenre, getGenres } from "@/lib/api/movies";
 import type { Genre, MovieSummary } from "@/types/movie";
+
+import { PosterRowSkeleton, SectionNotice } from "./home-states";
 
 type GenreListState =
   | { status: "loading" }
@@ -24,9 +27,6 @@ type GenreDiscoveryProps = {
   updatingMovieIds: Set<number>;
   onWatchlistToggle: (movie: MovieSummary) => void;
 };
-
-const retryButtonClassName =
-  "min-h-11 rounded-lg px-2 font-bold text-[#41bfff] outline-none hover:text-[#72d1ff] focus-visible:ring-2 focus-visible:ring-ring";
 
 export function GenreDiscovery({
   onWatchlistToggle,
@@ -120,13 +120,10 @@ export function GenreDiscovery({
     <section
       aria-busy={genreList.status === "loading" || results?.status === "loading"}
       aria-labelledby="genre-discovery-heading"
-      className="relative isolate pt-14 sm:pt-8 lg:pt-6"
+      className="relative isolate"
     >
-      <div className="relative z-10 mb-5 flex items-center justify-between sm:mb-7">
-        <h2
-          className="text-2xl font-extrabold tracking-[-0.035em] text-white sm:text-3xl lg:text-5xl"
-          id="genre-discovery-heading"
-        >
+      <div className="relative z-10 mb-4 flex min-h-11 items-center justify-between sm:mb-7">
+        <h2 className={sectionTitleClassName} id="genre-discovery-heading">
           Discover by Genre
         </h2>
       </div>
@@ -138,7 +135,7 @@ export function GenreDiscovery({
               <div className="h-11 w-24 shrink-0 animate-pulse rounded-full bg-white/[0.06]" key={index} />
             ))}
           </div>
-          <div className="mt-7 sm:mt-9">
+          <div className="mt-6 sm:mt-9">
             <PosterRowSkeleton />
           </div>
           <span className="sr-only" role="status">
@@ -148,12 +145,7 @@ export function GenreDiscovery({
       ) : null}
 
       {genreList.status === "error" ? (
-        <div className="flex flex-wrap items-center gap-3 text-sm text-white/72" role="alert">
-          <span>Genres could not be loaded right now.</span>
-          <button className={retryButtonClassName} onClick={handleGenreListRetry} type="button">
-            Try again
-          </button>
-        </div>
+        <SectionNotice onAction={handleGenreListRetry}>Genres could not be loaded right now.</SectionNotice>
       ) : null}
 
       {genreList.status === "ready" && results ? (
@@ -163,7 +155,7 @@ export function GenreDiscovery({
             onSelect={handleGenreSelect}
             selectedGenreId={results.genreId}
           />
-          <div className="relative mt-7 sm:mt-9">
+          <div className="relative mt-6 sm:mt-9">
             {shownResults ? (
               <div
                 className={
@@ -183,9 +175,9 @@ export function GenreDiscovery({
                     updatingMovieIds={updatingMovieIds}
                   />
                 ) : (
-                  <p className="py-10 text-sm text-white/64">
+                  <SectionNotice tone="empty">
                     No {genreName(shownResults.genreId)} movies to show right now.
-                  </p>
+                  </SectionNotice>
                 )}
               </div>
             ) : null}
@@ -202,36 +194,13 @@ export function GenreDiscovery({
             ) : null}
 
             {results.status === "error" ? (
-              <div
-                className="flex min-h-40 flex-wrap items-center justify-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-5 text-center text-sm text-white/72"
-                role="alert"
-              >
-                <span>{genreName(results.genreId)} movies could not be loaded.</span>
-                <button
-                  className={retryButtonClassName}
-                  onClick={() => void loadGenreMovies(results.genreId)}
-                  type="button"
-                >
-                  Try again
-                </button>
-              </div>
+              <SectionNotice onAction={() => void loadGenreMovies(results.genreId)}>
+                {genreName(results.genreId)} movies could not be loaded.
+              </SectionNotice>
             ) : null}
           </div>
         </>
       ) : null}
     </section>
-  );
-}
-
-function PosterRowSkeleton() {
-  return (
-    <div
-      aria-hidden="true"
-      className="grid auto-cols-[7.5rem] grid-flow-col gap-3.5 overflow-hidden sm:auto-cols-[10.5rem] sm:gap-5 lg:auto-cols-[13rem] lg:gap-8"
-    >
-      {Array.from({ length: 7 }, (_, index) => (
-        <div className="aspect-[7/10] animate-pulse rounded-xl bg-white/[0.05]" key={index} />
-      ))}
-    </div>
   );
 }

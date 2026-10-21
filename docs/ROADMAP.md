@@ -222,7 +222,7 @@ Major capabilities:
        Status: Completed / Accepted
 
 05.2 — Discover Home Experience
-       Status: In Progress
+       Status: Completed / Accepted
        Execution:
        05.2-H1 → 05.2-H2 → 05.2-H3 → 05.2-H4
 

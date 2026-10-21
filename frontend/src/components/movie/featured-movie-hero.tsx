@@ -10,6 +10,7 @@ import { Bookmark, ChevronLeft, ChevronRight, Pause, Play, Star } from "lucide-r
 
 import { PageContainer } from "@/components/layout/page-container";
 import { buttonVariants } from "@/components/ui/button";
+import { glassControlClassName, primaryActionClassName } from "@/components/ui/controls";
 import { WatchlistButton } from "@/components/watchlist/watchlist-button";
 import { cn } from "@/lib/utils";
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
@@ -141,7 +142,7 @@ export function FeaturedMovieHero({
         <div className="hero-image-scrim absolute inset-0" />
       </div>
 
-      <PageContainer className="relative z-10 flex min-h-[calc(100svh-5rem)] items-start pb-6 pt-[29rem] md:min-h-[100svh] md:items-end md:pb-60 md:pt-48 lg:min-h-[46rem] lg:pb-16 lg:pt-40 xl:min-h-[min(100svh,54rem)]">
+      <PageContainer className="relative z-10 flex min-h-[calc(100svh-5rem)] max-w-none items-start px-4 pb-6 pt-[29rem] lg:px-12 md:min-h-[100svh] md:items-end md:pb-60 md:pt-48 lg:min-h-[46rem] lg:pb-16 lg:pt-40 xl:min-h-[min(100svh,54rem)]">
         <div
           className="max-w-[39rem] space-y-4 motion-safe:animate-[hero-copy-reveal_550ms_ease-out] md:space-y-5 lg:pb-0"
           key={`copy-${activeMovie.id}`}
@@ -171,10 +172,7 @@ export function FeaturedMovieHero({
 
           <div className="flex flex-nowrap gap-3 pt-1">
             <Link
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "min-h-12 rounded-full border-[#27aaf7] bg-[#149dec] px-5 text-white shadow-[0_10px_32px_rgb(20_157_236/25%)] hover:bg-[#27aaf7] sm:px-6",
-              )}
+              className={cn(buttonVariants({ size: "lg" }), primaryActionClassName, "px-5 sm:px-6")}
               href={`/movies/${activeMovie.id}`}
             >
               View Details
@@ -199,7 +197,7 @@ export function FeaturedMovieHero({
         <div className="relative mx-auto flex h-[6.75rem] max-w-[36rem] items-center justify-center px-8 md:h-[8.5rem] md:px-12">
           <button
             aria-label="Previous featured movie"
-            className="absolute left-0 z-40 flex size-11 items-center justify-center rounded-full border border-white/15 bg-[#061126]/78 text-white shadow-[0_10px_30px_rgb(0_0_0/35%)] outline-none backdrop-blur-md transition-colors hover:border-white/35 hover:bg-[#0b1a34] focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(glassControlClassName, "absolute left-0 z-40 text-white shadow-[0_10px_30px_rgb(0_0_0/35%)]")}
             onClick={() => showSlide(activeIndex - 1)}
             type="button"
           >
@@ -249,7 +247,7 @@ export function FeaturedMovieHero({
 
           <button
             aria-label="Next featured movie"
-            className="absolute right-0 z-40 flex size-11 items-center justify-center rounded-full border border-white/15 bg-[#061126]/78 text-white shadow-[0_10px_30px_rgb(0_0_0/35%)] outline-none backdrop-blur-md transition-colors hover:border-white/35 hover:bg-[#0b1a34] focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(glassControlClassName, "absolute right-0 z-40 text-white shadow-[0_10px_30px_rgb(0_0_0/35%)]")}
             onClick={() => showSlide(activeIndex + 1)}
             type="button"
           >

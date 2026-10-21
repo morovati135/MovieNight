@@ -2,6 +2,10 @@ import type { HTMLAttributes, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Large display title used by every Home section heading. */
+export const sectionTitleClassName =
+  "text-2xl font-extrabold tracking-[-0.035em] text-white sm:text-3xl lg:text-5xl";
+
 type SectionHeadingProps = HTMLAttributes<HTMLDivElement> & {
   eyebrow?: string;
   title: string;

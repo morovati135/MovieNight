@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { Genre } from "@/types/movie";
 
+import { glassControlClassName } from "@/components/ui/controls";
 import { cn } from "@/lib/utils";
 
 type GenreChipsProps = {
@@ -14,8 +15,8 @@ type GenreChipsProps = {
   onSelect: (genreId: number) => void;
 };
 
-const arrowClassName =
-  "hidden size-11 shrink-0 items-center justify-center rounded-full border border-white/14 bg-[#061126]/76 text-white/85 outline-none transition-[background-color,border-color,color,opacity] hover:border-white/30 hover:bg-[#0b1a34]/92 hover:text-white focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-25 disabled:hover:border-white/14 disabled:hover:bg-[#061126]/76 disabled:hover:text-white/85 md:flex";
+// Genre arrows sit in the flow beside the chips (not over artwork), so inactive ones stay as a dim cue.
+const arrowClassName = cn(glassControlClassName, "hidden md:flex disabled:opacity-25");
 
 export function GenreChips({ genres, onSelect, selectedGenreId }: GenreChipsProps) {
   const scrollerId = useId();
@@ -101,8 +102,8 @@ export function GenreChips({ genres, onSelect, selectedGenreId }: GenreChipsProp
               className={cn(
                 "min-h-11 shrink-0 rounded-full border px-5 text-xs font-semibold text-nowrap outline-none transition-[background-color,border-color,color,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-6 sm:text-sm",
                 selectedGenreId === genre.id
-                  ? "border-[#e84c9d] bg-[#e84c9d] text-white shadow-[0_10px_28px_rgb(232_76_157/22%)]"
-                  : "border-[#e84c9d]/55 bg-transparent text-white/78 hover:border-[#35b8ff]/80 hover:bg-white/[0.045] hover:text-white",
+                  ? "border-brand-pink bg-brand-pink text-white shadow-[0_10px_28px_rgb(232_76_157/22%)]"
+                  : "border-brand-pink/55 bg-transparent text-white/78 hover:border-[#35b8ff]/80 hover:bg-white/[0.045] hover:text-white",
               )}
               key={genre.id}
               onClick={() => onSelect(genre.id)}
