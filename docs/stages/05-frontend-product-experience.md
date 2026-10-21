@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Current work is Sprint 05.4 — Movie Details Experience.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Next work is Sprint 05.5 — Pick for Me Experience.
 
 ---
 
@@ -887,7 +887,7 @@ Do not invent unsupported:
 
 ## 12.1 Sprint 05.4 Reference Adaptation and Execution Plan
 
-**Status: In Progress** — plan approved by the Tech Lead on 2026-10-22, with: rating shown as five stars filled to the TMDB score plus the number (e.g. ★★★★☆ 7.7); genre pills link to the Home Search view browsing that genre (`/?genre={id}`).
+**Status: Completed / Accepted** (D1–D3 accepted 2026-10-22) — plan approved by the Tech Lead on 2026-10-22, with: rating shown as five stars filled to the TMDB score plus the number (e.g. ★★★★☆ 7.7); genre pills link to the Home Search view browsing that genre (`/?genre={id}`).
 
 Approved references (supplied by the Tech Lead, committed 2026-10-22):
 
@@ -921,7 +921,7 @@ Work packages (each ends with a screenshot review checkpoint):
 - [x] 05.4-D1 — Route + Hero + About: `/movies/[id]` with real backend data, backdrop hero (poster, title, year · runtime · rating, Watchlist CTA), genres, About/overview, loading / error / not-found states, Watchlist saved state shared with Home.
 - [x] 05.4-D2 — Cast + More like this: circular Cast rail and Similar Movies MovieCard rail, empty handling.
 - [x] 05.4-D2b — Details enrichment (Tech Lead request 2026-10-22): backend contract adds directors, production country codes and text-free scene images and sources "More like" from TMDB recommendations (D027); frontend adds the scene gallery, Director section and countries.
-- [ ] 05.4-D3 — Responsive polish + visual QA: 1440 / 768 / 390 compositions, keyboard and reduced-motion checks, screenshots in `docs/screenshots/05.4-*`.
+- [x] 05.4-D3 — Responsive polish + visual QA: 1440 / 768 / 390 compositions, keyboard and reduced-motion checks, screenshots in `docs/screenshots/05.4-*`.
 
 Sprint 05.4 is complete only after D1–D3 are accepted.
 

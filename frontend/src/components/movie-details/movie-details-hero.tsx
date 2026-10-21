@@ -40,6 +40,9 @@ export function formatRuntime(minutes: number) {
 export function MovieDetailsHero({ isSaved, isUpdating, movie, onWatchlistToggle }: MovieDetailsHeroProps) {
   const year = movie.releaseDate?.slice(0, 4);
   const countries = formatCountries(movie.productionCountryCodes);
+  const facts = [year, movie.runtimeMinutes > 0 ? formatRuntime(movie.runtimeMinutes) : null, countries].filter(
+    (fact): fact is string => Boolean(fact),
+  );
   // Without a backdrop, a softened poster keeps the hero cinematic instead of an empty panel.
   const artwork = movie.backdropUrl ?? movie.posterUrl;
 
@@ -91,21 +94,26 @@ export function MovieDetailsHero({ isSaved, isUpdating, movie, onWatchlistToggle
               {movie.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm font-semibold text-white/82 sm:text-base">
-              {year ? <span>{year}</span> : null}
-              {movie.runtimeMinutes > 0 ? (
-                <span className="before:mr-3 before:text-white/30 before:content-['•']">
-                  {formatRuntime(movie.runtimeMinutes)}
-                </span>
-              ) : null}
-              {countries ? (
-                <span className="before:mr-3 before:text-white/30 before:content-['•']">{countries}</span>
+            {/* As in the reference: facts on one line, the rating on its own line below. Each separator sits in
+                the 1.5rem gap before its fact; a fact that starts a line has no gap before it, so its separator
+                falls outside the clipped row (including the first fact) whatever wraps. */}
+            <div className="space-y-2 text-sm font-semibold text-white/82 sm:text-base">
+              {facts.length > 0 ? (
+                <p className="flex flex-wrap items-center gap-x-6 gap-y-1 overflow-hidden">
+                  {facts.map((fact) => (
+                    <span
+                      className="relative before:absolute before:-left-[0.95rem] before:text-white/30 before:content-['•']"
+                      key={fact}
+                    >
+                      {fact}
+                    </span>
+                  ))}
+                </p>
               ) : null}
               {movie.voteAverage > 0 ? (
-                // On phones the rating takes its own line, so no separator dot is left dangling at a line start.
-                <span className="w-full before:mr-3 before:hidden before:text-white/30 before:content-['•'] sm:w-auto sm:before:inline">
+                <p>
                   <RatingStars voteAverage={movie.voteAverage} />
-                </span>
+                </p>
               ) : null}
             </div>
 

@@ -232,7 +232,7 @@ Major capabilities:
        05.3-S1 → 05.3-S2 → 05.3-S3
 
 05.4 — Movie Details Experience
-       Status: In Progress
+       Status: Completed / Accepted
        Execution:
        05.4-D1 → 05.4-D2 → 05.4-D2b → 05.4-D3
 

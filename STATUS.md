@@ -10,16 +10,25 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.4 — Movie Details Experience (in progress; plan approved 2026-10-22)
+Sprint 05.5 — Pick for Me Experience (next; not started)
+
+Sprint 05.4 — Movie Details Experience is accepted and complete (D1, D2, D2b, D3 accepted by the Tech Lead on 2026-10-22).
 
 ### Sprint 05.4 Work Packages
 
 - [x] 05.4-D1 — Route + Hero + About (accepted by the Tech Lead on 2026-10-22)
 - [x] 05.4-D2 — Cast + More like this (accepted by the Tech Lead on 2026-10-22)
 - [x] 05.4-D2b — Details enrichment (accepted by the Tech Lead on 2026-10-22)
-- [ ] 05.4-D3 — Responsive polish + visual QA
+- [x] 05.4-D3 — Responsive polish + visual QA (accepted by the Tech Lead on 2026-10-22)
 
 Reference adaptation, dropped reference elements (country, like/dislike, Watch Now / Preview, scene stills, Director, Comments, footer links) and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§12.1). Work happens on branch `feature/movie-details-05.4`. Plan decisions: rating as five stars filled to the TMDB score plus the number; genre pills link to the Home Search view (`/?genre={id}`).
+
+05.4-D3 accepted state:
+
+- Audit of the finished page for John Wick: Chapter 4, Inception and Clayface at 1440 / 768 / 390 (full-page captures): no horizontal overflow, no image without alt text, heading order H1 → H2 (About, Genres, Cast, Director, More like), all touch targets ≥ 44px except the tablet rail arrows at 40px (the accepted Home rail size, left consistent).
+- Fixed hero metadata: at 768px a separator dot started the rating line, and with a missing release year the row would have started with a dot. The facts (year, runtime, countries) are now one row whose separators sit in the gap before each fact and are clipped when a fact starts a line, so no line ever starts with a dot; the rating always has its own line below, as in `movie-details/Section_1`. Verified for full data, no year, and no year + no runtime at 1440 / 1024 / 768 / 390 / 320 (20 cases, none dangling; at 320 the countries wrap cleanly).
+- Keyboard: logical tab order (skip link, header, Watchlist, scene rail and tiles, genres, cast rail, More like cards with their Watchlist controls) with visible focus on every stop. Reduced motion: hero image and copy animations off; scene hover zoom is motion-safe only.
+- Regression on the production build: D1 (Watchlist toggle, genre link, not-found, retry), D2 (similar-card toggle, initials, Home rail), full-size scene viewer (arrow keys, close). `npm run lint`, `npm run build`, `git diff --check`. Screenshots in `docs/screenshots/05.4-D3-*`.
 
 05.4-D2b accepted state (Tech Lead request 2026-10-22 after reviewing D2 as "a little empty"):
 
@@ -193,6 +202,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 - 05.3-S2 — Discover filters + mode rule
 - 05.3-S3 — Paging + responsive polish + visual QA
 - Sprint 05.3 — Search & Discover Experience
+- Sprint 05.4 — Movie Details Experience
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
@@ -202,13 +212,12 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- Sprint 05.4 — Movie Details Experience (D1, D2, D2b accepted; D3 next)
+- None. Sprint 05.5 is next and has not started.
 
 ---
 
 ## Not Started
 
-- Sprint 05.4 — Movie Details Experience
 - Sprint 05.5 — Pick for Me Experience
 - Sprint 05.6 — Anonymous Watchlist Experience
 - Sprint 05.7 — Responsive, Interaction & UX Polish
@@ -293,6 +302,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Execute and review 05.4-D3 — Responsive polish + visual QA.
-2. Then mark Sprint 05.4 complete, each after the previous work package is accepted; do not start Sprint 05.5 before Sprint 05.4 is accepted.
-4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.
+1. Plan Sprint 05.5 — Pick for Me Experience (reference review and work packages with review checkpoints, as in 05.2–05.4).
+2. Execute 05.5 only after the plan is agreed; do not start Sprint 05.6 before Sprint 05.5 is accepted.
+3. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.
