@@ -793,13 +793,14 @@ Search / Discover interaction model:
 - Search lives on `/`. The header Search control opens a Search view in place of the Home sections; closing it returns to the Home sections. No new public route.
 - Search state lives in the `/` URL query (`q`, and from S2 `genre`, `year`, `rating`; from S3 `page`) so Back/Forward and reloads keep the current results.
 - Mode rule: a non-blank title query searches by title; with an empty query, any selected filter discovers by filter; with neither, no request is made and the view invites the user to start.
+- Title + filters: backend title Search accepts no filters, so with a title active the filters narrow the loaded title matches in the browser (Tech Lead decision 2026-10-21) and the summary states how many loaded matches were checked.
 - Typed queries are debounced and trimmed; a blank query never triggers a Search request.
 - Result cards reuse MovieCard and the Home Watchlist saved state.
 
 Work packages:
 
 - [x] 05.3-S1 — Search entry + title Search results: Search view on `/`, header/mobile access, prominent input, debounced title Search, responsive results grid, loading / no-results / validation-safe / error states, saved state on result cards.
-- [ ] 05.3-S2 — Discover filters + mode rule: Genre / Year / Minimum Rating filters with backend-supported values only, Discover results with an empty query, intentional mobile filter UX, clear mode feedback when a title query is active.
+- [x] 05.3-S2 — Discover filters + mode rule: Genre / Year / Minimum Rating filters with backend-supported values only, Discover results with an empty query, intentional mobile filter UX, clear mode feedback when a title query is active.
 - [ ] 05.3-S3 — Paging + responsive polish + visual QA: backend paging/navigation for Search and Discover, 1440 / 768 / 390 polish, keyboard / reduced-motion checks, screenshots in `docs/screenshots/05.3-*`.
 
 Sprint 05.3 is complete only after S1–S3 are accepted.

@@ -38,11 +38,15 @@ public sealed class TmdbClient(HttpClient httpClient)
     internal Task<TmdbMoviePage> GetPopularMoviesAsync(CancellationToken cancellationToken) =>
         GetFromTmdbAsync<TmdbMoviePage>(PopularMoviesPath, "popular movies", cancellationToken);
 
-    internal Task<TmdbMoviePage> SearchMoviesAsync(string query, int page, CancellationToken cancellationToken) =>
-        GetFromTmdbAsync<TmdbMoviePage>(
-            $"{SearchMoviesPath}?query={Uri.EscapeDataString(query)}&page={page}",
+    internal Task<TmdbMoviePage> SearchMoviesAsync(string query, int? year, int page, CancellationToken cancellationToken)
+    {
+        var yearParameter = year is null ? string.Empty : $"&primary_release_year={year}";
+
+        return GetFromTmdbAsync<TmdbMoviePage>(
+            $"{SearchMoviesPath}?query={Uri.EscapeDataString(query)}&page={page}{yearParameter}",
             "movie search",
             cancellationToken);
+    }
 
     internal Task<TmdbMoviePage> DiscoverMoviesAsync(TmdbDiscoverRequest request, CancellationToken cancellationToken)
     {

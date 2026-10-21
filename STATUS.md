@@ -15,7 +15,7 @@ Sprint 05.3 — Search & Discover Experience (in progress)
 ### Sprint 05.3 Work Packages
 
 - [x] 05.3-S1 — Search entry + title Search results (accepted by the Tech Lead on 2026-10-21)
-- [ ] 05.3-S2 — Discover filters + mode rule
+- [x] 05.3-S2 — Discover filters + mode rule (accepted by the Tech Lead on 2026-10-22)
 - [ ] 05.3-S3 — Paging + responsive polish + visual QA
 
 No approved Search/Discover references exist; by Tech Lead decision (2026-10-21) Sprint 05.3 derives its appearance from the accepted Home visual language. The interaction model and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§11.1). Work happens on branch `feature/search-discover-05.3`.
@@ -29,6 +29,18 @@ No approved Search/Discover references exist; by Tech Lead decision (2026-10-21)
 - Loading skeleton grid, no-results message, and a contained error message with retry; results for an older query or attempt are never shown.
 - Result cards share the Home Watchlist saved state and add/remove behaviour.
 - Verified: `npm run lint`, `npm run build`, `git diff --check`; live checks against the real backend at 1440 / 768 / 390 (header opens Search with focus, blank input sends 0 requests, typing "batman" sends exactly 1 request and updates the URL, saved state toggles and restores on a result card, reload / Close / Back, no-results, error via request interception and retry, no horizontal overflow); screenshots in `docs/screenshots/05.3-S1-*`.
+
+05.3-S2 accepted state:
+
+- Genre / Release year / Minimum rating filters as glass selects under the Search input; a chosen filter uses the pink selected treatment of the Home genre chips. Options are backend-supported values only: genres from `/api/movies/genres`, years from next year down to 1888, ratings 9+ down to 1+.
+- Mode rule: a title in the search box searches by title; with the box empty, any filter discovers by those filters; with neither, no request is made and the view invites the user to start.
+- Title + filters (Tech Lead decisions 2026-10-21/22): with a title active the filters stay usable. Year is applied by the backend (`GET /api/movies/search` now accepts an optional `year`, forwarded to TMDB as `primary_release_year`; recorded as D026), so title + year is exact with correct totals, e.g. "38 movies found for “Tv” from 2021". Genre and minimum rating, which TMDB title search cannot filter, narrow the loaded title matches in the browser with no new request, and the summary states what was checked, e.g. "4 of the first 20 matches for “Tv” from 2019 fit Rated 6+". Until S3 paging (which will load further title pages for genre/rating narrowing), only the first page is narrowed.
+- Empty results always offer a way forward: title + filters → `Show all “…” matches` (clears filters) and `Browse … movies` (drops the title, keeps the filters); Discover → `Clear filters`.
+- Backend: `SearchMoviesQuery.Year` (1888–2100, same validation as Discover) through `MovieCatalogService.SearchAsync` and `TmdbClient.SearchMoviesAsync`; new tests for year forwarding and year validation; endpoint description, Stage 03 contract notes and `DECISIONS.md` (D026) updated.
+- Filters live in the URL (`genre`, `year`, `rating`) alongside `q`. Out-of-range or malformed URL values are dropped before any request, and a genre the backend does not list is ignored (a URL genre is only sent once the genre list confirms it).
+- Discover results reuse the S1 grid and states, with a summary such as "235 movies match Action · 2019 · Rated 7+", a filter-specific no-results message, and a contained error with retry.
+- Mobile: the filters fold behind one `Filters` control (with an active-count badge and a `Clear filters` action) and open as full-width stacked selects; tablet and desktop show the three selects in one row.
+- Verified: `dotnet test` (74 passed), `npm run lint`, `npm run build`, `git diff --check`; live checks against the real backend at 1440 / 768 / 390 (backend title + year returns only that year and rejects 1887 with 400, a year change sends exactly one new title search while genre/rating changes send none, empty-state actions, each filter's request parameters, two filter changes 40ms apart both kept, filters with a title narrow the loaded matches to exactly the expected subset (checked against the API response) with 0 extra requests, changing the title keeps the filters applied, Clear filters, invalid URL values send no request, unknown genre dropped, no-results, error via request interception and retry, mobile filter toggle and 48px selects, no horizontal overflow); screenshots in `docs/screenshots/05.3-S2-*`.
 
 Sprint 05.2 — Discover Home Experience is accepted and complete (H1–H4 accepted by the Tech Lead on 2026-10-21).
 
@@ -136,7 +148,7 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- Sprint 05.3 — Search & Discover Experience (S1 accepted; S2 in progress)
+- Sprint 05.3 — Search & Discover Experience (S1–S2 accepted; S3 in progress)
 
 ---
 
@@ -228,7 +240,7 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Execute and review 05.3-S2 — Discover filters + mode rule.
-2. Execute 05.3-S3 after 05.3-S2 is accepted.
+1. Execute and review 05.3-S3 — Paging + responsive polish + visual QA.
+2. Mark Sprint 05.3 complete only after S3 is accepted.
 3. Do not start Sprint 05.4 before Sprint 05.3 is accepted.
 4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

@@ -209,3 +209,13 @@ This file records decisions that future agent sessions must preserve unless expl
 - This split between the Watchlist and Movie request paths is intentional, not accidental duplication of the API client.
 - The forwarding rules exist only when `NEXT_PUBLIC_API_BASE_URL` is set when the Next.js configuration loads (dev server start or build). If it is missing, no rewrites are registered and Watchlist requests fail with 404.
 - Do not replace this with `localStorage`/`sessionStorage` Watchlist storage or with direct cross-origin Watchlist calls without an explicit architecture change recorded in this file.
+## D026 — Optional Release Year on Movie Search
+
+**Decision:** `GET /api/movies/search` accepts an optional `year` (1888–2100, the same range as Discover), which the backend forwards to TMDB title search as `primary_release_year`. Genre and minimum rating remain Discover-only filters.
+
+**Reason:** In the Home Search view (Sprint 05.3) a title can be combined with Genre / Year / Minimum Rating filters. TMDB title search supports a release-year filter but not genre or rating filters. Without a backend year, a year filter could only narrow the first loaded page of title matches, so common titles routinely showed no results for a year that does have matches. Forwarding the year makes title + year exact, with correct totals and paging.
+
+**Rules:**
+
+- The frontend sends `year` with a title query; genre and minimum rating with a title still narrow the loaded title matches in the browser.
+- Do not emulate genre or rating filtering for title Search on the backend by scanning multiple TMDB pages without a separate decision (request cost and caching belong to Stage 06).

@@ -41,10 +41,22 @@ public sealed class TmdbClientTests
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
         var client = new TmdbClient(httpClient);
 
-        await client.SearchMoviesAsync("the movie", 2, CancellationToken.None);
+        await client.SearchMoviesAsync("the movie", null, 2, CancellationToken.None);
 
         Assert.Equal("/3/search/movie", handler.RequestUri?.AbsolutePath);
         Assert.Equal("query=the%20movie&page=2", handler.RequestUri?.Query.TrimStart('?'));
+    }
+
+    [Fact]
+    public async Task SearchMoviesAsync_sends_optional_year_as_primary_release_year()
+    {
+        var handler = new StubHttpMessageHandler(HttpStatusCode.OK, """{ "page": 1, "total_pages": 1, "total_results": 1, "results": [] }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        await client.SearchMoviesAsync("tv", 2021, 1, CancellationToken.None);
+
+        Assert.Equal("query=tv&page=1&primary_release_year=2021", handler.RequestUri?.Query.TrimStart('?'));
     }
 
     [Fact]

@@ -19,6 +19,16 @@ public sealed class MoviesQueryValidationTests
     }
 
     [Theory]
+    [InlineData(1887)]
+    [InlineData(2101)]
+    public void Search_query_rejects_year_outside_supported_range(int year)
+    {
+        var result = Validate(new SearchMoviesQuery { Query = "arrival", Year = year });
+
+        Assert.NotEmpty(result);
+    }
+
+    [Theory]
     [InlineData(0, null, null, 1)]
     [InlineData(null, 1887, null, 1)]
     [InlineData(null, 2101, null, 1)]
@@ -49,6 +59,7 @@ public sealed class MoviesQueryValidationTests
     public void Valid_queries_pass_validation_and_default_to_first_page()
     {
         Assert.Empty(Validate(new SearchMoviesQuery { Query = "arrival" }));
+        Assert.Empty(Validate(new SearchMoviesQuery { Query = "arrival", Year = 2016 }));
         Assert.Empty(Validate(new DiscoverMoviesQuery()));
         Assert.Empty(Validate(new PickMovieQuery()));
         Assert.Equal(1, new SearchMoviesQuery { Query = "arrival" }.Page);

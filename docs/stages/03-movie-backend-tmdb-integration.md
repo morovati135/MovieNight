@@ -224,6 +224,7 @@ Possible query contracts:
 ```text
 /api/movies/search
 - query      required
+- year       optional (added in Sprint 05.3, see D026)
 - page       optional/default 1
 
 /api/movies/discover

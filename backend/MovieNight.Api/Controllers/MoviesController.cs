@@ -43,12 +43,12 @@ public sealed class MoviesController(MovieCatalogService movieCatalogService) : 
 
     [HttpGet("search")]
     [EndpointSummary("Search movies.")]
-    [EndpointDescription("Searches TMDB by a non-blank query string.")]
+    [EndpointDescription("Searches TMDB by a non-blank query string, optionally limited to a primary release year.")]
     [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public Task<ActionResult<PagedMovieResultDto>> Search([FromQuery] SearchMoviesQuery search, CancellationToken cancellationToken) =>
-        ExecuteAsync(() => movieCatalogService.SearchAsync(search.Query, search.Page, cancellationToken));
+        ExecuteAsync(() => movieCatalogService.SearchAsync(search.Query, search.Year, search.Page, cancellationToken));
 
     [HttpGet("discover")]
     [EndpointSummary("Discover movies by optional filters.")]
@@ -109,6 +109,9 @@ public sealed class SearchMoviesQuery
     [Required]
     [RegularExpression(@".*\S.*", ErrorMessage = "Query must not be blank.")]
     public string Query { get; init; } = string.Empty;
+
+    [Range(1888, 2100)]
+    public int? Year { get; init; }
 
     [Range(1, 500)]
     public int Page { get; init; } = 1;

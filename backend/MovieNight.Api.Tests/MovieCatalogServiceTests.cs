@@ -65,8 +65,8 @@ public sealed class MovieCatalogServiceTests
         using var cache = new MemoryCache(new MemoryCacheOptions());
         var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
 
-        await service.SearchAsync("arrival", 2, CancellationToken.None);
-        await service.SearchAsync("arrival", 2, CancellationToken.None);
+        await service.SearchAsync("arrival", null, 2, CancellationToken.None);
+        await service.SearchAsync("arrival", null, 2, CancellationToken.None);
         await service.DiscoverAsync(878, 2016, 7.5, 2, CancellationToken.None);
         await service.DiscoverAsync(878, 2016, 7.5, 2, CancellationToken.None);
 

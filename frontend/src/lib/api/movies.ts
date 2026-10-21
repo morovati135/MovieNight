@@ -28,8 +28,12 @@ export function getPopularMovies(): Promise<PagedMovieResult> {
   return getJson("/api/movies/popular", "Popular movies could not be loaded.");
 }
 
-export function searchMovies(query: string): Promise<PagedMovieResult> {
+export function searchMovies(query: string, year: number | null = null): Promise<PagedMovieResult> {
   const parameters = new URLSearchParams({ query });
+
+  if (year !== null) {
+    parameters.set("year", year.toString());
+  }
 
   return getJson(`/api/movies/search?${parameters}`, "Movies could not be searched.");
 }
@@ -41,4 +45,28 @@ export function discoverMoviesByGenre(genreId: number): Promise<PagedMovieResult
     `/api/movies/discover?${parameters}`,
     "Movies for this genre could not be loaded.",
   );
+}
+
+export type DiscoverFilters = {
+  genreId: number | null;
+  year: number | null;
+  minRating: number | null;
+};
+
+export function discoverMovies(filters: DiscoverFilters): Promise<PagedMovieResult> {
+  const parameters = new URLSearchParams();
+
+  if (filters.genreId !== null) {
+    parameters.set("genreId", filters.genreId.toString());
+  }
+
+  if (filters.year !== null) {
+    parameters.set("year", filters.year.toString());
+  }
+
+  if (filters.minRating !== null) {
+    parameters.set("minRating", filters.minRating.toString());
+  }
+
+  return getJson(`/api/movies/discover?${parameters}`, "Movies could not be discovered.");
 }

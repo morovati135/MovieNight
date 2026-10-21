@@ -59,9 +59,9 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
         }) ?? EmptyPage();
     }
 
-    public async Task<PagedMovieResultDto> SearchAsync(string query, int page, CancellationToken cancellationToken)
+    public async Task<PagedMovieResultDto> SearchAsync(string query, int? year, int page, CancellationToken cancellationToken)
     {
-        return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.SearchMoviesAsync(query, page, cancellationToken));
+        return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.SearchMoviesAsync(query, year, page, cancellationToken));
     }
 
     public async Task<PagedMovieResultDto> DiscoverAsync(int? genreId, int? year, double? minRating, int page, CancellationToken cancellationToken)

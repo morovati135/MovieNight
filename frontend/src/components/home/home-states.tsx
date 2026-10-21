@@ -170,8 +170,13 @@ type SectionNoticeProps = {
   children: ReactNode;
   className?: string;
   onAction?: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
   tone?: "empty" | "error";
 };
+
+const sectionNoticeActionClassName =
+  "min-h-11 rounded-lg px-3 font-bold text-link outline-none transition-colors hover:text-link-hover focus-visible:ring-2 focus-visible:ring-ring";
 
 /** Contained message used inside a Home section when only that section failed or has no content. */
 export function SectionNotice({
@@ -179,6 +184,8 @@ export function SectionNotice({
   children,
   className,
   onAction,
+  onSecondaryAction,
+  secondaryActionLabel,
   tone = "error",
 }: SectionNoticeProps) {
   return (
@@ -191,12 +198,13 @@ export function SectionNotice({
     >
       <span>{children}</span>
       {onAction ? (
-        <button
-          className="min-h-11 rounded-lg px-3 font-bold text-link outline-none transition-colors hover:text-link-hover focus-visible:ring-2 focus-visible:ring-ring"
-          onClick={onAction}
-          type="button"
-        >
+        <button className={sectionNoticeActionClassName} onClick={onAction} type="button">
           {actionLabel}
+        </button>
+      ) : null}
+      {onSecondaryAction && secondaryActionLabel ? (
+        <button className={sectionNoticeActionClassName} onClick={onSecondaryAction} type="button">
+          {secondaryActionLabel}
         </button>
       ) : null}
     </div>

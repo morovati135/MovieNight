@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { FeaturedMovieHero } from "@/components/movie/featured-movie-hero";
 import { MovieRow } from "@/components/movie/movie-row";
 import { SearchExperience } from "@/components/search/search-experience";
+import { parseSearchState } from "@/components/search/search-state";
 import { getMovieDetails, getPopularMovies, getTrendingMovies } from "@/lib/api/movies";
 import { addToWatchlist, getWatchlist, removeFromWatchlist } from "@/lib/api/watchlist";
 import type { FeaturedMovie, MovieSummary } from "@/types/movie";
@@ -24,8 +25,7 @@ type HomeData = {
 
 export function HomeExperience() {
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("q")?.trim() ?? "";
-  const isSearchOpen = searchParams.has("search") || searchQuery !== "";
+  const search = useMemo(() => parseSearchState(searchParams), [searchParams]);
   const [data, setData] = useState<HomeData | null>(null);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -177,12 +177,13 @@ export function HomeExperience() {
   );
 
   // Search replaces the Home sections but shares their Watchlist saved state.
-  if (isSearchOpen) {
+  if (search.isOpen) {
     return (
       <>
         <SearchExperience
+          filters={search.filters}
           onWatchlistToggle={handleWatchlistToggle}
-          query={searchQuery}
+          query={search.query}
           savedMovieIds={savedMovieIds}
           updatingMovieIds={updatingMovieIds}
         />
