@@ -10,13 +10,24 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.3 — Search & Discover Experience (in progress)
+Sprint 05.4 — Movie Details Experience (next; not started)
+
+Sprint 05.3 — Search & Discover Experience is accepted and complete (S1–S3 accepted by the Tech Lead on 2026-10-22).
 
 ### Sprint 05.3 Work Packages
 
 - [x] 05.3-S1 — Search entry + title Search results (accepted by the Tech Lead on 2026-10-21)
 - [x] 05.3-S2 — Discover filters + mode rule (accepted by the Tech Lead on 2026-10-22)
-- [ ] 05.3-S3 — Paging + responsive polish + visual QA
+- [x] 05.3-S3 — Paging + responsive polish + visual QA (accepted by the Tech Lead on 2026-10-22)
+
+05.3-S3 accepted state:
+
+- Backend paging for title Search and Discover through an appending `Load more` button under the grid, with a caption such as "Showing 40 of 177"; pages are capped at the backend's 500 and movies repeated across pages are shown once. Paging is not stored in the URL (a reload starts from page 1).
+- Genre / rating narrowing of a title search automatically checks further title pages until at least 12 movies show, at most 5 pages (100 matches); then `Check more matches` continues one page at a time and the caption says how many title matches were checked (e.g. "Checked 99 of 1,677 title matches"). While pages are still being checked, an empty narrowing shows "Checking more matches…" instead of an empty message.
+- A failed later page keeps the loaded results and shows "More movies couldn’t be loaded." with `Try again`; a failed first page keeps the S1/S2 error state. A new title or filter change starts again from page 1.
+- `Load more` keeps keyboard focus while loading (busy, extra activations ignored); 48px target, centred, clear of the mobile bottom navigation; spinner and skeleton respect reduced motion.
+- Verified on the production build (`next build` + `next start`) against the real backend at 1440 / 768 / 390: Load more appends page 2 for Discover and Search without duplicates, keyboard Enter on Load more keeps focus, auto-check requests title pages 1–5 exactly once each and `Check more matches` requests page 6, a failed page 2 (request interception) keeps 20 results and recovers on retry, a new query requests only page 1, reduced motion disables animation, no horizontal overflow, logical tab order (search, clear, Genre, Year, Rating, card, Watchlist control) with visible focus on every control including the notched card outline; S1 / S2 QA re-run on the production build. `npm run lint`, `npm run build`, `git diff --check`. Screenshots in `docs/screenshots/05.3-S3-*`.
+- Local setup note: a fresh worktree's SQLite database needs `dotnet ef database update` (backend README) before Watchlist calls work; this was applied to the 05.3 worktree's untracked local database.
 
 No approved Search/Discover references exist; by Tech Lead decision (2026-10-21) Sprint 05.3 derives its appearance from the accepted Home visual language. The interaction model and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§11.1). Work happens on branch `feature/search-discover-05.3`.
 
@@ -139,6 +150,10 @@ The existing frontend visual implementation is not a visual source of truth for 
 - 05.2-H3 — Genre Discovery + Pick CTA + Watchlist Preview
 - 05.2-H4 — Home States + Responsive Polish + Visual QA
 - Sprint 05.2 — Discover Home Experience
+- 05.3-S1 — Search entry + title Search results
+- 05.3-S2 — Discover filters + mode rule
+- 05.3-S3 — Paging + responsive polish + visual QA
+- Sprint 05.3 — Search & Discover Experience
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
@@ -148,13 +163,12 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- Sprint 05.3 — Search & Discover Experience (S1–S2 accepted; S3 in progress)
+- None. Sprint 05.4 is next and has not started.
 
 ---
 
 ## Not Started
 
-- Sprint 05.3 — Search & Discover Experience
 - Sprint 05.4 — Movie Details Experience
 - Sprint 05.5 — Pick for Me Experience
 - Sprint 05.6 — Anonymous Watchlist Experience
@@ -226,7 +240,7 @@ Sprint 05.2 is intentionally executed as small work packages to reduce context u
 
 None currently blocking.
 
-Sprint 05.3 note: no approved Search/Discover reference images exist under `.agents/skills/movienight-ui/assets/`; Sprint 05.3 follows the accepted Home visual language by Tech Lead decision.
+Sprint 05.4 note: the Tech Lead supplied Movie Details reference images in the main checkout under `.agents/skills/movienight-ui/assets/Movies Deatils/` (with `Movie Covers/` and `Icons/`); they are not yet committed to the repository.
 
 Home footer note: the UI skill's Home section order lists a minimal footer with TMDB attribution; it is not assigned to any sprint yet.
 
@@ -240,7 +254,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Execute and review 05.3-S3 — Paging + responsive polish + visual QA.
-2. Mark Sprint 05.3 complete only after S3 is accepted.
-3. Do not start Sprint 05.4 before Sprint 05.3 is accepted.
+1. Plan Sprint 05.4 — Movie Details Experience against the supplied Movie Details references (work packages with review checkpoints, as in 05.2 / 05.3).
+2. Execute 05.4 only after the plan is agreed; do not start Sprint 05.5 before Sprint 05.4 is accepted.
 4. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

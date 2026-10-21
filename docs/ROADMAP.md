@@ -227,7 +227,7 @@ Major capabilities:
        05.2-H1 → 05.2-H2 → 05.2-H3 → 05.2-H4
 
 05.3 — Search & Discover Experience
-       Status: In Progress
+       Status: Completed / Accepted
        Execution:
        05.3-S1 → 05.3-S2 → 05.3-S3
 

@@ -4,11 +4,12 @@ import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { Search, X } from "lucide-react";
+import { LoaderCircle, RotateCcw, Search, X } from "lucide-react";
 
 import { SectionNotice } from "@/components/home/home-states";
 import { sectionTitleClassName } from "@/components/layout/section-heading";
 import { MovieGrid, movieGridClassName } from "@/components/movie/movie-grid";
+import { Button } from "@/components/ui/button";
 import { glassControlClassName } from "@/components/ui/controls";
 import { discoverMovies, getGenres, searchMovies } from "@/lib/api/movies";
 import type { MovieSummary, PagedMovieResult } from "@/types/movie";
@@ -17,11 +18,33 @@ import { type GenreOptions, SearchFilters } from "./search-filters";
 import { hasFilters, matchesFilters, noFilters, type SearchFilters as Filters, searchHref } from "./search-state";
 
 const searchDebounceMs = 350;
+// The backend accepts pages 1–500.
+const backendPageLimit = 500;
+// When genre/rating narrow a title search, further title pages load automatically until this many movies
+// show, checking at most `autoLoadPageLimit` pages; "Load more" continues from there.
+const autoFillTarget = 12;
+const autoLoadPageLimit = 5;
 
-type SearchResultsState = { attempt: number; requestKey: string } & (
-  | { status: "error" }
-  | { status: "ready"; result: PagedMovieResult }
-);
+/** Pages loaded so far for one request; `failedPage` is the page whose request failed, if any. */
+type SearchResultsState = { requestKey: string; pages: PagedMovieResult[]; failedPage: number | null };
+
+const loadMoreClassName = "min-h-12 rounded-full border-white/25 bg-glass/65 px-6 text-white hover:bg-white/10";
+
+function uniqueMovies(pages: PagedMovieResult[]) {
+  const seen = new Set<number>();
+
+  // TMDB can repeat a movie on neighbouring pages when rankings shift between requests.
+  return pages
+    .flatMap((page) => page.results)
+    .filter((movie) => {
+      if (seen.has(movie.id)) {
+        return false;
+      }
+
+      seen.add(movie.id);
+      return true;
+    });
+}
 
 type SearchExperienceProps = {
   /** Trimmed title query from the URL; when present, the filters narrow its matches. */
@@ -56,7 +79,7 @@ export function SearchExperience({
   const [syncedQuery, setSyncedQuery] = useState(query);
   const [genres, setGenres] = useState<GenreOptions>({ status: "loading" });
   const [results, setResults] = useState<SearchResultsState | null>(null);
-  const [attempt, setAttempt] = useState(0);
+  const [requestedPages, setRequestedPages] = useState<{ requestKey: string; count: number } | null>(null);
 
   // Filter choices apply here immediately, so a second change made before the URL updates keeps the first.
   const [selectedFilters, setSelectedFilters] = useState(urlFilters);
@@ -135,30 +158,65 @@ export function SearchExperience({
   const { genreId, minRating } = mode === "discover" ? filters : noFilters;
   const { year } = filters;
 
+  // Pages for an older request are never shown.
+  const loaded = results?.requestKey === requestKey ? results : null;
+  const pages = loaded?.pages ?? [];
+  const failedPage = loaded?.failedPage ?? null;
+  const totalPages = Math.min(pages[0]?.totalPages ?? 1, backendPageLimit);
+  const totalResults = pages[0]?.totalResults ?? 0;
+  const hasMorePages = pages.length > 0 && pages.length < totalPages;
+
+  // Title Search cannot filter by genre or rating on the backend, so those narrow the loaded title matches here.
+  const localFilters: Filters = { ...filters, year: null };
+  const isRefined = mode === "search" && hasFilters(localFilters);
+  const loadedMovies = uniqueMovies(pages);
+  const shownMovies = isRefined ? loadedMovies.filter((movie) => matchesFilters(movie, localFilters)) : loadedMovies;
+
+  const shouldAutoLoad =
+    isRefined && hasMorePages && shownMovies.length < autoFillTarget && pages.length < autoLoadPageLimit;
+  const wantedPageCount = Math.max(
+    requestedPages?.requestKey === requestKey ? requestedPages.count : 1,
+    shouldAutoLoad ? pages.length + 1 : 1,
+  );
+  const nextPage =
+    requestKey && failedPage === null && pages.length < wantedPageCount && (pages.length === 0 || hasMorePages)
+      ? pages.length + 1
+      : null;
+
   useEffect(() => {
-    if (!requestKey) {
+    if (nextPage === null) {
       return;
     }
 
     let isCurrent = true;
-    const request = query ? searchMovies(query, year) : discoverMovies({ genreId, minRating, year });
+    const request = query
+      ? searchMovies(query, year, nextPage)
+      : discoverMovies({ genreId, minRating, year }, nextPage);
 
     request
       .then((result) => {
         if (isCurrent) {
-          setResults({ attempt, requestKey, result, status: "ready" });
+          setResults((previous) => ({
+            failedPage: null,
+            pages: [...(previous?.requestKey === requestKey ? previous.pages.slice(0, nextPage - 1) : []), result],
+            requestKey,
+          }));
         }
       })
       .catch(() => {
         if (isCurrent) {
-          setResults({ attempt, requestKey, status: "error" });
+          setResults((previous) => ({
+            failedPage: nextPage,
+            pages: previous?.requestKey === requestKey ? previous.pages : [],
+            requestKey,
+          }));
         }
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [attempt, genreId, minRating, query, requestKey, year]);
+  }, [genreId, minRating, nextPage, query, requestKey, year]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -179,10 +237,17 @@ export function SearchExperience({
     router.replace(searchHref({ filters: nextFilters, query }), { scroll: false });
   };
 
-  // Results for an older request or attempt are never shown; until the current ones arrive, the view is loading.
-  const current =
-    requestKey && results?.requestKey === requestKey && results.attempt === attempt ? results : null;
-  const isLoading = isWaitingForGenres || (requestKey !== "" && !current);
+  const isLoading = isWaitingForGenres || (requestKey !== "" && pages.length === 0 && failedPage === null);
+  const isLoadingMore = pages.length > 0 && nextPage !== null;
+  const isReady = pages.length > 0;
+
+  const handleRetry = () => {
+    setResults((previous) => (previous ? { ...previous, failedPage: null } : previous));
+  };
+
+  const handleLoadMore = () => {
+    setRequestedPages({ count: pages.length + 1, requestKey });
+  };
 
   const genreName =
     genres.status === "ready" ? genres.genres.find((genre) => genre.id === filters.genreId)?.name : undefined;
@@ -192,12 +257,6 @@ export function SearchExperience({
   const localFilterSummary = [genreLabel, ratingLabel].filter(Boolean).join(" · ");
   const titleLabel = `“${query}”${filters.year !== null ? ` from ${filters.year}` : ""}`;
 
-  // Title Search cannot filter by genre or rating on the backend, so those narrow the loaded title matches here.
-  const localFilters: Filters = { ...filters, year: null };
-  const isRefined = mode === "search" && hasFilters(localFilters);
-  const loadedMovies = current?.status === "ready" ? current.result.results : [];
-  const shownMovies = isRefined ? loadedMovies.filter((movie) => matchesFilters(movie, localFilters)) : loadedMovies;
-  const totalResults = current?.status === "ready" ? current.result.totalResults : 0;
   const checkedMatches =
     loadedMovies.length >= totalResults
       ? `${totalResults} ${totalResults === 1 ? "match" : "matches"}`
@@ -309,14 +368,18 @@ export function SearchExperience({
 
         {isLoading ? <SearchGridSkeleton /> : null}
 
-        {current?.status === "error" ? (
-          <SectionNotice onAction={() => setAttempt((previous) => previous + 1)}>
+        {failedPage === 1 ? (
+          <SectionNotice onAction={handleRetry}>
             {mode === "search" ? "Search isn’t available right now." : "Movies couldn’t be loaded right now."}
           </SectionNotice>
         ) : null}
 
+        {isReady && shownMovies.length === 0 && isLoadingMore ? (
+          <SectionNotice tone="empty">Checking more matches for {titleLabel}…</SectionNotice>
+        ) : null}
+
         {/* Empty results always offer a way forward instead of a dead end. */}
-        {current?.status === "ready" && shownMovies.length === 0 && mode === "search" && hasFilters(filters) ? (
+        {isReady && !isLoadingMore && shownMovies.length === 0 && mode === "search" && hasFilters(filters) ? (
           <SectionNotice
             actionLabel={`Show all “${query}” matches`}
             onAction={handleShowAllTitleMatches}
@@ -330,11 +393,11 @@ export function SearchExperience({
           </SectionNotice>
         ) : null}
 
-        {current?.status === "ready" && shownMovies.length === 0 && mode === "search" && !hasFilters(filters) ? (
+        {isReady && shownMovies.length === 0 && mode === "search" && !hasFilters(filters) ? (
           <SectionNotice tone="empty">No movies match “{query}”. Try a different title.</SectionNotice>
         ) : null}
 
-        {current?.status === "ready" && shownMovies.length === 0 && mode === "discover" ? (
+        {isReady && shownMovies.length === 0 && mode === "discover" ? (
           <SectionNotice actionLabel="Clear filters" onAction={handleShowAllTitleMatches} tone="empty">
             No movies match {filterSummary}.
           </SectionNotice>
@@ -347,6 +410,43 @@ export function SearchExperience({
             savedMovieIds={savedMovieIds}
             updatingMovieIds={updatingMovieIds}
           />
+        ) : null}
+
+        {isReady && (hasMorePages || failedPage !== null) ? (
+          <div className="mt-10 flex flex-col items-center gap-3 text-center sm:mt-14">
+            {failedPage !== null ? (
+              <>
+                <p className="text-sm text-white/72" role="alert">
+                  More movies couldn’t be loaded.
+                </p>
+                <Button className={loadMoreClassName} onClick={handleRetry} type="button" variant="outline">
+                  <RotateCcw aria-hidden="true" />
+                  Try again
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-white/55">
+                  {isRefined
+                    ? `Checked ${loadedMovies.length.toLocaleString("en-US")} of ${totalResults.toLocaleString("en-US")} title matches`
+                    : `Showing ${loadedMovies.length.toLocaleString("en-US")} of ${totalResults.toLocaleString("en-US")}`}
+                </p>
+                {/* Stays enabled while loading so keyboard focus is not lost; extra clicks are ignored. */}
+                <Button
+                  aria-busy={isLoadingMore}
+                  className={loadMoreClassName}
+                  onClick={isLoadingMore ? undefined : handleLoadMore}
+                  type="button"
+                  variant="outline"
+                >
+                  {isLoadingMore ? (
+                    <LoaderCircle aria-hidden="true" className="motion-safe:animate-spin" />
+                  ) : null}
+                  {isLoadingMore ? "Loading…" : isRefined ? "Check more matches" : "Load more"}
+                </Button>
+              </>
+            )}
+          </div>
         ) : null}
       </div>
     </section>
