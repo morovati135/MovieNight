@@ -11,6 +11,8 @@ export type MovieSummary = {
   genreIds: number[];
   posterUrl: string | null;
   voteAverage: number;
+  /** Landscape artwork (D029); missing on older Watchlist snapshots. */
+  backdropUrl?: string | null;
 };
 
 export type MovieDetails = Omit<MovieSummary, "genreIds"> & {

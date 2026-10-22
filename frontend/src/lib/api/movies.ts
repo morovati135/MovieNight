@@ -1,4 +1,4 @@
-import type { Genre, MovieDetails, PagedMovieResult } from "@/types/movie";
+import type { Genre, MovieDetails, MovieSummary, PagedMovieResult } from "@/types/movie";
 
 import { apiFetch } from "./client";
 
@@ -64,7 +64,7 @@ export type DiscoverFilters = {
   minRating: number | null;
 };
 
-export function discoverMovies(filters: DiscoverFilters, page = 1): Promise<PagedMovieResult> {
+function filterParameters(filters: DiscoverFilters) {
   const parameters = new URLSearchParams();
 
   if (filters.genreId !== null) {
@@ -79,9 +79,23 @@ export function discoverMovies(filters: DiscoverFilters, page = 1): Promise<Page
     parameters.set("minRating", filters.minRating.toString());
   }
 
+  return parameters;
+}
+
+export function discoverMovies(filters: DiscoverFilters, page = 1): Promise<PagedMovieResult> {
+  const parameters = filterParameters(filters);
+
   if (page > 1) {
     parameters.set("page", page.toString());
   }
 
   return getJson(`/api/movies/discover?${parameters}`, "Movies could not be discovered.");
+}
+
+/** One movie matching the filters, picked by the backend; a `MovieNotFoundError` means nothing matched. */
+export function pickMovie(filters: DiscoverFilters): Promise<MovieSummary> {
+  const parameters = filterParameters(filters);
+  const query = parameters.size > 0 ? `?${parameters}` : "";
+
+  return getJson(`/api/movies/pick${query}`, "A movie could not be picked.");
 }

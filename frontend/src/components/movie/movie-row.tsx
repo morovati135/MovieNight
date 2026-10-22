@@ -23,9 +23,11 @@ type MovieRowProps = {
   headingMode?: "visible" | "sr-only";
   moreHref?: string;
   moreLabel?: string;
+  cardVariant?: "poster" | "landscape";
 };
 
 export function MovieRow({
+  cardVariant = "poster",
   movies,
   headingMode = "visible",
   moreHref,
@@ -81,14 +83,25 @@ export function MovieRow({
       <div className="relative z-10">
         <div
           aria-label={`${controlLabel} movies`}
-          className="-mx-5 overflow-x-auto overscroll-x-contain pb-5 outline-none [scroll-padding-inline-start:1.25rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] [touch-action:pan-x_pan-y] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ring sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden"
+          className={cn(
+            "-mx-5 overflow-x-auto overscroll-x-contain pb-5 outline-none [scroll-padding-inline-start:1.25rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] [touch-action:pan-x_pan-y] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ring sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden",
+            // Landscape cards cast a longer shadow; extra bottom room keeps it soft instead of clipped.
+            cardVariant === "landscape" && "-mb-7 pb-12",
+          )}
           id={railId}
           onScroll={updateScrollState}
           ref={railRef}
           role="region"
           tabIndex={0}
         >
-          <div className="grid w-max auto-cols-[7.5rem] grid-flow-col gap-3.5 px-5 sm:auto-cols-[10.5rem] sm:gap-5 sm:px-8 lg:auto-cols-[13rem] lg:gap-8 lg:px-0">
+          <div
+            className={cn(
+              "grid w-max grid-flow-col gap-3.5 px-5 sm:gap-5 sm:px-8 lg:gap-8 lg:px-0",
+              cardVariant === "landscape"
+                ? "auto-cols-[15rem] sm:auto-cols-[18rem] lg:auto-cols-[22rem]"
+                : "auto-cols-[7.5rem] sm:auto-cols-[10.5rem] lg:auto-cols-[13rem]",
+            )}
+          >
             {movies.map((movie) => (
               <MovieCard
                 isSaved={savedMovieIds.has(movie.id)}
@@ -96,6 +109,7 @@ export function MovieRow({
                 key={movie.id}
                 movie={movie}
                 onWatchlistToggle={onWatchlistToggle}
+                variant={cardVariant}
               />
             ))}
           </div>

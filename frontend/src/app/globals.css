@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+/* Hover styles only for devices with a precise pointer (used by the halo controls). */
+@custom-variant fine-hover (@media (hover: hover) and (pointer: fine));
 
 @theme inline {
   --color-background: var(--background);
@@ -556,5 +558,45 @@
       linear-gradient(to top, var(--background) 0%, rgb(3 10 27 / 78%) 18%, transparent 48%),
       linear-gradient(to right, var(--background) 0%, rgb(3 10 27 / 90%) 24%, rgb(3 10 27 / 28%) 59%, transparent 82%),
       linear-gradient(to bottom, rgb(2 11 27 / 24%), transparent 34%);
+  }
+}
+
+/* Vengeance UI animated-rays drift (original keyframes). */
+@keyframes aurora-smooth-bg {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
+  }
+}
+
+/* Pick for Me: light sweeping down the poster frame while searching. */
+@keyframes pick-scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(300%);
+  }
+}
+
+/* Pick for Me spotlight: the poster as a rounded ticket, notched at the tear line above the stub. */
+.pick-poster-ticket {
+  --ticket-notch: 0.8rem;
+  --ticket-tear: calc(100% - 3.5rem);
+  -webkit-mask:
+    radial-gradient(circle at 0 var(--ticket-tear), #0000 var(--ticket-notch), #000 calc(var(--ticket-notch) + 0.5px)),
+    radial-gradient(circle at 100% var(--ticket-tear), #0000 var(--ticket-notch), #000 calc(var(--ticket-notch) + 0.5px));
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle at 0 var(--ticket-tear), #0000 var(--ticket-notch), #000 calc(var(--ticket-notch) + 0.5px)),
+    radial-gradient(circle at 100% var(--ticket-tear), #0000 var(--ticket-notch), #000 calc(var(--ticket-notch) + 0.5px));
+  mask-composite: intersect;
+}
+
+@media (min-width: 40rem) {
+  .pick-poster-ticket {
+    --ticket-tear: calc(100% - 4rem);
   }
 }

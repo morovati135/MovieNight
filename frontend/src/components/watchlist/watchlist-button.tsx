@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type WatchlistButtonProps = {
-  appearance?: "default" | "poster" | "details";
+  appearance?: "default" | "poster" | "landscape" | "details";
   isSaved: boolean;
   isUpdating: boolean;
   label?: "full" | "icon";
@@ -25,15 +25,18 @@ export function WatchlistButton({
   title,
 }: WatchlistButtonProps) {
   // The details page follows the bookmark reference: the bookmark itself fills in when saved.
-  const Icon = isSaved && appearance !== "details" ? Check : appearance === "poster" ? Plus : Bookmark;
+  // Poster and landscape cards share the notch island; only its size differs.
+  const isCardIsland = appearance === "poster" || appearance === "landscape";
+  const Icon = isSaved && appearance !== "details" ? Check : isCardIsland ? Plus : Bookmark;
   const action = isSaved ? "Remove from watchlist" : "Add to watchlist";
   const icon = (
     <Icon
       aria-hidden="true"
       className={cn(
         isUpdating && "animate-pulse",
-        appearance === "poster" &&
-          "size-5 drop-shadow-[0_1px_3px_rgb(0_0_0/72%)] sm:size-7 lg:size-8",
+        isCardIsland && "size-5 drop-shadow-[0_1px_3px_rgb(0_0_0/72%)]",
+        appearance === "poster" && "sm:size-7 lg:size-8",
+        appearance === "landscape" && "sm:size-6",
         appearance === "details" && "size-5",
         appearance === "details" && isSaved && "fill-current",
       )}
@@ -49,8 +52,10 @@ export function WatchlistButton({
         label === "icon" &&
           "size-10 rounded-full border-white/15 bg-background/75 p-0 text-foreground shadow-lg backdrop-blur-md hover:bg-background/90",
         // The hit area stays a comfortable touch target; the glass island is drawn separately below.
-        appearance === "poster" &&
-          "relative size-11 rounded-xl border-0 bg-transparent p-0 text-white shadow-none backdrop-blur-none hover:bg-transparent hover:shadow-none focus-visible:ring-0 sm:size-12 lg:size-16",
+        isCardIsland &&
+          "relative size-11 rounded-xl border-0 bg-transparent p-0 text-white shadow-none backdrop-blur-none hover:bg-transparent hover:shadow-none focus-visible:ring-0",
+        appearance === "poster" && "sm:size-12 lg:size-16",
+        appearance === "landscape" && "lg:size-12",
         appearance === "details" &&
           "min-h-12 gap-2.5 rounded-full border-brand-blue bg-[#020a1b]/80 px-6 text-sm font-semibold text-white backdrop-blur-md hover:bg-brand-blue/16 sm:text-base",
         className,
@@ -61,14 +66,15 @@ export function WatchlistButton({
       type="button"
       variant={isSaved ? "default" : "outline"}
     >
-      {appearance === "poster" ? (
+      {isCardIsland ? (
         <span
           aria-hidden="true"
           className={cn(
-            // Same geometry as the card's notch island (see the clip path in MovieCard):
-            // 26.9% of the card width, corner radius 5.8%. Sized from the card so the glass
-            // always fills the whole notch at every breakpoint.
-            "pointer-events-none absolute top-0 left-0 grid size-[26.9cqw] place-items-center rounded-[5.8cqw] border border-white/14 bg-[#030a1b]/24 bg-gradient-to-br from-white/16 via-transparent to-[#229ee5]/8 shadow-[inset_0_1px_0_rgb(255_255_255/18%),0_7px_18px_rgb(0_0_0/22%)] backdrop-blur-[5px] transition-colors group-hover/button:bg-[#071426]/30 group-focus-visible/button:ring-2 group-focus-visible/button:ring-ring",
+            // Sized from the card so the glass always fills the whole notch at every breakpoint.
+            "pointer-events-none absolute top-0 left-0 grid place-items-center border border-white/14 bg-[#030a1b]/24 bg-gradient-to-br from-white/16 via-transparent to-[#229ee5]/8 shadow-[inset_0_1px_0_rgb(255_255_255/18%),0_7px_18px_rgb(0_0_0/22%)] backdrop-blur-[5px] transition-colors group-hover/button:bg-[#071426]/30 group-focus-visible/button:ring-2 group-focus-visible/button:ring-ring",
+            // Same geometry as each card's notch island (see the clip paths in MovieCard):
+            // poster 26.9% of the card width (radius 5.8%), landscape 16% (radius 2.5%).
+            appearance === "poster" ? "size-[26.9cqw] rounded-[5.8cqw]" : "size-[16cqw] rounded-[2.5cqw]",
             isSaved &&
               "border-[#8bd8ff]/28 bg-[#229ee5]/24 from-white/20 to-[#e5228d]/10 group-hover/button:bg-[#229ee5]/34",
           )}
