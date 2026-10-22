@@ -10,7 +10,57 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.5 — Pick for Me Experience (next; not started)
+Sprint 05.6 — Anonymous Watchlist Experience (next; not started)
+
+Sprint 05.5 — Pick for Me Experience is accepted and complete (P1, P2, P3 accepted by the Tech Lead on 2026-10-22).
+
+### Sprint 05.5 Work Packages
+
+- [x] 05.5-P1 — Route + filters + pick flow (accepted by the Tech Lead on 2026-10-22: "Perfect!" and go-ahead to the next part; also covers P2's spotlight, artwork-first reveal and repeat avoidance)
+- [x] 05.5-P2 — Spotlight + states (accepted by the Tech Lead on 2026-10-22, including the polish round)
+- [x] 05.5-P3 — Responsive polish + visual QA (accepted by the Tech Lead on 2026-10-22)
+
+Visual direction, cult-ui components (halo-search adapted as the prompt line, halo-select, halo-toggle-group, halo-button), Vengeance UI effects, loading-ui morphing-infinity, data decisions and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§13.1). Work happens on branch `feature/pick-for-me-05.5`.
+
+05.5-P3 accepted state:
+
+- QA audit of `/pick` at 1440 / 768 / 390 in every state (idle, searching, result, no match, error): no page-level horizontal overflow, no touch target under 44px except the accepted 40px tablet rail arrows, heading order H1 → H2 → H3 → H2, every image has alt text, focus moves to and announces the result / notice, keyboard Genre select + rating toggle + Pick by Enter all work, reduced motion leaves nothing animating (strip loop, rays, glows), no page errors.
+- Fixed (Tech Lead report): posters sometimes did not load. Cause: the Next image optimiser times out fetching TMDB artwork on slow connections (`upstream image response timed out`), and summary backdrops were TMDB `original` files (several MB). Movie-summary backdrops now use TMDB `w780` (D029 updated); a shared `ResilientImage` retries a failed optimised image straight from TMDB and otherwise shows a designed placeholder, never a broken image; the picker quietly picks another movie (max 2, within the 10 s budget) when the picked poster cannot load at all or the movie has no poster. Verified with the optimiser down (loads directly), the first two picks' posters blocked (third movie shown with its poster) and all images down (placeholder ticket in ~5 s, no broken images).
+- Fixed (Tech Lead report): the top strip started fast, slowed and stopped. Cause: a new image array on every render restarted the loop, and the GSAP tween was created in a timeout outside the GSAP context, so old tweens were never killed and stacked. Follow-up (Tech Lead report: occasional stutter, and a faster strip after resizing): GSAP ran on the main thread, tiles popped in while moving, extra copies were added after the first render, and the loop distance was computed once from the window width (tiles are 140px below md, 180px above). Now the strip keeps its first set of posters for the page load, renders all copies up front, preloads the posters before the loop starts (max 4 s), and loops with the Web Animations API on the compositor; the distance is measured from the tiles and re-synced on resize, and speed is per tile. `gsap` was removed. Measured: ~242 px/s at 1440 even with the main thread frozen 350ms every second, 192 px/s at 390 (same 1.23 tiles/s), unchanged after resizing back, 0 tiles added while moving, no animation with reduced motion; UI unchanged.
+- Genre / Release year: the label reveal after choosing an option is slower and smoother (~0.55 s for "Animation", was ~0.3 s; Tech Lead request).
+- Screenshots: `docs/screenshots/05.5-P3-*` (idle, searching, result, full page, no match, error at 1440 / 768 / 390; reduced motion; poster placeholder).
+
+05.5-P2 polish (accepted):
+
+- Top poster strip: soft fade and edge blur on both sides.
+- Searching frame: loading-ui `morphing-infinity` (verbatim) replaces the shader orb.
+- Minimum rating: cult-ui `halo-toggle-group` used verbatim (dark styles applied directly, 44px items) instead of the adapted `halo-segmented`, which was removed.
+- Spotlight poster as a rounded ticket (perforated tear line, side notches); the TMDB score moved off the artwork into the ticket stub.
+- Landscape suggestion rail: extra bottom room so the card shadow fades softly instead of being clipped.
+- Verified: lint, build, `git diff --check`; live at 1440 / 390: no horizontal overflow, rating toggles 44px with full screen-reader names and URL sync, score not over the artwork; screenshots `docs/screenshots/05.5-P2-polish-*`.
+
+05.5-P2 implemented state (awaiting review):
+
+- No match: names the current choices in words and offers one button per active choice ("Rated 7+ instead" / "Any rating", "Any year, not just 1925", "Any genre, not just Documentary") plus "Start over with any movie"; each loosens just that choice, updates the URL and searches again straight away.
+- Error: same cinematic frame, accurate copy ("We couldn't reach the movie service"), choices kept, Try again.
+- Both notices use the spotlight frame with a dim fan of popular posters and the halo orb; focus moves to the notice heading.
+- Verified: lint, build, `git diff --check`; live at 1440 / 390: no-match → loosen year → result; forced 502 → Try again → result with the URL unchanged; no horizontal overflow; screenshots `docs/screenshots/05.5-P2-*`.
+
+05.5-P1 redesign (accepted):
+
+- Title hero: earlier Manrope title / flip-fade design restored (Tech Lead request) with the original Vengeance UI magnetic-spotlight-marquee strip below the text (no pointer-follow; 240 px/s instead of 600; loop later moved from GSAP to the Web Animations API and `gsap` removed — see P3), original animated-rays (drift now actually running) and flip-fade-text; controls on a symmetric 2 × 2 grid; halo rims desynchronised (own phase/speed, only prompt and Pick button glow continuously).
+- "Picked for you" spotlight from the Tech Lead's references; the search stays up until details, poster and backdrop have loaded (max 10 s from the click), shuffling posters of movies that match the current choices (popular as fallback) with honest step text; quiet retry (max 2) when Pick Again repeats a recently shown movie; focus moves to the result.
+- Landscape suggestion cards (`movie-covers/Cards`): "Popular right now" / "More like {title}"; `MovieCard` / `MovieRow` gained a landscape variant; backend D029 adds an optional `backdropUrl` to movie summaries (77 tests passing).
+- Verified: lint, build, `git diff --check`, `dotnet test`; browser at 1440 / 768 / 390: no horizontal overflow, touch targets ≥ 44px (except the accepted 40px tablet rail arrows), artwork always loaded at reveal (reveals in ~2–6 s live; 10.2 s with artwork held back 14 s), marquee follow + wake, no-match / error states, marquee strip fixed under mouse movement, reduced motion with no running animations or marquee loop; screenshots in `docs/screenshots/05.5-P1-*` (replacing the first-round set; hero screenshots to be retaken once TMDB is reachable again — on 2026-10-22 TMDB timed out from this machine, so the final hero was verified with stand-in data).
+
+05.5-P1 first-round state (superseded by the redesign above):
+
+- Backend D028: `vote_count.gte=100` is sent with every minimum-rating Discover/Pick request; tests updated (77 passing).
+- New dependencies: `motion` (all halo controls) and `@paper-design/shaders-react` (the Warp orb in the prompt line), required by the cult-ui components.
+- cult-ui components adapted in `frontend/src/components/ui/halo/` (shared glow, button, select, segmented; halo-search adapted to a read-only prompt line because Pick takes no free text). Brand pink/violet/cyan rim, dark-only surfaces, rim and orb still under reduced motion, staggered text readable as a whole by screen readers.
+- `/pick`: intro, prompt sentence restating the choice, Genre / Release year selects, Minimum rating segmented (Any / 6+ / 7+ / 8+), Pick a movie / Pick again, basic result (poster, title, year, rating, overview, View Details, Watchlist), no-match with Clear choices, error with Try again; filters in the URL (`/pick?genre=&year=&rating=`).
+- Verified: lint, build, `git diff --check`, `dotnet test`; live API checks (unfiltered, genre, genre+year+rating, rating only, no match 404, invalid 400); browser checks at 1440 / 768 / 390: no horizontal overflow, no touch target under 44px, URL sync, Pick again, Watchlist add/remove, View Details, no-match and error states; screenshots in `docs/screenshots/05.5-P1-*`.
+- Known: the header prefetches `/watchlist`, which 404s until Sprint 05.6 (pre-existing).
 
 Sprint 05.4 — Movie Details Experience is accepted and complete (D1, D2, D2b, D3 accepted by the Tech Lead on 2026-10-22).
 
@@ -203,6 +253,10 @@ The existing frontend visual implementation is not a visual source of truth for 
 - 05.3-S3 — Paging + responsive polish + visual QA
 - Sprint 05.3 — Search & Discover Experience
 - Sprint 05.4 — Movie Details Experience
+- 05.5-P1 — Route + filters + pick flow
+- 05.5-P2 — Spotlight + states
+- 05.5-P3 — Responsive polish + visual QA
+- Sprint 05.5 — Pick for Me Experience
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
@@ -212,13 +266,12 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- None. Sprint 05.5 is next and has not started.
+- None. Sprint 05.6 is next and has not started.
 
 ---
 
 ## Not Started
 
-- Sprint 05.5 — Pick for Me Experience
 - Sprint 05.6 — Anonymous Watchlist Experience
 - Sprint 05.7 — Responsive, Interaction & UX Polish
 - Sprint 05.8 — Stage 05 Verification & Handoff
@@ -302,6 +355,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Plan Sprint 05.5 — Pick for Me Experience (reference review and work packages with review checkpoints, as in 05.2–05.4).
-2. Execute 05.5 only after the plan is agreed; do not start Sprint 05.6 before Sprint 05.5 is accepted.
+1. Plan Sprint 05.6 — Anonymous Watchlist Experience (reference review and work packages with review checkpoints, as in 05.2–05.5). The header link to `/watchlist` currently returns 404 until this page exists.
+2. Execute 05.6 only after the plan is agreed; do not start Sprint 05.7 before Sprint 05.6 is accepted.
 3. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

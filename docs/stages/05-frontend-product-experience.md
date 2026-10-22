@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Next work is Sprint 05.5 — Pick for Me Experience.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Next work is Sprint 05.6 — Anonymous Watchlist Experience.
 
 ---
 
@@ -992,6 +992,52 @@ Do not claim LLM/AI personalization that does not exist.
 - [ ] copy remains accurate to rule-based behavior.
 - [ ] approved references define appearance.
 
+## 13.1 Sprint 05.5 Reference Adaptation and Execution Plan
+
+**Status: Completed / Accepted** (P1–P3 accepted 2026-10-22) — plan approved by the Tech Lead on 2026-10-22.
+
+Visual direction (Tech Lead decision 2026-10-22):
+
+- No Pick-specific reference images exist. Base elements (header, typography, colours, cards, Watchlist control, genre pills, rating stars, buttons) use the existing shared MovieNight UI.
+- The Pick experience itself gets a distinctive "smart pick" UX, in the spirit of other smart-pick products: it should feel considered and intelligent without ever claiming AI, personalization or learning. Copy describes what actually happens (one movie picked from popular movies matching the chosen filters).
+- Use these cult-ui components (https://www.cult-ui.com/docs/components), adapted to MovieNight tokens:
+
+| Component | Use on `/pick` |
+|---|---|
+| `halo-search` | Signature intro / prompt surface of the picker (adapted to a read-only prompt line: Pick takes no free text) |
+| `halo-select` | Genre and Release year selection |
+| `halo-toggle-group` | Minimum rating choice (replaced the first-round `halo-segmented` at the Tech Lead's request) |
+| `halo-button` | The Pick action and Pick Again |
+
+Their install method and dependencies (e.g. a motion library) are checked in 05.5-P1 before use and reported in the P1 completion report. They must respect reduced motion, keyboard access and the 44px touch-target rule.
+
+Data decisions:
+
+- `GET /api/movies/pick?genreId&year&minRating` returns one `MovieSummaryDto`; 404 = no match, 502 = TMDB failure.
+- The spotlight additionally calls the existing `GET /api/movies/{id}` for runtime, genres, director, country and recommendations; if that call fails or misses the 10 s budget the spotlight uses the summary data. Movie summaries carry an optional backdrop (D029).
+- When a minimum rating is set, Discover and Pick send a TMDB vote-count floor (D028), so high ratings do not return obscure low-vote movies.
+- Repeat avoidance is frontend-only: if a pick returns a movie shown recently in this session, the picker retries quietly, at most twice, then shows the result.
+- Filters live in the URL (`/pick?genre=&year=&rating=`), parsed with the Search ranges; the result is not in the URL.
+
+P1 review feedback (Tech Lead, 2026-10-22) and resulting direction:
+
+- The page felt empty and the result card generic; the rating/button row left a gap and broke symmetry; every halo control pulsed in step.
+- Controls sit on a symmetric 2 × 2 grid; halo rims run at their own phase and speed, and only the prompt line and the Pick button glow continuously (selects / rating move only on hover or focus).
+- The page opens with a title hero built from the original Vengeance UI components: `magnetic-spotlight-marquee` image strip and seamless loop with live popular posters (Tech Lead changes: no pointer-follow, the strip sits below the hero text rather than under it, the original title/serif treatment is not used, slower loop at 240 px/s; in P3 the loop moved from GSAP to the compositor-driven Web Animations API so it never stutters, with fixed preloaded posters per page load and per-tile speed on every screen size); the hero text keeps the earlier Manrope design, `animated-rays` with its original colours and 60 s drift as the background, and `flip-fade-text` mood words in the subtitle.
+- Result follows the Tech Lead's "Picked for you" references (blurred backdrop, centred poster with rating badge, blurred neighbouring posters from recommendations, genre links, title, year (country) · runtime · director, View Details / Watchlist / Pick again, overview) in the spirit of wewatch.ai.
+- Artwork-first reveal: the search keeps playing until the picked movie's details, poster and backdrop have loaded, never longer than 10 s from the click (then the result shows with whatever has loaded). The searching stage shuffles posters of movies matching the current choices (Discover with the same filters; popular as fallback) and states real steps of the search (`flip-fade-text`).
+- A suggestions rail at the bottom uses landscape cards (`movie-covers/Cards`): "Popular right now" before a pick, "More like {title}" after. Needs backdrops on summaries (D029).
+- This brought P2's spotlight, reveal and repeat-avoidance work into P1.
+- P2 polish (Tech Lead, 2026-10-22): faded/blurred edges on the poster strip; loading-ui `morphing-infinity` in the searching frame; the exact cult-ui `halo-toggle-group` for Minimum rating; the spotlight poster as a rounded ticket with the score in its stub, off the artwork; softer shadow room under the landscape suggestion cards.
+
+Work packages (each ends with a screenshot review checkpoint):
+
+- [x] 05.5-P1 — Route + filters + pick flow (accepted 2026-10-22; redesigned per Tech Lead review, absorbing P2's spotlight, reveal and repeat avoidance): D028 backend floor with tests; cult-ui components installed and themed; `/pick` intro, Genre / Year / Min. rating controls, `pickMovie()` client, idle → picking → result / no-match / error flow, basic result with View Details, Watchlist toggle (shared saved state) and Pick Again.
+- [x] 05.5-P2 — Spotlight + states (accepted 2026-10-22, with the polish round): cinematic spotlight result using details data, restrained "picking" reveal, repeat avoidance, no-match state offering to loosen filters, safe error state with retry, accurate rule-based copy.
+- [x] 05.5-P3 — Responsive polish + visual QA (accepted 2026-10-22; also fixed unreliable poster loading and the top-strip speed): 1440 / 768 / 390 compositions, focus moved to and announced for the result, keyboard and reduced-motion checks, screenshots in `docs/screenshots/05.5-*`.
+
+Work happens on branch `feature/pick-for-me-05.5`. Sprint 05.5 is complete only after P1–P3 are accepted.
+
 ## Verification
 
 ```text
@@ -999,6 +1045,8 @@ npm run lint
 npm run build
 git diff --check
 ```
+
+Backend changes (D028) also run `dotnet test`.
 
 Live-check filtered and unfiltered Pick flows.
 
