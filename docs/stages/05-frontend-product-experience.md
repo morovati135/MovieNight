@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Next work is Sprint 05.6 — Anonymous Watchlist Experience.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Next work is Sprint 05.7 — Responsive, Interaction & UX Polish.
 
 ---
 
@@ -1114,6 +1114,29 @@ Do not invent:
 - [ ] no dashboard/analytics content is invented.
 - [ ] mobile grid is usable.
 - [ ] approved references define appearance.
+
+## 14.1 Sprint 05.6 Reference Adaptation and Execution Plan
+
+**Status: Completed / Accepted** (W1–W3 accepted 2026-10-22) — plan approved by the Tech Lead on 2026-10-22.
+
+Direction (Tech Lead decisions, 2026-10-22):
+
+- No Watchlist references exist (`movie-covers/Collections*` show named collections, which are out of scope). The page uses MovieNight's established language (card styles, shared header). W2 review: the hero uses Vengeance UI `morph-text` for the title over the Framer Marketplace "Floating Animation" aurora; the rays background and the fanned recent-poster pile were tried and rejected.
+- Mood: a cozy, personal page — the visitor's own movie shelf, warm and calm rather than a dashboard.
+- Saved movies use the poster `MovieCard` (`movie-covers/Covers_Type_1`, as on Home) in the shared poster grid, each with View Details and a clear Remove.
+- Remove shows a short "Removed *title* · Undo" message (about 5 s); Undo saves the movie again (it returns to the top, because the backend orders by save time).
+- No sorting or genre filtering in this sprint.
+- Privacy note in plain words (saved in this browser only, no account, another browser or cleared site data starts a fresh list); no cookie or identity details.
+
+Backend contract (unchanged): `GET /api/watchlist` (up to 50 movie summaries, newest first), `POST` / `DELETE /api/watchlist/{movieId}`, all through the same-origin `/backend/watchlist` forwarding with browser credentials (D025).
+
+Work packages (each ends with a screenshot review checkpoint):
+
+- [x] 05.6-W1 — Page + states (accepted 2026-10-22): `/watchlist` with title, saved count and privacy note; poster grid with View Details and Remove (+ Undo); loading, error with retry, and empty state with links to Discover and Pick for Me.
+- [x] 05.6-W2 — Visual polish (accepted 2026-10-22): cozy hero with the animated rays, card treatment, gentle remove animation, responsive compositions.
+- [x] 05.6-W3 — QA (accepted 2026-10-22): 1440 / 768 / 390, keyboard, reduced motion, live add → Watchlist → remove, screenshots in `docs/screenshots/05.6-*`.
+
+Work happens on branch `feature/watchlist-05.6`. Sprint 05.6 is complete only after W1–W3 are accepted.
 
 ## Verification
 

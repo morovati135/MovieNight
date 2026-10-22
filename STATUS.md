@@ -10,7 +10,40 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.6 — Anonymous Watchlist Experience (next; not started)
+Sprint 05.7 — Responsive, Interaction & UX Polish (next; not started)
+
+Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete (W1, W2, W3 accepted by the Tech Lead on 2026-10-22).
+
+### Sprint 05.6 Work Packages
+
+- [x] 05.6-W1 — Page + states (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.6-W2 — Visual polish (accepted by the Tech Lead on 2026-10-22, with the morph-text / floating-aurora hero)
+- [x] 05.6-W3 — QA (accepted by the Tech Lead on 2026-10-22)
+
+Direction (cozy personal shelf in the site's own visual language, poster cards, Remove with Undo, no sorting/filtering), privacy note and work-package scope are recorded in `docs/stages/05-frontend-product-experience.md` (§14.1). Work happens on branch `feature/watchlist-05.6`.
+
+05.6-W3 accepted state:
+
+- QA audit of `/watchlist` at 1440 / 768 / 390 in every state (loading, empty, shelf, Undo message, error): no horizontal overflow, no touch target under 44px, headings H1 → H2, every image has alt text, no page errors; reduced motion leaves nothing animating.
+- Fixed: keyboard focus was lost after Remove (it fell back to the top of the page). Now focus moves to Undo; Undo returns it to the restored movie; if the message times out while focused, focus moves to the movie now in that slot, or to the empty-shelf heading when the shelf is empty.
+- Fixed: a card fading out after removal could still be clicked or focused. Each saved movie is now a `ShelfItem` that becomes inert (and hidden from assistive technology) while it exits.
+- Live cross-page run: saved from Home (card island), Movie Details (Add to Watchlist) and Pick for Me (spotlight) → all three on the shelf, newest first → Home's "Your Watchlist" row shows them → removed all by keyboard → Home row hidden.
+- Screenshots: `docs/screenshots/05.6-W3-*`.
+
+05.6-W2 accepted state:
+
+- Hero (revised after Tech Lead review the same day — the first version with rays, a fanned poster pile and a warm ambient glow was rejected): centred title using Vengeance UI `morph-text` ("Your movie shelf" → "Saved for later" → "Ready for tonight"; screen readers get one `h1`), over the Framer Marketplace "Floating Animation" aurora (ported from its published module onto the new `ogl` dependency, brand pink / blue / violet, fading into the page, paused off screen).
+- Cards drift in gently when the shelf opens; a removed card fades and shrinks while the others slide into place, and Undo eases it back in (motion `layout` + `AnimatePresence`).
+- Empty state: a small "empty shelf" of three dashed poster outlines on a warm glow.
+- Reduced motion: no entrance or removal animation, the first title phrase only, and a still aurora frame.
+- Verified: lint, build, `git diff --check`; the W1 live flow rerun unchanged (empty → 9 saved → remove → Undo → details; error → Try again) with no overflow and no target under 44px at 1440 / 768 / 390; aurora canvas renders at 1440 and 390; title morphs; removed card mid-fade at 160 ms; with reduced motion it leaves at once; screenshots `docs/screenshots/05.6-W2-*`.
+
+05.6-W1 accepted state:
+
+- `/watchlist` ("Your movie shelf"): saved count ("9 movies waiting for movie night"), plain-language privacy note, poster grid (shared `MovieCard` + title, year · rating and a Remove button per movie; the card's own island also removes), View Details through the card.
+- Remove shows "Removed *title* · Undo" for 5 s; Undo saves the movie again. `useWatchlist().toggle` now resolves to whether the change succeeded (existing callers unaffected).
+- Loading skeleton, error with Try again, cozy empty state with Discover movies / Pick for Me.
+- Verified: lint, build, `git diff --check`; live with a fresh browser: empty shelf → 9 saved through `/backend/watchlist` → 9 shown → remove 9 → 8 → Undo → 9 (backend 9) → Undo message gone after 5 s → View Details opens the movie; error → Try again → shelf; no horizontal overflow and no target under 44px at 1440 / 768 / 390; screenshots `docs/screenshots/05.6-W1-*`.
 
 Sprint 05.5 — Pick for Me Experience is accepted and complete (P1, P2, P3 accepted by the Tech Lead on 2026-10-22).
 
@@ -257,6 +290,10 @@ The existing frontend visual implementation is not a visual source of truth for 
 - 05.5-P2 — Spotlight + states
 - 05.5-P3 — Responsive polish + visual QA
 - Sprint 05.5 — Pick for Me Experience
+- 05.6-W1 — Page + states
+- 05.6-W2 — Visual polish
+- 05.6-W3 — QA
+- Sprint 05.6 — Anonymous Watchlist Experience
 - Product scope and non-goals locked
 - Backend/frontend stack selected
 - Local development conventions locked
@@ -266,13 +303,12 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- None. Sprint 05.6 is next and has not started.
+- None. Sprint 05.7 is next and has not started.
 
 ---
 
 ## Not Started
 
-- Sprint 05.6 — Anonymous Watchlist Experience
 - Sprint 05.7 — Responsive, Interaction & UX Polish
 - Sprint 05.8 — Stage 05 Verification & Handoff
 - Stage 06 — Full-Stack Integration, Testing & Runtime Hardening
@@ -355,6 +391,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Plan Sprint 05.6 — Anonymous Watchlist Experience (reference review and work packages with review checkpoints, as in 05.2–05.5). The header link to `/watchlist` currently returns 404 until this page exists.
-2. Execute 05.6 only after the plan is agreed; do not start Sprint 05.7 before Sprint 05.6 is accepted.
+1. Plan Sprint 05.7 — Responsive, Interaction & UX Polish (scope review and work packages with review checkpoints, as in 05.2–05.6).
+2. Execute 05.7 only after the plan is agreed; do not start Sprint 05.8 before Sprint 05.7 is accepted.
 3. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.
