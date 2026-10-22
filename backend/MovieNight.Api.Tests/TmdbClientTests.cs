@@ -69,7 +69,19 @@ public sealed class TmdbClientTests
         await client.DiscoverMoviesAsync(new TmdbDiscoverRequest(28, 2020, 7.5, 3), CancellationToken.None);
 
         Assert.Equal("/3/discover/movie", handler.RequestUri?.AbsolutePath);
-        Assert.Equal("sort_by=popularity.desc&page=3&with_genres=28&primary_release_year=2020&vote_average.gte=7.5", handler.RequestUri?.Query.TrimStart('?'));
+        Assert.Equal("sort_by=popularity.desc&page=3&with_genres=28&primary_release_year=2020&vote_average.gte=7.5&vote_count.gte=100", handler.RequestUri?.Query.TrimStart('?'));
+    }
+
+    [Fact]
+    public async Task DiscoverMoviesAsync_sends_no_vote_count_floor_without_minimum_rating()
+    {
+        var handler = new StubHttpMessageHandler(HttpStatusCode.OK, """{ "page": 1, "total_pages": 1, "total_results": 0, "results": [] }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        await client.DiscoverMoviesAsync(new TmdbDiscoverRequest(28, 2020, null, 1), CancellationToken.None);
+
+        Assert.Equal("sort_by=popularity.desc&page=1&with_genres=28&primary_release_year=2020", handler.RequestUri?.Query.TrimStart('?'));
     }
 
     [Fact]

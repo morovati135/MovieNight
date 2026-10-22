@@ -15,6 +15,9 @@ public sealed class TmdbClient(HttpClient httpClient)
     private const string SearchMoviesPath = "search/movie";
     private const string DiscoverMoviesPath = "discover/movie";
 
+    // D028: a minimum rating only counts for movies rated by enough people.
+    private const int MinimumRatingVoteCount = 100;
+
     internal Task<TmdbMovie> GetMovieSummaryAsync(int movieId, CancellationToken cancellationToken) =>
         GetFromTmdbAsync<TmdbMovie>(
             $"movie/{movieId}",
@@ -70,6 +73,7 @@ public sealed class TmdbClient(HttpClient httpClient)
         if (request.MinRating is not null)
         {
             parameters.Add($"vote_average.gte={request.MinRating.Value.ToString(CultureInfo.InvariantCulture)}");
+            parameters.Add($"vote_count.gte={MinimumRatingVoteCount}");
         }
 
         return GetFromTmdbAsync<TmdbMoviePage>(

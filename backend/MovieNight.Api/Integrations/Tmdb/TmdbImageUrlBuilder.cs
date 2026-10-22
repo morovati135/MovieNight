@@ -8,6 +8,9 @@ internal static class TmdbImageUrlBuilder
 
     public static string? BuildBackdropUrl(string? imagePath) => BuildUrl("original", imagePath);
 
+    // Movie-list backdrops only fill cards and blurred backgrounds; "original" files are several MB and load slowly.
+    public static string? BuildCardBackdropUrl(string? imagePath) => BuildUrl("w780", imagePath);
+
     public static string? BuildProfileUrl(string? imagePath) => BuildUrl("w185", imagePath);
 
     // Full quality: the frontend resizes thumbnails itself and shows the original in its full-size viewer.

@@ -20,7 +20,8 @@ internal static class TmdbMovieMapper
         movie.ReleaseDate,
         movie.GenreIds.Count > 0 ? movie.GenreIds : movie.Genres.Select(genre => genre.Id).ToArray(),
         TmdbImageUrlBuilder.BuildPosterUrl(movie.PosterPath),
-        movie.VoteAverage);
+        movie.VoteAverage,
+        TmdbImageUrlBuilder.BuildCardBackdropUrl(movie.BackdropPath));
 
     public static PagedMovieResultDto ToPagedMovieResult(TmdbMoviePage page) => new(
         page.Results.Select(ToMovieSummary).ToArray(),

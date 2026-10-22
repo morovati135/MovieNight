@@ -230,3 +230,27 @@ This file records decisions that future agent sessions must preserve unless expl
 
 - Keep this to one TMDB request per movie; cap list sizes in the mapper.
 - Still out of scope (PROJECT.md non-goals / Stage 05 scope): reviews and comments, likes and user ratings, watch providers, IMDb data, production studios. Trailers, tagline, age rating and collections were offered and not selected; adding them needs a new decision.
+
+## D028 — Vote-Count Floor for Minimum Rating Filters
+
+**Decision:** When a minimum rating is set, the backend Discover request to TMDB (used by `GET /api/movies/discover` and `GET /api/movies/pick`) also sends a minimum vote count (`vote_count.gte`). Without a minimum rating, no floor is sent. The floor is 100 votes (`MinimumRatingVoteCount` in `TmdbClient`).
+
+**Reason:** TMDB `vote_average.gte` alone lets movies with only a handful of votes satisfy high ratings, so "Min. rating 9" returned obscure titles instead of well-rated films. The Tech Lead approved the floor on 2026-10-22 during Sprint 05.5 planning.
+
+**Rules:**
+
+- The floor applies only together with a minimum rating; unfiltered and genre/year-only results are unchanged.
+- It affects Search & Discover (Sprint 05.3) as well as Pick for Me; this is intended.
+- Changing the floor value or exposing it as a parameter needs a new decision.
+
+## D029 — Optional Backdrop on Movie Summaries
+
+**Decision:** `MovieSummaryDto` (every movie list: trending, popular, search, discover, pick, recommendations, Watchlist) gains an optional `backdropUrl`, built from the TMDB list result's `backdrop_path` that MovieNight already receives. It is null when TMDB has none and on Watchlist snapshots created before this change.
+
+**Reason:** The Tech Lead asked (2026-10-22, Sprint 05.5) for landscape suggestion cards (`movie-covers/Cards`, `Covers_Type_2`) and a backdrop behind the Pick spotlight. Landscape cards need wide artwork, which summaries did not carry (05.4 had dropped these cards for that reason). TMDB list results already include it, so no extra request is made.
+
+**Rules:**
+
+- Additive and optional: existing clients and stored data stay valid.
+- Landscape cards fall back to the poster when `backdropUrl` is null.
+- Summary backdrops use the TMDB `w780` rendition (cards and blurred backgrounds); the Movie Details hero keeps its `original` backdrop. `original` files are several MB and timed out in the Next image optimiser on slow connections.

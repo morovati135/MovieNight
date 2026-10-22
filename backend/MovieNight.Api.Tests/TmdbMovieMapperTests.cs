@@ -23,6 +23,7 @@ public sealed class TmdbMovieMapperTests
                     ReleaseDate = new DateOnly(2016, 11, 10),
                     GenreIds = [18, 878],
                     PosterPath = "/poster.jpg",
+                    BackdropPath = "/backdrop.jpg",
                     VoteAverage = 7.6
                 }
             ]
@@ -37,6 +38,7 @@ public sealed class TmdbMovieMapperTests
         Assert.Equal(12, movie.Id);
         Assert.Equal(new[] { 18, 878 }, movie.GenreIds);
         Assert.Equal("https://image.tmdb.org/t/p/w780/poster.jpg", movie.PosterUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w780/backdrop.jpg", movie.BackdropUrl);
     }
 
     [Fact]

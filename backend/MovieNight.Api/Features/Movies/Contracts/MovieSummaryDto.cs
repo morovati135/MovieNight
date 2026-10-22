@@ -7,4 +7,6 @@ public sealed record MovieSummaryDto(
     DateOnly? ReleaseDate,
     IReadOnlyList<int> GenreIds,
     string? PosterUrl,
-    double VoteAverage);
+    double VoteAverage,
+    // Landscape artwork for wide cards (D029); optional so stored Watchlist snapshots stay valid.
+    string? BackdropUrl = null);

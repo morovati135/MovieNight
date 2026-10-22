@@ -76,7 +76,7 @@ public sealed class MovieCatalogServiceTests
     [Theory]
     [InlineData(null, null, null, "sort_by=popularity.desc&page=1")]
     [InlineData(28, null, null, "sort_by=popularity.desc&page=1&with_genres=28")]
-    [InlineData(null, 2020, 7.5, "sort_by=popularity.desc&page=1&primary_release_year=2020&vote_average.gte=7.5")]
+    [InlineData(null, 2020, 7.5, "sort_by=popularity.desc&page=1&primary_release_year=2020&vote_average.gte=7.5&vote_count.gte=100")]
     public async Task PickAsync_reuses_the_first_page_when_only_one_page_is_available_and_preserves_filters(int? genreId, int? year, double? minRating, string expectedQuery)
     {
         var handler = new GenreHttpMessageHandler("""
@@ -115,8 +115,8 @@ public sealed class MovieCatalogServiceTests
         Assert.Equal([(1, 16), (0, 2)], randomCalls);
         Assert.Collection(
             handler.RequestUris,
-            request => Assert.Equal("sort_by=popularity.desc&page=1&with_genres=28&primary_release_year=2020&vote_average.gte=7.5", request.Query.TrimStart('?')),
-            request => Assert.Equal("sort_by=popularity.desc&page=15&with_genres=28&primary_release_year=2020&vote_average.gte=7.5", request.Query.TrimStart('?')));
+            request => Assert.Equal("sort_by=popularity.desc&page=1&with_genres=28&primary_release_year=2020&vote_average.gte=7.5&vote_count.gte=100", request.Query.TrimStart('?')),
+            request => Assert.Equal("sort_by=popularity.desc&page=15&with_genres=28&primary_release_year=2020&vote_average.gte=7.5&vote_count.gte=100", request.Query.TrimStart('?')));
     }
 
     [Fact]
