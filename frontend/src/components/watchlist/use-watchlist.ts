@@ -54,10 +54,11 @@ export function useWatchlist() {
     [watchlist],
   );
 
+  /** Adds or removes `movie`; resolves to whether the change was saved. */
   const toggle = useCallback(
-    async (movie: MovieSummary) => {
+    async (movie: MovieSummary): Promise<boolean> => {
       if (updatingMovieIds.has(movie.id)) {
-        return;
+        return false;
       }
 
       const wasSaved = savedMovieIds.has(movie.id);
@@ -92,8 +93,10 @@ export function useWatchlist() {
             ? `${movie.title} removed from your watchlist.`
             : `${movie.title} added to your watchlist.`,
         );
+        return true;
       } catch {
         setStatusMessage("We couldn't update your watchlist. Please try again.");
+        return false;
       } finally {
         setUpdatingMovieIds((current) => {
           const next = new Set(current);
