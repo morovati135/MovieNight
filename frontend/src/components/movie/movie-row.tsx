@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { glassControlClassName, inlineLinkClassName } from "@/components/ui/controls";
 import { cn } from "@/lib/utils";
 import type { MovieSummary } from "@/types/movie";

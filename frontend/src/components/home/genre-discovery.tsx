@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getImageProps } from "next/image";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { GenreChips } from "@/components/movie/genre-chips";
 import { MovieRow } from "@/components/movie/movie-row";
 import { discoverMoviesByGenre, getGenres } from "@/lib/api/movies";

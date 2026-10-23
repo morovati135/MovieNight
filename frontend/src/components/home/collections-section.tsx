@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { useRailScroll } from "@/components/movie/use-rail-scroll";
 import { glassControlClassName } from "@/components/ui/controls";
 import { ResilientImage } from "@/components/ui/resilient-image";

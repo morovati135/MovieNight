@@ -148,5 +148,3 @@ export function MagneticSpotlightMarquee({ background, children, className, imag
     </section>
   );
 }
-
-export default MagneticSpotlightMarquee;

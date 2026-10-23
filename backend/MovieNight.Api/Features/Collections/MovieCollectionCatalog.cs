@@ -1,20 +1,5 @@
 namespace MovieNight.Api.Features.Collections;
 
-/// <summary>Where a curated collection's movies come from on TMDB.</summary>
-public enum MovieCollectionSource
-{
-    /// <summary>A TMDB franchise collection (<c>collection/{id}</c>), in release order.</summary>
-    Franchise,
-
-    /// <summary>Popular movies from one or more production companies (<c>with_companies</c>, "|" = OR).</summary>
-    Studio,
-
-    /// <summary>Popular movies of one genre.</summary>
-    Genre,
-}
-
-public sealed record MovieCollectionDefinition(string Slug, string Title, MovieCollectionSource Source, string TmdbId);
-
 /// <summary>
 /// The fixed, curated set of Home collections (D030). Franchises use TMDB collections; "Marvel", "DC" and
 /// "Musicals" are not TMDB collections, so they are built from studios and a genre.

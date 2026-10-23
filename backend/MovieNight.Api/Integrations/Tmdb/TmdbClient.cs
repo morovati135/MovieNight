@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Json;
 using System.Globalization;
 using System.Text.Json;
 using MovieNight.Api.Integrations.Tmdb.Transport;
@@ -170,31 +169,5 @@ public sealed class TmdbClient(HttpClient httpClient)
 
             throw new TmdbUpstreamException("TMDB rejected the connectivity request.");
         }
-    }
-}
-
-internal sealed record TmdbDiscoverRequest(int? GenreId, int? Year, double? MinRating, int Page, string? CompanyIds = null);
-
-public sealed class TmdbAuthenticationException : Exception
-{
-    public TmdbAuthenticationException()
-        : base("TMDB authentication failed.")
-    {
-    }
-}
-
-public sealed class TmdbUpstreamException : Exception
-{
-    public TmdbUpstreamException(string message)
-        : base(message)
-    {
-    }
-}
-
-public sealed class TmdbNotFoundException : Exception
-{
-    public TmdbNotFoundException()
-        : base("TMDB movie was not found.")
-    {
     }
 }

@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 import { HaloGlow, haloSurfaceClassName, haloSurfaceStyle, StaggeredText } from "./halo-glow";
 
-export type HaloSelectItem = { value: string; label: string };
+type HaloSelectItem = { value: string; label: string };
 
 type HaloSelectProps = {
   label: string;

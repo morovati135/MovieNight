@@ -6,13 +6,6 @@ using MovieNight.Api.Integrations.Tmdb;
 
 namespace MovieNight.Api.Features.Watchlists;
 
-public enum WatchlistAddResult
-{
-    Added,
-    AlreadyExists,
-    CapacityReached
-}
-
 public sealed class WatchlistService(MovieNightDbContext dbContext, IMovieSummaryLookup movieSummaryLookup)
 {
     public const int MaximumItems = 50;

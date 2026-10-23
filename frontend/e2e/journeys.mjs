@@ -1,6 +1,6 @@
 // End-to-end user journeys through the real frontend and backend (and live TMDB data).
 // Start the backend and the frontend first; see e2e/README.md. Exits with code 1 if any check fails.
-import { launch, sleep } from "./browser.mjs";
+import { apiUrl, launch, sleep } from "./browser.mjs";
 
 const browser = await launch();
 let failures = 0;
@@ -74,7 +74,7 @@ try {
   check("Watchlist: empty state after removal", /Discover movies|Pick for Me/.test(text) && !/waiting for movie night/.test(text));
 
   // Backend down
-  await browser.blockUrls(["http://localhost:5080/*", "*/backend/*"]);
+  await browser.blockUrls([`${apiUrl}/*`, "*/backend/*"]);
   await browser.go("/", 6000);
   text = await browser.text();
   check(

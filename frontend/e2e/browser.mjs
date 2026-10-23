@@ -5,9 +5,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-export const baseUrl = (process.env.E2E_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const baseUrl = (process.env.E2E_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 export const apiUrl = (process.env.E2E_API_URL ?? "http://localhost:5080").replace(/\/$/, "");
-export const shotsDir = process.env.E2E_SHOTS_DIR ?? path.join(os.tmpdir(), "movienight-e2e-shots");
+const shotsDir = process.env.E2E_SHOTS_DIR ?? path.join(os.tmpdir(), "movienight-e2e-shots");
 
 const candidates = [
   process.env.BROWSER_PATH,
