@@ -2,13 +2,17 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 is next and has not started
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 in progress
 
 ## Current Stage
 
-Stage 05 — Frontend Product Experience (completed / accepted)
+Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). Stage 05 is completed / accepted.
 
 ## Current Sprint
+
+Sprint 06.1 — Cache Review & Hardening (in progress; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
+
+Previous sprint:
 
 Sprint 05.8 — Stage 05 Verification & Handoff (accepted by the Tech Lead on 2026-10-23; verification run 2026-10-23: PASS; branch `feature/stage-05-handoff`)
 
