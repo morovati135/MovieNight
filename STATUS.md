@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 accepted by the Tech Lead on 2026-10-23; Sprint 06.4 in progress
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 accepted by the Tech Lead on 2026-10-23; Sprint 06.4 accepted by the Tech Lead on 2026-10-23; Sprint 06.5 in progress
 
 ## Current Stage
 
@@ -10,7 +10,18 @@ Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). 
 
 ## Current Sprint
 
-Sprint 06.4 — Runtime Configuration, Security & Dependency Audit (in progress).
+Sprint 06.5 — Stage 06 Verification & Handoff (in progress).
+
+Sprint 06.4 — Runtime Configuration, Security & Dependency Audit (accepted by the Tech Lead on 2026-10-23).
+
+06.4 implemented state (decisions in D033):
+
+- Findings and fixes: the TMDB preflight diagnostic was public and reached TMDB uncached on every call → Development only; an unexpected exception returned an empty 500 → generic Problem Details 500; CORS origin was hard-coded → `Cors:AllowedOrigins` (default localhost:3000); no security headers → added on API and frontend.
+- Verified by 15 new HTTP tests (178 backend tests): security headers; generic 500 without internal detail; malformed TMDB answers → 502; preflight, OpenAPI and Scalar absent in Production; startup fails clearly for a missing token or non-HTTPS TMDB address without leaking the token; CORS from configuration and no credentials for other origins; cookie Secure over HTTPS only; the TMDB token is sent only to TMDB and never returned.
+- Dependencies: `dotnet list package --vulnerable --include-transitive` clean; patch updates to 10.0.13 (OpenApi, EF Core, Mvc.Testing) and Microsoft.OpenApi 2.12.2; frontend `next` 16.4.3, `eslint-config-next`, `tailwind-merge` 3.7; `npm audit --omit=dev` 0. Left alone as major jumps: eslint 10, TypeScript 7, React 19.3, `@types/node` 26, Scalar minor, Microsoft.OpenApi 3.
+- Checked and clean: no secret in the repository (token only from user secrets); logs do not include the Authorization header; production build, 41 frontend tests, 17 / 17 journey checks and the route sweep pass against the production build.
+- Open Tech Lead decisions (not done): Content-Security-Policy, rate limiting, HTTPS redirect / HSTS: see D033.
+
 
 Sprint 06.3 — Contract Verification & Frontend Tests (accepted by the Tech Lead on 2026-10-23).
 

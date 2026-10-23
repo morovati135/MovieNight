@@ -310,3 +310,16 @@ This file records decisions that future agent sessions must preserve unless expl
 - Keys are `group:name:...` and built the same way everywhere; Discover keys use invariant formatting.
 - Hits, misses and joined loads are counted (`MovieNight.Cache` meter, tagged by key group) and logged at debug level.
 - Staleness is accepted up to the lifetime. There is no background refresh (a user can still meet one cold call when an entry expires); revisit only if measurements show it matters.
+
+
+## D033 — Runtime Hardening and Configuration (Sprint 06.4)
+
+**Decision:** The API is hardened for a deployed run without changing any product behavior.
+
+**Rules:**
+
+- **Configuration:** `Tmdb:ReadAccessToken` (user secret or environment variable) is required and `Tmdb:BaseUrl` must be an absolute HTTPS URL; the app refuses to start otherwise, with a message that never contains the token. CORS origins come from `Cors:AllowedOrigins` (default `http://localhost:3000`); credentials are never allowed cross-origin because the Watchlist goes through the frontend's same-origin `/backend` proxy.
+- **Errors:** an unexpected failure outside Development returns a generic `application/problem+json` 500 (no message, stack or type); malformed TMDB answers are 502; the exception is only logged. OpenAPI, Scalar and `GET /api/tmdb/preflight` exist only in Development (the preflight reaches TMDB uncached on every call).
+- **Headers:** the API sends `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and `Referrer-Policy: no-referrer`; the frontend sends nosniff, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` and a restrictive `Permissions-Policy`.
+- **Cookie:** the anonymous cookie is HttpOnly and SameSite=Lax, and Secure whenever the request is HTTPS (tested).
+- **Not done, on purpose:** no Content-Security-Policy (Next needs nonces; the pages load only TMDB images and own scripts, so the benefit is small for this project), no rate limiting (behind the Next proxy every Watchlist call would share one address, so a per-IP limit would punish everyone; revisit with a deployment decision), no HTTPS redirect or HSTS (depends on where it is hosted).
