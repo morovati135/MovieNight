@@ -4,7 +4,7 @@ Discover, search and pick movies for your next movie night, and keep a private w
 
 ![MovieNight home page](docs/images/home-hero.jpg)
 
-MovieNight is a portfolio project: an **ASP.NET Core 10** API and a **Next.js 16** frontend over the [TMDB](https://www.themoviedb.org/) catalog, built almost entirely by an AI coding agent working in small, reviewed steps (see [docs/AI-WORKFLOW.md](docs/AI-WORKFLOW.md)).
+**MovieNight is open source and a good starting point for your own movie site.** It is a portfolio project: an **ASP.NET Core 10** API and a **Next.js 16** frontend over the [TMDB](https://www.themoviedb.org/) catalog, built almost entirely by an AI coding agent working in small, reviewed steps (see [docs/AI-WORKFLOW.md](docs/AI-WORKFLOW.md)).
 
 ## Features
 
@@ -15,12 +15,36 @@ MovieNight is a portfolio project: an **ASP.NET Core 10** API and a **Next.js 16
 - **Anonymous watchlist:** up to 50 movies, stored per browser with a protected cookie; no sign-up, no tracking.
 - **Quality:** responsive from 320 px, keyboard accessible and axe-clean, friendly loading / empty / error states, and a server-side cache tuned per kind of data.
 
-| | |
-|---|---|
-| ![Genre discovery](docs/images/home-genres.jpg) | ![Search](docs/images/search.jpg) |
-| ![Movie details](docs/images/details-hero.jpg) | ![Cast and scenes](docs/images/details-cast-scenes.jpg) |
-| ![Pick for Me](docs/images/pick-result.jpg) | ![Watchlist](docs/images/watchlist.jpg) |
-| ![Collection](docs/images/collection.jpg) | <img src="docs/images/mobile-home.jpg" alt="Mobile home" width="200"> <img src="docs/images/mobile-details.jpg" alt="Mobile details" width="200"> |
+### Desktop
+
+<table>
+  <tr>
+    <td><img src="docs/images/home-genres.jpg" alt="Home: instant genre discovery"></td>
+    <td><img src="docs/images/search.jpg" alt="Search by title with filters"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/details-hero.jpg" alt="Movie details"></td>
+    <td><img src="docs/images/details-cast-scenes.jpg" alt="Cast and scene gallery"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/pick-result.jpg" alt="Pick for Me result"></td>
+    <td><img src="docs/images/watchlist.jpg" alt="Anonymous watchlist"></td>
+  </tr>
+</table>
+
+### Mobile
+
+![MovieNight on a phone: home, details, watchlist and search](docs/images/mobile-showcase.jpg)
+
+## Use it as a template
+
+The code is MIT-licensed, small and documented, so you can fork it as a base for a movie discovery site of your own. You get a working API with caching and tests, a polished responsive frontend, and an anonymous watchlist you can keep or remove. To make it yours:
+
+- **Name, colors and content:** the brand colors are tokens in `frontend/src/app/globals.css`; the About page and its social links are in `frontend/src/components/about/about-experience.tsx`; page titles and the social-preview image are in `frontend/src/app/layout.tsx` and `opengraph-image.tsx`.
+- **Collections:** the curated Home collections are one list in `backend/MovieNight.Api/Features/Collections/MovieCollectionCatalog.cs`.
+- **Features:** keep what you need (for example, drop the watchlist and SQLite for a read-only catalog). Read [ARCHITECTURE.md](ARCHITECTURE.md) and [DECISIONS.md](DECISIONS.md) first; they explain the boundaries and why they exist.
+- **Keep the TMDB attribution** in the footer and README, and use your own TMDB token: TMDB's terms apply to any site you publish.
+- Working with an AI agent? [CLAUDE.md](CLAUDE.md) and [docs/AI-WORKFLOW.md](docs/AI-WORKFLOW.md) are ready to use.
 
 ## Tech stack
 
@@ -130,4 +154,4 @@ MovieNight is built to run locally; deployment is out of scope for version 1. If
 
 This product uses the TMDB API but is not endorsed or certified by TMDB. Movie data and images are provided by [TMDB](https://www.themoviedb.org/).
 
-Released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE): free to use, copy, modify and publish, including as a template for your own project. Stars, forks and feedback are welcome.
