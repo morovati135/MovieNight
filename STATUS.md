@@ -2,13 +2,23 @@
 
 ## Current Phase
 
-Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 accepted by the Tech Lead on 2026-10-23; Sprint 07.2 accepted by the Tech Lead on 2026-10-23; Sprint 07.3 is next and has not started
+Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 accepted by the Tech Lead on 2026-10-23; Sprint 07.2 accepted by the Tech Lead on 2026-10-23; Sprint 07.3 accepted by the Tech Lead on 2026-10-23; Sprint 07.4 is next and has not started
 
 ## Current Stage
 
 Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / accepted). Stage 07 — Final Polish & Portfolio Handoff is in progress. Stage 05 is completed / accepted.
 
 ## Current Sprint
+
+Sprint 07.3 — Code Cleanup, Backend Structure & Dead Code (accepted by the Tech Lead on 2026-10-23).
+
+07.3 implemented state:
+
+- One type per file in the backend (no logic change, namespaces unchanged): the 12 TMDB transport models (`Transport/Tmdb*.cs`), the four query models (`PageQuery`, `SearchMoviesQuery`, `DiscoverMoviesQuery`, `PickMovieQuery`), the three TMDB exceptions and `TmdbDiscoverRequest`, `CacheTtl`, `IMovieSummaryLookup`, `IAnonymousVisitorIdentityService`, `WatchlistAddResult`, the collection enum / definition / catalog, and in the tests `ApiHost` / `FakeTmdb`. The old `TmdbMovieTransportModels.cs` is gone. Every file now holds exactly one top-level type.
+- Unused `using` lines removed across both projects (checked with the IDE0005 analyzer); one dead private method (`EmptyPage`) removed; analyzers for unused members and parameters report nothing else. Generated EF migrations untouched.
+- Frontend: removed the unused `src/lib/api/health.ts`, the unused `SectionHeading` component (the file now holds only the shared title style and is named `section-title.ts`), duplicate default exports, and unused exported types. A `knip` scan lists only `shadcn` (a documented dev tool, D031) and `axe-core` (loaded by path in the audit script).
+- `.gitattributes` added (`* text=auto eol=lf`, binaries marked) to match `.editorconfig`; the repository already stores LF, so nothing is rewritten and the "LF will be replaced by CRLF" warnings stop for new checkouts.
+- Zero compiler warnings, zero ESLint warnings. Verified: 178 backend tests, 41 frontend tests, tsc, build, 17 / 17 journey checks, 13-route × 4-width sweep, accessibility audit.
 
 Sprint 07.2 — Accessibility, Responsive & Metadata Review (accepted by the Tech Lead on 2026-10-23, including the deeper brand blue and pink).
 
