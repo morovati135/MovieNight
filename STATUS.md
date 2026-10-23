@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 in progress
+Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 accepted by the Tech Lead on 2026-10-23; Sprint 07.2 in progress
 
 ## Current Stage
 
@@ -10,7 +10,19 @@ Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / ac
 
 ## Current Sprint
 
-Sprint 07.1 — Performance & Loading Polish (in progress).
+Sprint 07.2 — Accessibility, Responsive & Metadata Review (in progress).
+
+Sprint 07.1 — Performance & Loading Polish (accepted by the Tech Lead on 2026-10-23).
+
+07.1 implemented state:
+
+- New measurement script `frontend/e2e/perf.mjs` (`npm run e2e:perf`): FCP, LCP, layout shift (CLS), image requests, bytes and failed images per route at 390 and 1440, production build, browser cache off.
+- Baseline findings: warm pages are fast (FCP 30–110 ms, LCP 80–900 ms); the only layout-shift problem was Pick at 1440 (CLS 0.169, "needs improvement"): the page rendered empty before it loaded, so the footer started on screen and jumped down. Cold first loads (no optimizer cache) have LCP 2.7–10 s on Home, dominated by the TMDB image servers (measured 0.6–2 s per image, 4–7 s for the 1 MB hero backdrop), with occasional optimizer 504s recovered by the fallback. Mobile Home requested about 90 images (850 KB) in 10 s because of the genre warm-up.
+- Fixes: Pick's loading fallback is as tall as the page (CLS 0.169 → 0.003, all other routes ≤ 0.014); optimized artwork is kept 30 days instead of 4 hours (`images.minimumCacheTTL`), so returning visits and later hosts need far fewer cold TMDB fetches; early connection to `image.tmdb.org` (preconnect); the genre warm-up is skipped on Save-Data and 2G / 3G connections (mobile Home 90 → 32 image requests with Save-Data).
+- Not changed: the first-ever load of each artwork depends on TMDB's image servers and cannot be made faster from this side; the Hero already loads its first slide first and the rest after it.
+- The journey script's Pick step now polls up to 30 s instead of waiting a fixed 9 s (the reveal waits for artwork and is slow only when TMDB is cold).
+- States: loading, empty and error states of every route were re-checked by the 17 journey checks and the 13-route × 3-width sweep; all pass. 41 frontend tests, tsc, eslint, build pass.
+
 
 Previous sprint:
 
