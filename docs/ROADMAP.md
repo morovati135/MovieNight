@@ -193,6 +193,8 @@ Public frontend routes:
 /movies/[id]         → Movie Details
 /pick                → Pick for Me
 /watchlist           → Anonymous Watchlist
+/about               → About (added by D030, Sprint 05.7)
+/browse/[category]   → See more / category pages with paging (added by D030, Sprint 05.7)
 ```
 
 Major capabilities:
@@ -237,13 +239,18 @@ Major capabilities:
        05.4-D1 → 05.4-D2 → 05.4-D2b → 05.4-D3
 
 05.5 — Pick for Me Experience
-       Status: Not Started
+       Status: Completed / Accepted
 
 05.6 — Anonymous Watchlist Experience
-       Status: Not Started
+       Status: Completed / Accepted
+       Execution:
+       05.6-W1 → 05.6-W2 → 05.6-W3
 
-05.7 — Responsive, Interaction & UX Polish
-       Status: Not Started
+05.7 — Product Additions and Polish (responsive, interaction, UX, About, footer,
+       Collections, Iconic, browse pages, Home speed)
+       Status: Completed / Accepted
+       Execution:
+       05.7-X1 → X2 → X3 → X4 → X5 → X6 → X7
 
 05.8 — Stage 05 Verification & Handoff
        Status: Not Started

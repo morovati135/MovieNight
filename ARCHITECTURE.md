@@ -176,7 +176,11 @@ All movie data requested by the frontend must pass through the backend.
 Example endpoints may include:
 
 ```text
-GET  /api/movies/trending
+GET  /api/movies/trending?page=
+GET  /api/movies/popular?page=
+GET  /api/movies/top-rated?page=
+GET  /api/collections
+GET  /api/collections/{slug}/movies?page=
 GET  /api/movies/search
 GET  /api/movies/discover
 GET  /api/movies/{id}

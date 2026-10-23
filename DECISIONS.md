@@ -253,7 +253,7 @@ This file records decisions that future agent sessions must preserve unless expl
 
 - Additive and optional: existing clients and stored data stay valid.
 - Landscape cards fall back to the poster when `backdropUrl` is null.
-- Summary backdrops use the TMDB `w1280` rendition (cards, blurred backgrounds and, since Sprint 05.7-X3, the Home hero); the Movie Details hero keeps its `original` backdrop. `original` files can be several MB and timed out in the Next image optimiser on slow connections; `w780` was used first and raised to `w1280` so a full-width hero stays sharp.
+- Summary backdrops use the TMDB `w1280` rendition (cards, blurred backgrounds and, since Sprint 05.7-X3, the Home hero); since Sprint 05.7-X7 the Movie Details hero also uses `w1280` (its `original` file, about 2.6 MB, could time out in the image optimiser and leave the hero blank); the Details scene images stay at `original` for the full-size viewer. `original` files can be several MB and timed out in the Next image optimiser on slow connections; `w780` was used first and raised to `w1280` so a full-width hero stays sharp.
 
 ## D030 — Sprint 05.7 Product Additions: About, Browse Pages, Home Sections and Footer
 
@@ -268,3 +268,4 @@ This file records decisions that future agent sessions must preserve unless expl
 - The catalogue (`Features/Collections/MovieCollectionCatalog.cs`): Marvel (company 420), DC (companies 9993, 128064, 429), Harry Potter (collection 1241), John Wick (404609), Godzilla (535313), Musicals (genre 10402), The Lord of the Rings (119), Star Wars (10). `GET /api/collections` returns each with up to three cover posters (franchises in release order), cached 6 hours; a collection TMDB cannot load is left out.
 - "Iconic: Top rated of all time" (`GET /api/movies/top-rated?page=`) is TMDB Discover sorted by rating with at least 10,000 votes, not TMDB's `movie/top_rated`, which currently ranks new, barely voted titles first.
 - `/login`, `/register`, `/profile`, `/settings`, `/collections` and `/admin` remain out of scope.
+- `/browse/[category]` serves `trending`, `popular`, `iconic` and every collection slug; trending, popular and top rated take `?page=` (1–500), `GET /api/collections/{slug}/movies?page=` serves one collection (franchises are a single page, studio and genre sets page through Discover, unknown slug returns 404).

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stage 05 (in progress)
+Implementation / Stage 05 (in progress — only Sprint 05.8 remains)
 
 ## Current Stage
 
@@ -10,7 +10,9 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.7 — Product Additions and Polish (plan approved by the Tech Lead on 2026-10-22; in progress)
+Sprint 05.8 — Stage 05 Verification & Handoff (not started; starts only when the Tech Lead asks)
+
+Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted by the Tech Lead on 2026-10-22 and 2026-10-23); it is committed and pushed on branch `feature/polish-05.7` and not yet merged into `master`.
 
 ### Sprint 05.7 Work Packages
 
@@ -22,7 +24,9 @@ Sprint 05.7 — Product Additions and Polish (plan approved by the Tech Lead on 
 - [x] 05.7-X6 — See more + category pages (accepted by the Tech Lead on 2026-10-23)
 - [x] 05.7-X7 — Interaction pass + final QA (accepted by the Tech Lead on 2026-10-23)
 
-Scope extension, audit findings, decisions (footer, About and Socials, header, collections, browse pages) and work packages are recorded in `docs/stages/05-frontend-product-experience.md` (§15.1) and D030. Work happens on branch `feature/polish-05.7`.
+Scope extension, audit findings, decisions (footer, About and Socials, header, collections, browse pages) and work packages are recorded in `docs/stages/05-frontend-product-experience.md` (§15.1) and D030. Work happened on branch `feature/polish-05.7`.
+
+What remains: Sprint 05.8 (Stage 05 verification and handoff, no new features), then Stage 06 (full-stack integration, testing and runtime hardening, including the mandatory cache review) and Stage 07 (final polish and portfolio handoff). Open Tech Lead decision: whether the details page's scene thumbnails should use TMDB w1280 instead of `original`.
 
 05.7-X7 accepted state:
 

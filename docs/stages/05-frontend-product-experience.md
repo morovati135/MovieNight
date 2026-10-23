@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Sprint 05.7 — Product Additions and Polish is in progress (plan approved 2026-10-22, §15.1).
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted 2026-10-22 / 2026-10-23, §15.1). Sprint 05.8 — Stage 05 Verification & Handoff is next and has not started.
 
 ---
 
@@ -1223,7 +1223,7 @@ Fix only genuine frontend UX/polish issues.
 
 ## 15.1 Sprint 05.7 Plan — Product Additions and Polish
 
-**Status: Plan approved by the Tech Lead on 2026-10-22 — in progress.**
+**Status: Accepted / Completed (X1–X7 accepted by the Tech Lead on 2026-10-22 and 2026-10-23).**
 
 The Tech Lead extended Sprint 05.7 on 2026-10-22 with product additions alongside the planned polish (D030). The planning audit (1440 / 768 / 390, every page) found: Movie Details overflowing horizontally on phones; no footer and no TMDB attribution anywhere; generic tab titles for Search and not-found; "Add to watchlist" vs "Add to Watchlist"; a 36px skip link; Home / Details error and not-found screens in the older plain style. Keyboard focus, headings, alt text and console were clean.
 
@@ -1248,7 +1248,7 @@ Work packages (each ends with a screenshot review checkpoint):
 - [x] 05.7-X6 — See more + category pages (accepted 2026-10-23): `/browse/[category]` with grid and paging; backend paging for those lists.
 - [x] 05.7-X7 — (accepted 2026-10-23) Interaction pass + final QA across all pages, including the new ones; screenshots in `docs/screenshots/05.7-*`.
 
-Work happens on branch `feature/polish-05.7`. Sprint 05.7 is complete only after X1–X7 are accepted.
+Work happened on branch `feature/polish-05.7` (committed and pushed 2026-10-23). Sprint 05.7 is complete: X1–X7 are accepted.
 
 ## Verification
 
@@ -1349,16 +1349,16 @@ Fix only genuine Stage 05 inconsistencies.
 
 ## Stage 05 Definition of Done
 
-- [ ] Sprint 05.1 is accepted.
-- [ ] Sprint 05.2 H1–H4 are accepted.
-- [ ] Sprint 05.3 is accepted.
-- [ ] Sprint 05.4 is accepted.
-- [ ] Sprint 05.5 is accepted.
-- [ ] Sprint 05.6 is accepted.
-- [ ] Sprint 05.7 is accepted.
+- [x] Sprint 05.1 is accepted.
+- [x] Sprint 05.2 H1–H4 are accepted.
+- [x] Sprint 05.3 is accepted.
+- [x] Sprint 05.4 is accepted.
+- [x] Sprint 05.5 is accepted.
+- [x] Sprint 05.6 is accepted.
+- [x] Sprint 05.7 is accepted.
 - [ ] frontend lint passes.
 - [ ] frontend build passes.
-- [ ] all four public frontend routes are complete.
+- [ ] all public frontend routes are complete (`/`, `/movies/[id]`, `/pick`, `/watchlist`, plus `/about` and `/browse/[category]` added by D030).
 - [ ] Search/Discover is complete.
 - [ ] Watchlist anonymous/browser-private behavior works.
 - [ ] required UI states exist.
