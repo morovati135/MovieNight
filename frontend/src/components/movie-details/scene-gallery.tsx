@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 
 import { useRailScroll } from "@/components/movie/use-rail-scroll";
 import { glassControlClassName } from "@/components/ui/controls";
+import { tmdbImageAtSize } from "@/lib/tmdb-image";
 import { cn } from "@/lib/utils";
 
 import { SceneViewer } from "./scene-viewer";
@@ -56,7 +57,8 @@ export function SceneGallery({ imageUrls, title }: SceneGalleryProps) {
                   className="object-cover transition-[filter,transform] duration-200 ease-out group-hover/scene:brightness-90 motion-safe:group-hover/scene:scale-[1.03]"
                   fill
                   sizes="(max-width: 639px) 224px, (max-width: 1279px) 256px, 20vw"
-                  src={url}
+                  // Tiles are small: the lighter 780px file loads reliably; the full-size viewer opens the original.
+                  src={tmdbImageAtSize(url, "w780")}
                 />
                 <span className="absolute right-2.5 bottom-2.5 flex size-8 items-center justify-center rounded-full bg-[#01050f]/60 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover/scene:opacity-100 group-focus-visible/scene:opacity-100">
                   <Maximize2 aria-hidden="true" className="size-4" />

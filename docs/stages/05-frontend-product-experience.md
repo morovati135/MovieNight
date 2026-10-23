@@ -2,13 +2,13 @@
 
 ## Stage Status
 
-**In Progress**
+**Completed / Accepted** (Sprint 05.8 accepted by the Tech Lead on 2026-10-23)
 
 Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted 2026-10-22 / 2026-10-23, §15.1). Sprint 05.8 — Stage 05 Verification & Handoff is next and has not started.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted 2026-10-22 / 2026-10-23, §15.1). Sprint 05.8 — Stage 05 Verification & Handoff is accepted and complete (verification PASS and the follow-up dependency fixes accepted 2026-10-23). Stage 05 is complete.
 
 ---
 
@@ -155,6 +155,8 @@ Version 1 public frontend routes:
 /movies/[id]         → Movie Details
 /pick                → Pick for Me
 /watchlist           → Anonymous Watchlist
+/about               → About (D030, Sprint 05.7)
+/browse/[category]   → See more / category pages (D030, Sprint 05.7)
 ```
 
 Search remains part of the `/` product experience.
@@ -1356,17 +1358,17 @@ Fix only genuine Stage 05 inconsistencies.
 - [x] Sprint 05.5 is accepted.
 - [x] Sprint 05.6 is accepted.
 - [x] Sprint 05.7 is accepted.
-- [ ] frontend lint passes.
-- [ ] frontend build passes.
-- [ ] all public frontend routes are complete (`/`, `/movies/[id]`, `/pick`, `/watchlist`, plus `/about` and `/browse/[category]` added by D030).
-- [ ] Search/Discover is complete.
-- [ ] Watchlist anonymous/browser-private behavior works.
-- [ ] required UI states exist.
-- [ ] responsive layouts are intentional.
-- [ ] approved reference-driven visual workflow has been followed.
-- [ ] no fake account/profile/streaming/backend capabilities exist.
-- [ ] no direct frontend-to-TMDB calls exist.
-- [ ] Stage 06 hardening has not been started.
+- [x] frontend lint passes.
+- [x] frontend build passes.
+- [x] all public frontend routes are complete (`/`, `/movies/[id]`, `/pick`, `/watchlist`, plus `/about` and `/browse/[category]` added by D030).
+- [x] Search/Discover is complete.
+- [x] Watchlist anonymous/browser-private behavior works.
+- [x] required UI states exist.
+- [x] responsive layouts are intentional.
+- [x] approved reference-driven visual workflow has been followed.
+- [x] no fake account/profile/streaming/backend capabilities exist.
+- [x] no direct frontend-to-TMDB calls exist.
+- [x] Stage 06 hardening has not been started.
 - [ ] `STATUS.md` marks Stage 05 complete only after all checks pass.
 - [ ] Stage 06 is marked next.
 
