@@ -1,0 +1,10 @@
+{
+  "_note": "The JSON property names the MovieNight API returns. The backend test (ApiContractTests) checks the real API against this file, and the frontend test (src/lib/api/contract.test.ts) checks the TypeScript types in src/types/movie.ts against it. Change the API, this file and the types together.",
+  "Genre": ["id", "name"],
+  "MovieSummary": ["id", "title", "overview", "releaseDate", "genreIds", "posterUrl", "voteAverage", "backdropUrl"],
+  "Cast": ["id", "name", "character", "order", "profileUrl"],
+  "Person": ["id", "name", "profileUrl"],
+  "MovieDetails": ["id", "title", "overview", "releaseDate", "genres", "runtimeMinutes", "posterUrl", "backdropUrl", "voteAverage", "cast", "similarMovies", "directors", "productionCountryCodes", "sceneImageUrls"],
+  "PagedMovieResult": ["results", "page", "totalPages", "totalResults"],
+  "MovieCollection": ["slug", "title", "posterUrls"]
+}
