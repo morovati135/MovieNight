@@ -94,3 +94,6 @@ app.UseCors();
 app.MapControllers();
 
 app.Run();
+
+// Lets the API tests start the real application in memory.
+public partial class Program;
