@@ -289,7 +289,15 @@ Detailed Stage file:
 
 # Stage 06 — Full-Stack Integration, Testing & Runtime Hardening
 
-**Status:** Planned
+**Status:** Completed / Accepted (plan: `docs/stages/06-full-stack-integration-testing-hardening.md`)
+
+```text
+06.1 — Cache Review & Hardening                          Completed / Accepted
+06.2 — Backend Integration & Failure-Path Tests          Completed / Accepted
+06.3 — Contract Verification & Frontend Tests            Completed / Accepted
+06.4 — Runtime Configuration, Security & Dependency Audit Completed / Accepted
+06.5 — Stage 06 Verification & Handoff                   Completed / Accepted
+```
 
 Primary outcome:
 

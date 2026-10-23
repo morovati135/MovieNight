@@ -2,13 +2,56 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 is next and has not started
+Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff is next and has not started
 
 ## Current Stage
 
-Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). Stage 05 is completed / accepted.
+Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / accepted). Stage 07 — Final Polish & Portfolio Handoff is next. Stage 05 is completed / accepted.
 
 ## Current Sprint
+
+Sprint 06.5 — Stage 06 Verification & Handoff (accepted by the Tech Lead on 2026-10-23; verified 2026-10-23: PASS).
+
+06.5 verification:
+
+- Backend 178 tests, frontend 41 tests, `tsc`, `eslint`, `next build`, `git diff --check` all clean; `dotnet` vulnerable-package check clean; `npm audit` 0 vulnerabilities (production and full; the 9 dev-only advisories from Stage 05 disappeared with the 06.4 updates).
+- Live against the production build and the real backend: 17 / 17 journey checks; 13-route × 3-width sweep clean (a first cold pass showed `_next/image` 504s while the TMDB image CDN was slow, recovered by the image fallback, and a repeat run was clean).
+- Docs aligned: ARCHITECTURE (caching policy, test layers, CORS), ROADMAP (Stage 06 progress), DECISIONS (D032, D033), Stage 06 file with the handoff report and the mandatory cache-review checklist.
+- Stage 06 is complete. Stage 07 has not started.
+
+
+Sprint 06.4 — Runtime Configuration, Security & Dependency Audit (accepted by the Tech Lead on 2026-10-23).
+
+06.4 implemented state (decisions in D033):
+
+- Findings and fixes: the TMDB preflight diagnostic was public and reached TMDB uncached on every call → Development only; an unexpected exception returned an empty 500 → generic Problem Details 500; CORS origin was hard-coded → `Cors:AllowedOrigins` (default localhost:3000); no security headers → added on API and frontend.
+- Verified by 15 new HTTP tests (178 backend tests): security headers; generic 500 without internal detail; malformed TMDB answers → 502; preflight, OpenAPI and Scalar absent in Production; startup fails clearly for a missing token or non-HTTPS TMDB address without leaking the token; CORS from configuration and no credentials for other origins; cookie Secure over HTTPS only; the TMDB token is sent only to TMDB and never returned.
+- Dependencies: `dotnet list package --vulnerable --include-transitive` clean; patch updates to 10.0.13 (OpenApi, EF Core, Mvc.Testing) and Microsoft.OpenApi 2.12.2; frontend `next` 16.4.3, `eslint-config-next`, `tailwind-merge` 3.7; `npm audit --omit=dev` 0. Left alone as major jumps: eslint 10, TypeScript 7, React 19.3, `@types/node` 26, Scalar minor, Microsoft.OpenApi 3.
+- Checked and clean: no secret in the repository (token only from user secrets); logs do not include the Authorization header; production build, 41 frontend tests, 17 / 17 journey checks and the route sweep pass against the production build.
+- Open Tech Lead decisions (not done): Content-Security-Policy, rate limiting, HTTPS redirect / HSTS: see D033.
+
+
+Sprint 06.3 — Contract Verification & Frontend Tests (accepted by the Tech Lead on 2026-10-23).
+
+06.3 implemented state:
+
+- Contract: `contracts/api-shapes.json` lists the JSON property names of every shape the frontend consumes (movie summary, details, cast, person, genre, page, collection). The backend test `ApiContractTests` checks the real API responses (including nested items and Problem Details) against it; the frontend test `src/lib/api/contract.test.ts` checks the TypeScript types in `src/types/movie.ts` against it, with compile-time exhaustive key lists. No drift was found; changing one side now fails a test (confirmed by changing the file).
+- Frontend tests: Vitest + Testing Library + jsdom (dev dependencies; `@types/node` raised to 24 as Vitest requires). 41 tests in 5 files: API client (URLs, paging, encoding, 404 / error mapping), Watchlist client (proxy path, cookie, messages), `useWatchlist` (load, retry, add, remove, failure, double-click guard, rehydrate), Browse paging (Load more, duplicate removal, retry on page failure, empty, not-found, collection slug, category change), contract. `npm test`.
+- End-to-end: the Stage 05 browser journeys and the 13-route × 3-width sweep are now committed scripts in `frontend/e2e/` (`npm run e2e`, `npm run e2e:sweep`, README); they use live TMDB data and are run by hand. Run now: 17 / 17 journey checks and all 39 route-width pages pass. The sweep ignores hidden images (the Hero's inactive slides are loaded eagerly and some finish unrendered); noted for Stage 07 polish: image-optimizer requests in dev took up to 7.5 s cold.
+- Checks: tsc, eslint, `next build`, 41 frontend tests, 163 backend tests, `npm audit --omit=dev` 0.
+
+
+
+Sprint 06.2 — Backend Integration & Failure-Path Tests (accepted by the Tech Lead on 2026-10-23).
+
+06.2 implemented state:
+
+- Gap found: the 85 earlier tests called controllers directly, so routing, model validation, Problem Details output, cookies, CORS, data protection and the real SQLite database were never exercised together.
+- New HTTP-level tests start the real application in memory (`Microsoft.AspNetCore.Mvc.Testing` 10.0.10, test project only; `public partial class Program` added so the tests can start it) with a fake TMDB, a temporary database and keys per test. 63 new tests in `backend/MovieNight.Api.Tests/Http/`:
+  - Movies: all public endpoints return 200 JSON; MovieNight shape (no TMDB fields); 13 invalid inputs return 400 validation problems without calling TMDB; unknown id 404 (remembered 1 minute); 401 / 500 / network failure return a safe 502 that leaks no upstream text or token and is not cached; list endpoints and Collections turn an outage into 502; cache and no-cache behavior; no anonymous cookie on movie endpoints; CORS allows only the frontend origin.
+  - Collections: list, pages (studio pages through Discover, franchise is one page), unknown slug 404 without calling TMDB, invalid page 400, outage 502.
+  - Watchlist: protected HttpOnly SameSite=Lax cookie issued once; tampered cookie replaced with an empty list; idempotent add and remove; newest first; two browsers isolated; same cookie restores the list; unknown movie 404 and not saved; invalid id 400; TMDB failure 502 and nothing saved; the 51st movie returns 409 while existing movies can be re-added and a removal frees a slot; hydration served from cache; after a cold start a movie TMDB forgot is left out and an outage returns 502.
+- 154 backend tests pass (91 before). Developer database and keys under `App_Data` were not touched.
 
 Sprint 06.1 — Cache Review & Hardening (accepted by the Tech Lead on 2026-10-23; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
 
@@ -31,7 +74,7 @@ Sprint 05.8 — Stage 05 Verification & Handoff (accepted by the Tech Lead on 20
 - Integration: no request to api.themoviedb.org, no `fetch()` outside `src/lib/api/`, Watchlist requests use `credentials: "include"` through `/backend/watchlist`. Artwork may be re-requested straight from `image.tmdb.org` by the image fallback (images only, no API access).
 - Build: lint, build, `git diff --check` clean; 85 backend tests passing; every npm dependency is used (`react-dom`, `shadcn` and `tw-animate-css` implicitly or through `globals.css`).
 - Docs: fixed two stale route lists (Stage 05 §5 and the UI skill's product-scope) that still named only four routes; STATUS, ROADMAP, DECISIONS and ARCHITECTURE agree.
-- Remaining issues found by the verification were fixed the same day (Tech Lead approved the plan): `next` 16.3.6 → 16.4.2 (it carried a critical advisory), `eslint-config-next` 16.4.2, `lucide-react` 1.61, `@base-ui/react` 1.9, React type packages 19.3; `shadcn` moved from `dependencies` to `devDependencies` and its one used file, `shadcn/tailwind.css`, copied unchanged to `src/app/shadcn-tailwind.css` (no component imports the package; generated CSS compared before / after: no rule from it changed; D031); `npm audit fix` (non-breaking). `npm audit --omit=dev`: 0 vulnerabilities (was 19, 2 critical). The 9 findings still listed by a full `npm audit` are dev-only (`shadcn` CLI and `eslint-config-next` via `braces` / `micromatch` / `fast-glob`; no patched `braces` exists yet) and do not ship. Scene thumbnails on Details now use TMDB w780 (the full-size viewer keeps the original): the failing thumbnail requests are gone (0 errors on Details at 390 / 768 / 1440).
+- Remaining issues found by the verification were fixed the same day (Tech Lead approved the plan): `next` 16.3.6 → 16.4.2 (it carried a critical advisory), `eslint-config-next` 16.4.2, `lucide-react` 1.61, `@base-ui/react` 1.9, React type packages 19.3; `shadcn` moved from `dependencies` to `devDependencies` and its one used file, `shadcn/tailwind.css`, copied unchanged to `src/app/shadcn-tailwind.css` (no component imports the package; generated CSS compared before / after: no rule from it changed; D031); `npm audit fix` (non-breaking). `npm audit --omit=dev`: 0 vulnerabilities (was 19, 2 critical). The 9 findings still listed by a full `npm audit` are dev-only (`shadcn` CLI and `eslint-config-next` via `braces` / `micromatch` / `fast-glob`; no patched `braces` existed then and they did not ship; resolved by later updates). Scene thumbnails on Details now use TMDB w780 (the full-size viewer keeps the original): the failing thumbnail requests are gone (0 errors on Details at 390 / 768 / 1440).
 - Not changed: the image fallback may re-request artwork from `image.tmdb.org` (images only); the dev-only hydration warnings come from a browser extension (`bis_skin_checked`), not the code.
 - After the fixes: lint, tsc, build, 85 backend tests, the 18 live checks and the 13-route sweep were run again and pass.
 - Stage 06 has not been started. Screenshots `docs/screenshots/05.8-*`.

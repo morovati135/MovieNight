@@ -71,15 +71,41 @@ builder.Services.AddScoped<IAnonymousVisitorIdentityService, AnonymousVisitorIde
 
 builder.Services.AddScoped<WatchlistService>();
 
+// Browsers may call the API directly only from these origins (the Watchlist goes through the frontend's
+// same-origin /backend proxy). Set Cors:AllowedOrigins to the deployed frontend address(es).
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() is { Length: > 0 } configuredOrigins
+    ? configuredOrigins
+    : ["http://localhost:3000"];
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000");
+        policy.WithOrigins(allowedOrigins);
     });
 });
 
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
+
+// An unexpected failure becomes a generic Problem Details response; the exception itself is only logged.
+// (Development keeps the detailed developer error page.)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler();
+}
+
+app.Use(async (context, next) =>
+{
+    var headers = context.Response.Headers;
+
+    headers.XContentTypeOptions = "nosniff";
+    headers.XFrameOptions = "DENY";
+    headers["Referrer-Policy"] = "no-referrer";
+
+    await next();
+});
 
 if (app.Environment.IsDevelopment())
 {
@@ -94,3 +120,6 @@ app.UseCors();
 app.MapControllers();
 
 app.Run();
+
+// Lets the API tests start the real application in memory.
+public partial class Program;
