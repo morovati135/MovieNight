@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
+import { preconnect } from "react-dom";
 
 import { AppHeader } from "@/components/layout/app-header";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
@@ -23,6 +24,10 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  // Artwork comes from TMDB's image servers; opening the connection early helps when an image is
+  // requested from there directly (the optimiser fallback).
+  preconnect("https://image.tmdb.org");
+
   return (
     <html lang="en" className={`${manrope.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">

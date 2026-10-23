@@ -100,6 +100,9 @@ export async function launch({ port = 9400 + Math.floor(Math.random() * 400) } =
     },
     resize: (width, height, mobile = false) =>
       send("Emulation.setDeviceMetricsOverride", { deviceScaleFactor: 1, height, mobile, width }),
+    /** Raw DevTools events since the last navigation (for the performance script). */
+    rawEvents: () => events,
+    send,
     blockUrls: (urls) => send("Network.setBlockedURLs", { urls }),
     /** Console errors, thrown exceptions and failed (>= 400) responses since the last navigation. */
     problems() {

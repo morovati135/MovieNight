@@ -54,8 +54,15 @@ try {
   // Pick for Me
   await browser.go("/pick", 4000);
   const picked = await click(`(b) => /Pick a movie/i.test(b.textContent)`);
-  await sleep(9000);
-  check("Pick: the button works and a movie is revealed", picked && /Tonight's ticket|Pick again|View Details/i.test(await browser.text()));
+  // The reveal waits for the movie's artwork (up to a few seconds with a cold TMDB), so poll rather than guess.
+  let revealed = false;
+
+  for (let attempt = 0; attempt < 15 && picked && !revealed; attempt++) {
+    await sleep(2000);
+    revealed = /Tonight's ticket|Pick again|View Details/i.test(await browser.text());
+  }
+
+  check("Pick: the button works and a movie is revealed", picked && revealed);
 
   // Remove, undo window, empty state
   await browser.go("/watchlist", 4000);

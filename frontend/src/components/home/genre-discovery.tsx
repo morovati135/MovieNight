@@ -28,6 +28,13 @@ type GenreResultsState =
 const posterSizes = "(max-width: 639px) 112px, (max-width: 1023px) 168px, 208px";
 const warmedPosterCount = 12;
 
+/** True on Save-Data or slow connections, where downloading posters nobody asked for would cost real data. */
+function isDataConstrained() {
+  const connection = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+
+  return Boolean(connection?.saveData) || /(^|-)[23]g$/.test(connection?.effectiveType ?? "");
+}
+
 /** Starts downloading the first posters of a genre, so they are already cached when its row appears. */
 function warmPosters(movies: MovieSummary[]) {
   for (const movie of movies.slice(0, warmedPosterCount)) {
@@ -184,7 +191,7 @@ export function GenreDiscovery({
   const genres = genreList.status === "ready" ? genreList.genres : null;
 
   useEffect(() => {
-    if (firstShownGenreId === null || !genres) {
+    if (firstShownGenreId === null || !genres || isDataConstrained()) {
       return;
     }
 
