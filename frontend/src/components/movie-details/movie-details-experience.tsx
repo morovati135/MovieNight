@@ -48,7 +48,7 @@ function MovieDetailsLoading() {
     <div aria-busy="true" role="status">
       <div aria-hidden="true" className="relative isolate overflow-hidden bg-background">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_68%_35%,rgb(28_52_79/52%),transparent_48%)] motion-safe:animate-pulse" />
-        <div className="flex min-h-[33rem] items-end px-4 pt-32 pb-8 sm:min-h-[38rem] sm:px-8 sm:pb-12 md:min-h-[42rem] lg:min-h-[46rem] lg:px-12 lg:pb-16 xl:min-h-[min(100svh,52rem)]">
+        <div className="flex min-h-[33rem] items-end px-5 pt-32 pb-8 sm:min-h-[38rem] sm:px-8 sm:pb-12 md:min-h-[42rem] lg:min-h-[46rem] lg:px-12 lg:pb-16 xl:min-h-[min(100svh,52rem)]">
           <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-end sm:gap-7 lg:gap-9">
             <div className={cn(skeletonBlockClassName, "aspect-[2/3] w-28 bg-white/6 sm:w-40 md:w-44 lg:w-52")} />
             <div className="w-full max-w-xl space-y-4 sm:space-y-5">
@@ -59,7 +59,7 @@ function MovieDetailsLoading() {
           </div>
         </div>
       </div>
-      <div aria-hidden="true" className="space-y-4 px-4 pt-10 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16">
+      <div aria-hidden="true" className="space-y-4 px-5 pt-10 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16">
         <div className={cn(skeletonBlockClassName, "h-9 w-64 lg:h-12 lg:w-96")} />
         <div className={cn(skeletonBlockClassName, "h-4 w-full max-w-4xl rounded bg-white/6")} />
         <div className={cn(skeletonBlockClassName, "h-4 w-11/12 max-w-4xl rounded bg-white/6")} />
@@ -108,7 +108,14 @@ export function MovieDetailsExperience({ movieId }: { movieId: number | null }) 
 
   // Details for another movie or an older attempt are never shown; until the current ones arrive, the page is loading.
   const current = details?.movieId === movieId && details.attempt === attempt ? details : null;
-  const title = current?.status === "ready" ? current.movie.title : null;
+  const title =
+    current?.status === "ready"
+      ? current.movie.title
+      : movieId === null || current?.status === "not-found"
+        ? "Movie not found"
+        : current?.status === "error"
+          ? "Movie unavailable"
+          : null;
 
   useEffect(() => {
     if (!title) {
@@ -163,7 +170,7 @@ export function MovieDetailsExperience({ movieId }: { movieId: number | null }) 
         onWatchlistToggle={() => void toggle(toSummary(movie))}
       />
 
-      <div className="flex w-full flex-col gap-10 px-4 pt-10 pb-12 sm:gap-14 sm:px-8 sm:pt-14 sm:pb-20 lg:gap-16 lg:px-12 lg:pt-16 lg:pb-24">
+      <div className="flex w-full flex-col gap-10 overflow-x-clip px-5 pt-10 pb-12 sm:gap-14 sm:px-8 sm:pt-14 sm:pb-20 lg:gap-16 lg:px-12 lg:pt-16 lg:pb-24">
         {movie.sceneImageUrls.length > 0 ? <SceneGallery imageUrls={movie.sceneImageUrls} title={movie.title} /> : null}
 
         <section aria-labelledby="movie-about-heading" className="max-w-5xl space-y-4 sm:space-y-5">

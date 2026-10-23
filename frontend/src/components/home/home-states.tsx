@@ -14,7 +14,7 @@ export const homeSectionsClassName =
   "h2-rails-ambient flex w-full flex-col gap-8 overflow-x-clip px-4 pt-8 pb-12 sm:gap-20 sm:px-8 sm:pt-16 sm:pb-20 lg:gap-24 lg:px-12 lg:pt-20 lg:pb-24";
 
 const heroSizeClassName =
-  "min-h-[calc(100svh-5rem)] md:min-h-[100svh] lg:min-h-[46rem] xl:min-h-[min(100svh,54rem)]";
+  "min-h-[44rem] md:min-h-[100svh] lg:min-h-[46rem] xl:min-h-[min(100svh,54rem)]";
 
 // Same silhouette as the Hero carousel strip: small, medium, active, medium, small.
 const thumbnailSizes = [
@@ -110,19 +110,28 @@ type PageNoticeProps = {
   title: string;
 };
 
-/** Full-page message for page-level failures, empty pages and not-found pages. */
+/**
+ * Full-page message for page-level failures, empty pages and not-found pages, in the same
+ * cinematic frame as the Pick for Me and Watchlist notices.
+ */
 export function PageNotice({ action, children, role, title }: PageNoticeProps) {
   return (
-    <div
-      className="flex flex-1 flex-col items-center justify-center px-6 pt-28 pb-16 text-center md:pt-32"
-      role={role}
-    >
-      <div className="mb-5 flex size-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-muted-foreground">
-        <Clapperboard aria-hidden="true" />
+    <div className="flex flex-1 items-center justify-center px-5 pt-28 pb-16 sm:px-8 md:pt-32">
+      <div
+        className="relative isolate flex w-full max-w-3xl flex-col items-center overflow-hidden rounded-[2rem] border border-white/10 bg-[#061126]/60 px-6 py-14 text-center shadow-[0_40px_120px_rgb(0_0_0/45%)] backdrop-blur-md sm:py-20"
+        role={role}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_55%_45%_at_50%_30%,rgb(20_157_236/14%),transparent_70%),radial-gradient(ellipse_35%_30%_at_60%_70%,rgb(232_76_157/9%),transparent_70%)]"
+        />
+        <div className="flex size-14 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-white/75 shadow-[0_0_32px_rgb(20_157_236/22%)]">
+          <Clapperboard aria-hidden="true" />
+        </div>
+        <h1 className="mt-6 text-2xl font-extrabold tracking-[-0.035em] text-balance text-white sm:text-3xl">{title}</h1>
+        <p className="mt-3 max-w-md text-sm leading-6 text-white/70 sm:text-base sm:leading-7">{children}</p>
+        {action ? <div className="mt-7">{action}</div> : null}
       </div>
-      <h1 className="text-2xl font-extrabold tracking-[-0.03em] text-balance text-white sm:text-3xl">{title}</h1>
-      <p className="mt-3 max-w-md text-sm leading-6 text-white/68 sm:text-base">{children}</p>
-      {action ? <div className="mt-7">{action}</div> : null}
     </div>
   );
 }

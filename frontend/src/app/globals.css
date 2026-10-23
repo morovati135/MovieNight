@@ -236,7 +236,7 @@
  * so the light is elongated along the border, keeps its centre on the border, and on corners
  * bends with the curve. Its orientation follows the outline continuously; nothing rotates or snaps.
  *   core  - spot through a band straddling the edge, softly blurred, above the ticket:
- *           the elongated hotspot (about 3x longer than it is thick)
+ *           the elongated hotspot (about 5x longer than it is thick; lengthened in Sprint 05.7-X4)
  *   rim   - spot through the 1.5px border ring: the short brightened stretch of border
  *   halo  - larger spot through a wider band, behind the ticket, blurred: only its outer half
  *           shows, so it fades outward from the edge
@@ -329,7 +329,7 @@
 .pick-glow-core {
   --pick-ring-out: 6px;
   --pick-ring-width: 12px;
-  --pick-spot: 4.25rem;
+  --pick-spot: 7.75rem;
   --pick-core-blur: 4px;
   z-index: 25;
   mix-blend-mode: screen;
@@ -352,7 +352,7 @@
 .pick-glow-halo {
   --pick-ring-out: 9px;
   --pick-ring-width: 18px;
-  --pick-spot: 6.5rem;
+  --pick-spot: 9rem;
   filter: blur(7px);
 }
 
@@ -369,7 +369,7 @@
 .pick-glow-bleed {
   --pick-ring-out: 0px;
   --pick-ring-width: 0.5rem;
-  --pick-spot: 4.5rem;
+  --pick-spot: 6.25rem;
   z-index: 5;
   mix-blend-mode: screen;
   filter: blur(5px);
@@ -387,7 +387,7 @@
 /* Rim: a faint static border; only the short stretch under the light brightens. */
 .pick-ticket-frame {
   --pick-ring-out: 0px;
-  --pick-spot: 4.25rem;
+  --pick-spot: 7.75rem;
   position: absolute;
   z-index: 20;
   inset: 0;
@@ -421,24 +421,24 @@
   .pick-glow-core {
     --pick-ring-out: 8px;
     --pick-ring-width: 16px;
-    --pick-spot: 5.5rem;
+    --pick-spot: 10rem;
     --pick-core-blur: 5px;
   }
 
   .pick-glow-halo {
     --pick-ring-out: 13px;
     --pick-ring-width: 26px;
-    --pick-spot: 9rem;
+    --pick-spot: 12.5rem;
     filter: blur(11px);
   }
 
   .pick-glow-bleed {
     --pick-ring-width: 0.625rem;
-    --pick-spot: 6rem;
+    --pick-spot: 8.5rem;
   }
 
   .pick-ticket-frame {
-    --pick-spot: 5.5rem;
+    --pick-spot: 10rem;
   }
 }
 
@@ -450,23 +450,23 @@
   .pick-glow-core {
     --pick-ring-out: 9px;
     --pick-ring-width: 18px;
-    --pick-spot: 6.75rem;
+    --pick-spot: 12.25rem;
     --pick-core-blur: 6px;
   }
 
   .pick-glow-halo {
     --pick-ring-out: 16px;
     --pick-ring-width: 32px;
-    --pick-spot: 11rem;
+    --pick-spot: 15.5rem;
     filter: blur(14px);
   }
 
   .pick-glow-bleed {
-    --pick-spot: 7rem;
+    --pick-spot: 9.75rem;
   }
 
   .pick-ticket-frame {
-    --pick-spot: 6.75rem;
+    --pick-spot: 12.25rem;
   }
 }
 
