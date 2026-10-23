@@ -36,11 +36,24 @@ public sealed class TmdbClient(HttpClient httpClient)
         return await GetFromTmdbAsync<TmdbGenreListResponse>(MovieGenresPath, "genre", cancellationToken);
     }
 
-    internal Task<TmdbMoviePage> GetTrendingMoviesAsync(CancellationToken cancellationToken) =>
-        GetFromTmdbAsync<TmdbMoviePage>(TrendingMoviesPath, "trending movies", cancellationToken);
+    internal Task<TmdbMoviePage> GetTrendingMoviesAsync(int page, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMoviePage>($"{TrendingMoviesPath}?page={page}", "trending movies", cancellationToken);
 
-    internal Task<TmdbMoviePage> GetPopularMoviesAsync(CancellationToken cancellationToken) =>
-        GetFromTmdbAsync<TmdbMoviePage>(PopularMoviesPath, "popular movies", cancellationToken);
+    internal Task<TmdbMoviePage> GetPopularMoviesAsync(int page, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMoviePage>($"{PopularMoviesPath}?page={page}", "popular movies", cancellationToken);
+
+    // "Top rated of all time": the highest rated films that very many people have rated. TMDB's own
+    // movie/top_rated list currently ranks new, barely voted titles first, so it is not used.
+    internal const int IconicMinimumVoteCount = 10000;
+
+    internal Task<TmdbMoviePage> GetTopRatedMoviesAsync(int page, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbMoviePage>(
+            $"{DiscoverMoviesPath}?sort_by=vote_average.desc&vote_count.gte={IconicMinimumVoteCount}&page={page}",
+            "top rated movies",
+            cancellationToken);
+
+    internal Task<TmdbCollection> GetCollectionAsync(int collectionId, CancellationToken cancellationToken) =>
+        GetFromTmdbAsync<TmdbCollection>($"collection/{collectionId}", "collection", cancellationToken);
 
     internal Task<TmdbMoviePage> SearchMoviesAsync(string query, int? year, int page, CancellationToken cancellationToken)
     {
@@ -68,6 +81,12 @@ public sealed class TmdbClient(HttpClient httpClient)
         if (request.Year is not null)
         {
             parameters.Add($"primary_release_year={request.Year}");
+        }
+
+        if (request.CompanyIds is not null)
+        {
+            // TMDB reads "|" as OR, so a studio collection can span several of its production companies.
+            parameters.Add($"with_companies={request.CompanyIds}");
         }
 
         if (request.MinRating is not null)
@@ -154,7 +173,7 @@ public sealed class TmdbClient(HttpClient httpClient)
     }
 }
 
-internal sealed record TmdbDiscoverRequest(int? GenreId, int? Year, double? MinRating, int Page);
+internal sealed record TmdbDiscoverRequest(int? GenreId, int? Year, double? MinRating, int Page, string? CompanyIds = null);
 
 public sealed class TmdbAuthenticationException : Exception
 {

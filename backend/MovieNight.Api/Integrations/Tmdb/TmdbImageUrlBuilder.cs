@@ -6,10 +6,11 @@ internal static class TmdbImageUrlBuilder
 
     public static string? BuildPosterUrl(string? imagePath) => BuildUrl("w780", imagePath);
 
-    public static string? BuildBackdropUrl(string? imagePath) => BuildUrl("original", imagePath);
+    // Backdrops fill cards, blurred backgrounds and full-width heroes: w1280 is sharp enough for those, while
+    // "original" files are several MB, load slowly and can exceed the Next image optimiser's upstream timeout.
+    public static string? BuildBackdropUrl(string? imagePath) => BuildUrl("w1280", imagePath);
 
-    // Movie-list backdrops only fill cards and blurred backgrounds; "original" files are several MB and load slowly.
-    public static string? BuildCardBackdropUrl(string? imagePath) => BuildUrl("w780", imagePath);
+    public static string? BuildCardBackdropUrl(string? imagePath) => BuildUrl("w1280", imagePath);
 
     public static string? BuildProfileUrl(string? imagePath) => BuildUrl("w185", imagePath);
 
