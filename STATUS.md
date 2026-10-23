@@ -10,7 +10,15 @@ Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). 
 
 ## Current Sprint
 
-Sprint 06.1 — Cache Review & Hardening (in progress; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
+Sprint 06.1 — Cache Review & Hardening (implemented and verified; awaiting Tech Lead review; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
+
+06.1 implemented state:
+
+- Inventory and measurement (live, 2026-10-23): cached endpoints answer in about 2 ms against 0.6–5 s cold (details 5.2 s, trending 3.0 s, collections 2.5 s); Discover, Search and Pick were uncached at about 0.5–1.3 s each.
+- New `CatalogCache` helper replaces the two services' own `GetOrCreateAsync` calls: shared loads for concurrent misses, size-bounded cache (`SizeLimit` 5000), 1-minute negative cache for unknown movie ids, failures never cached, hit / miss counters and debug logs.
+- TTL policy by data category in `CacheTtl` and D032: details 10 min → 2 h, trending / popular 5 min → 30 min, top rated 1 h → 6 h, genres 6 h → 24 h, collections 6 h → 12 h, Discover newly cached 15 min; Search stays uncached; Pick reuses cached Discover pages.
+- Verified live: Discover 0.52 s → 0.003 s on repeat, unknown id 404 0.73 s → 0.001 s, 8 concurrent cold requests for one movie completed together in about 0.8 s.
+- Tests: 91 backend tests pass (6 new cache tests: expiry, shared load, cancellation, failures not cached, negative cache, size bound; one test updated because Discover is now cached).
 
 Previous sprint:
 

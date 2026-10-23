@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Caching.Memory;
+using MovieNight.Api.Features.Caching;
 using MovieNight.Api.Features.Collections.Contracts;
 using MovieNight.Api.Features.Movies;
 using MovieNight.Api.Features.Movies.Contracts;
@@ -7,23 +7,19 @@ using MovieNight.Api.Integrations.Tmdb.Transport;
 
 namespace MovieNight.Api.Features.Collections;
 
-public sealed class MovieCollectionService(TmdbClient tmdbClient, IMemoryCache cache)
+public sealed class MovieCollectionService(TmdbClient tmdbClient, CatalogCache cache)
 {
-    private const string CollectionsCacheKey = "collections:all";
     private const int PostersPerCollection = 3;
-    private static readonly TimeSpan CollectionsCacheDuration = TimeSpan.FromHours(6);
 
     /// <summary>
     /// The curated collections with their cover posters. A collection whose TMDB data cannot be loaded is
     /// left out rather than failing the whole list; if none can be loaded, the TMDB failure is raised.
     /// </summary>
-    public async Task<IReadOnlyList<MovieCollectionDto>> GetCollectionsAsync(CancellationToken cancellationToken)
-    {
-        if (cache.TryGetValue(CollectionsCacheKey, out IReadOnlyList<MovieCollectionDto>? cached) && cached is not null)
-        {
-            return cached;
-        }
+    public Task<IReadOnlyList<MovieCollectionDto>> GetCollectionsAsync(CancellationToken cancellationToken) =>
+        cache.GetOrCreateAsync("collections:all", CacheTtl.Collections, LoadCollectionsAsync, cancellationToken);
 
+    private async Task<IReadOnlyList<MovieCollectionDto>> LoadCollectionsAsync(CancellationToken cancellationToken)
+    {
         var attempts = await Task.WhenAll(MovieCollectionCatalog.All.Select(async definition =>
         {
             try
@@ -50,7 +46,6 @@ public sealed class MovieCollectionService(TmdbClient tmdbClient, IMemoryCache c
             throw error;
         }
 
-        cache.Set(CollectionsCacheKey, (IReadOnlyList<MovieCollectionDto>)collections, CollectionsCacheDuration);
         return collections;
     }
 
@@ -66,11 +61,11 @@ public sealed class MovieCollectionService(TmdbClient tmdbClient, IMemoryCache c
             return null;
         }
 
-        return await cache.GetOrCreateAsync($"collections:{slug}:{page}", async entry =>
-        {
-            entry.AbsoluteExpirationRelativeToNow = CollectionsCacheDuration;
-            return await GetPageAsync(definition, page, cancellationToken);
-        });
+        return await cache.GetOrCreateAsync(
+            $"collections:{slug}:{page}",
+            CacheTtl.Collections,
+            token => GetPageAsync(definition, page, token),
+            cancellationToken);
     }
 
     private async Task<IReadOnlyList<MovieSummaryDto>> GetFirstPageAsync(MovieCollectionDefinition definition, CancellationToken cancellationToken) =>

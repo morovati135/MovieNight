@@ -1,3 +1,4 @@
+using MovieNight.Api.Features.Caching;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,8 +16,8 @@ public sealed class MovieCatalogServiceTests
             { "genres": [{ "id": 28, "name": "Action" }, { "id": 35, "name": "Comedy" }] }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var firstResult = await service.GetGenresAsync(CancellationToken.None);
         var secondResult = await service.GetGenresAsync(CancellationToken.None);
@@ -39,8 +40,8 @@ public sealed class MovieCatalogServiceTests
             { "page": 1, "total_pages": 3, "total_results": 42, "results": [{ "id": 7, "title": "Movie", "vote_average": 8.1 }] }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var first = expectedPath.EndsWith("popular")
             ? await service.GetPopularAsync(1, CancellationToken.None)
@@ -56,19 +57,20 @@ public sealed class MovieCatalogServiceTests
     }
 
     [Fact]
-    public async Task Search_and_discover_do_not_use_the_memory_cache()
+    public async Task Search_is_not_cached_but_discover_is_cached_per_filter_combination()
     {
         var handler = new GenreHttpMessageHandler("""
             { "page": 2, "total_pages": 3, "total_results": 42, "results": [] }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         await service.SearchAsync("arrival", null, 2, CancellationToken.None);
         await service.SearchAsync("arrival", null, 2, CancellationToken.None);
         await service.DiscoverAsync(878, 2016, 7.5, 2, CancellationToken.None);
         await service.DiscoverAsync(878, 2016, 7.5, 2, CancellationToken.None);
+        await service.DiscoverAsync(878, 2016, 7.0, 2, CancellationToken.None);
 
         Assert.Equal(4, handler.RequestCount);
     }
@@ -83,8 +85,8 @@ public sealed class MovieCatalogServiceTests
             { "page": 1, "total_pages": 1, "total_results": 1, "results": [{ "id": 7, "title": "Movie", "vote_average": 8.1 }] }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, _) => min);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache), (min, _) => min);
 
         var result = await service.PickAsync(genreId, year, minRating, CancellationToken.None);
 
@@ -101,9 +103,9 @@ public sealed class MovieCatalogServiceTests
             ? """{ "page": 1, "total_pages": 50, "total_results": 1000, "results": [{ "id": 1, "title": "First page" }] }"""
             : """{ "page": 15, "total_pages": 50, "total_results": 1000, "results": [{ "id": 7, "title": "First candidate" }, { "id": 8, "title": "Selected" }] }""");
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
         var randomCalls = new List<(int Min, int Max)>();
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, max) =>
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache), (min, max) =>
         {
             randomCalls.Add((min, max));
             return max - 1;
@@ -126,9 +128,9 @@ public sealed class MovieCatalogServiceTests
             ? """{ "page": 1, "total_pages": 12, "total_results": 240, "results": [{ "id": 1, "title": "First page" }] }"""
             : """{ "page": 12, "total_pages": 12, "total_results": 240, "results": [{ "id": 12, "title": "Selected" }] }""");
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
         var randomCalls = new List<(int Min, int Max)>();
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, max) =>
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache), (min, max) =>
         {
             randomCalls.Add((min, max));
             return max - 1;
@@ -146,8 +148,8 @@ public sealed class MovieCatalogServiceTests
     {
         var handler = new GenreHttpMessageHandler("""{ "page": 1, "total_pages": 0, "total_results": 0, "results": [] }""");
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache, (min, _) => min);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache), (min, _) => min);
 
         var result = await service.PickAsync(null, null, null, CancellationToken.None);
 
@@ -161,8 +163,8 @@ public sealed class MovieCatalogServiceTests
             { "id": 7, "title": "Movie", "credits": { "cast": [] }, "recommendations": { "results": [] } }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var first = await service.GetDetailsAsync(7, CancellationToken.None);
         var second = await service.GetDetailsAsync(7, CancellationToken.None);
@@ -188,8 +190,8 @@ public sealed class MovieCatalogServiceTests
             }
             """);
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var first = await service.GetSummaryAsync(7, CancellationToken.None);
         var second = await service.GetSummaryAsync(7, CancellationToken.None);

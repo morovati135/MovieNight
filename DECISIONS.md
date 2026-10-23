@@ -282,3 +282,31 @@ This file records decisions that future agent sessions must preserve unless expl
 
 - After updating `shadcn`, compare its `dist/tailwind.css` with `src/app/shadcn-tailwind.css` and refresh the copy if it changed.
 - Do not import the `shadcn` package from application code.
+
+
+## D032 — Cache Policy (Sprint 06.1)
+
+**Decision:** All TMDB-derived data is cached in memory through one helper, `CatalogCache` (`Features/Caching`), with lifetimes chosen by how fast each kind of data changes, because a cold TMDB call costs 0.5–5 s and a cached one about 2 ms (measured locally on 2026-10-23).
+
+**Lifetimes (`CacheTtl`):**
+
+| Data | Lifetime | Why |
+|---|---|---|
+| Genres | 24 h | names effectively never change |
+| Collections list and pages | 12 h | curated sets; TMDB reorders them rarely |
+| Top rated (Iconic) | 6 h | barely moves |
+| Movie details and summaries | 2 h | only ratings and vote counts drift (was 10 min; a cold details call took up to 5 s) |
+| Trending and popular pages | 30 min | TMDB recomputes over hours (was 5 min) |
+| Discover (genre / year / rating / page) | 15 min | new; Home genre switching and Pick repeat these (about 0.55 s uncached) |
+| Unknown movie id (TMDB 404) | 1 min | negative cache; a new movie appears soon |
+| Search | not cached | free-text keys rarely repeat |
+| TMDB failures and timeouts | never cached | the next request retries |
+
+**Rules:**
+
+- Only MovieNight DTOs are cached, never TMDB transport models. Pick samples the cached Discover DTO pages, so a Pick after browsing a genre costs no extra TMDB call.
+- Concurrent misses for one key share a single TMDB call, and one caller cancelling does not cancel it for the others.
+- The memory cache has `SizeLimit = 5000`; each entry counts as 1, which bounds the page-keyed entries.
+- Keys are `group:name:...` and built the same way everywhere; Discover keys use invariant formatting.
+- Hits, misses and joined loads are counted (`MovieNight.Cache` meter, tagged by key group) and logged at debug level.
+- Staleness is accepted up to the lifetime. There is no background refresh (a user can still meet one cold call when an entry expires); revisit only if measurements show it matters.
