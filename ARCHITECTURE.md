@@ -247,16 +247,14 @@ Responsibilities of the TMDB integration:
 
 Use `IMemoryCache` only where it provides clear value for repeatedly requested TMDB data.
 
-Suitable candidates:
+All caching goes through one helper, `CatalogCache` (`Features/Caching`), over `IMemoryCache`. Policy (D032):
 
-- trending movies,
-- genres,
-- popular/top-rated lists,
-- individual movie details.
+- cached: genres, trending, popular, top rated, Discover, collections, movie details and summaries; not cached: Search, Pick (it samples cached Discover pages), TMDB failures;
+- lifetimes by data category in `CacheTtl` (24 h genres, 12 h collections, 6 h top rated, 2 h movie data, 30 min trending / popular, 15 min Discover, 1 min for an unknown movie id);
+- concurrent misses for one key share one TMDB call; the cache is bounded (`SizeLimit` 5000 entries, one per key);
+- only MovieNight DTOs are cached, never TMDB transport models; hits and misses are counted (`MovieNight.Cache` meter) and logged at debug level.
 
-Caching is an optimization, not a second source of truth.
-
-Avoid complex cache invalidation logic.
+Caching is an optimization, not a second source of truth. There is no invalidation logic: entries simply expire.
 
 ---
 
@@ -311,6 +309,14 @@ Backend tests should cover:
 - recommendation rules,
 - API success/error behavior.
 
+Layers (Stage 06):
+
+- backend unit tests for services, mapping and the TMDB client;
+- backend HTTP tests (`MovieNight.Api.Tests/Http`) that run the real application in memory with a fake TMDB, a temporary SQLite database and keys: routing, validation, Problem Details, cookies, CORS, caching, startup configuration, security headers;
+- a shared contract of JSON property names (`contracts/api-shapes.json`) checked by a backend test against the real API and by a frontend test against the TypeScript types;
+- frontend Vitest tests for the API clients, `useWatchlist` and Browse paging (`npm test`);
+- manual browser journeys and a 13-route responsive sweep (`frontend/e2e`, `npm run e2e`, `npm run e2e:sweep`) against the running application with live TMDB data.
+
 Do not chase artificial test coverage percentages.
 
 ---
@@ -354,7 +360,7 @@ Backend:  http://localhost:5080
 
 The backend uses controller-based ASP.NET Core Web API endpoints.
 
-Local CORS should allow the frontend origin above rather than using an unrestricted origin policy.
+CORS allows only the configured frontend origin(s) (`Cors:AllowedOrigins`, default the origin above), never an unrestricted policy and never credentials; the Watchlist is called through the frontend's same-origin `/backend` proxy. Runtime hardening rules (generic 500s, Development-only diagnostics and API reference, security headers) are in D033.
 
 The first integration gate is:
 

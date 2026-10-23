@@ -2,7 +2,7 @@
 
 ## Stage Status
 
-**In Progress — sprint breakdown and recommendations approved by the Tech Lead on 2026-10-23.** Tech Lead note: TTLs are a performance lever, so the TTL policy must be chosen carefully from measured evidence, not guessed.
+**Completed / Accepted — Sprints 06.1–06.5 accepted by the Tech Lead on 2026-10-23.** Plan approved 2026-10-23. Tech Lead note: TTLs are a performance lever, so the TTL policy must be chosen carefully from measured evidence, not guessed.
 
 Stage 05 — Frontend Product Experience is accepted and complete (Sprint 05.8 accepted 2026-10-23).
 
@@ -111,3 +111,44 @@ Full local regression (backend tests, frontend checks, live end-to-end run), doc
 - Preserve recorded architecture and decisions; propose changes through `DECISIONS.md`.
 - One sprint at a time; do not continue to the next sprint automatically.
 - Commit only when the Tech Lead asks.
+
+---
+
+# 6. Stage 06 Handoff Report (Sprint 06.5, 2026-10-23)
+
+## Outcome
+
+Every sprint goal was met. No product feature was added; behavior visible to users changed only where hardening required it (longer-lived caches, a Development-only diagnostic).
+
+## Mandatory cache review: checklist
+
+| Required item | Where it is answered |
+|---|---|
+| Cacheable-operation inventory, evidence / value | Measured cold vs cached latency per endpoint (cold 0.5–5 s, cached about 2 ms); D032 |
+| TTL policy by data category | `CacheTtl`, D032 table |
+| Search / Discover reconsidered | Discover cached 15 min (also feeds Pick); Search left uncached (rarely repeats) |
+| Key consistency | `group:name:...` keys, invariant formatting for Discover filters, tested |
+| Negative-cache policy | unknown movie id 1 min; TMDB failures never cached; tested |
+| Stale-data tolerance, expiry / refresh | accepted up to the lifetime; no background refresh (a cold call after expiry is the known trade-off) |
+| Memory bound | `SizeLimit` 5000, one unit per entry; tested |
+| Concurrency / stampede | one shared TMDB call per missing key; one caller cancelling does not cancel it; tested |
+| Observability | `MovieNight.Cache` hit / miss / joined counters, debug logs |
+| DTO / transport boundary | only DTOs cached; Pick now samples cached Discover DTO pages |
+| Important cache tests | `CatalogCacheTests` (6) plus HTTP-level cache tests |
+| Remove cache with no value | none found; the per-service `GetOrCreateAsync` code was replaced by the shared helper |
+
+## Verification run
+
+- Backend: 178 tests pass (85 at the start of Stage 06); `dotnet list package --vulnerable --include-transitive`: none.
+- Frontend: `tsc`, `eslint`, `next build` clean; 41 Vitest tests pass; `npm audit` (production and full): 0 vulnerabilities (the 9 dev-only advisories noted in Stage 05 are gone after the 06.4 updates).
+- Live, against the production build and the real backend: 17 / 17 journey checks; 13 routes × 3 widths clean (one earlier pass showed `_next/image` 504s on cold first loads; every visible image was recovered by the fallback and a repeat run was clean).
+- Contract: API responses, TypeScript types and `contracts/api-shapes.json` agree; each side fails if it drifts.
+- `git diff --check` clean.
+
+## Known limits handed to Stage 07 or the Tech Lead
+
+- The first load of artwork can be slow when the TMDB image CDN is slow (2–7 s measured); the Next image optimizer then answers 504 and the image fallback loads it directly. Candidate for Stage 07 polish (for example, smaller image sizes or earlier preloading).
+- No background cache refresh: the first visitor after an expiry waits for one cold TMDB call.
+- Not implemented on purpose (D033): Content-Security-Policy, rate limiting, HTTPS redirect / HSTS; they depend on a deployment decision.
+- Frontend component tests cover the API layer, `useWatchlist` and Browse; other components are covered by the manual browser journeys and sweep, which need live TMDB data and are run by hand.
+- Stage 07 has not been started.

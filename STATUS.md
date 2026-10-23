@@ -2,15 +2,23 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 accepted by the Tech Lead on 2026-10-23; Sprint 06.4 accepted by the Tech Lead on 2026-10-23; Sprint 06.5 in progress
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 accepted by the Tech Lead on 2026-10-23; Sprint 06.4 accepted by the Tech Lead on 2026-10-23; Sprint 06.5 accepted by the Tech Lead on 2026-10-23; Stage 06 complete; Stage 07 is next and has not started
 
 ## Current Stage
 
-Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). Stage 05 is completed / accepted.
+Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / accepted). Stage 07 — Final Polish & Portfolio Handoff is next. Stage 05 is completed / accepted.
 
 ## Current Sprint
 
-Sprint 06.5 — Stage 06 Verification & Handoff (in progress).
+Sprint 06.5 — Stage 06 Verification & Handoff (accepted by the Tech Lead on 2026-10-23; verified 2026-10-23: PASS).
+
+06.5 verification:
+
+- Backend 178 tests, frontend 41 tests, `tsc`, `eslint`, `next build`, `git diff --check` all clean; `dotnet` vulnerable-package check clean; `npm audit` 0 vulnerabilities (production and full; the 9 dev-only advisories from Stage 05 disappeared with the 06.4 updates).
+- Live against the production build and the real backend: 17 / 17 journey checks; 13-route × 3-width sweep clean (a first cold pass showed `_next/image` 504s while the TMDB image CDN was slow, recovered by the image fallback, and a repeat run was clean).
+- Docs aligned: ARCHITECTURE (caching policy, test layers, CORS), ROADMAP (Stage 06 progress), DECISIONS (D032, D033), Stage 06 file with the handoff report and the mandatory cache-review checklist.
+- Stage 06 is complete. Stage 07 has not started.
+
 
 Sprint 06.4 — Runtime Configuration, Security & Dependency Audit (accepted by the Tech Lead on 2026-10-23).
 
@@ -66,7 +74,7 @@ Sprint 05.8 — Stage 05 Verification & Handoff (accepted by the Tech Lead on 20
 - Integration: no request to api.themoviedb.org, no `fetch()` outside `src/lib/api/`, Watchlist requests use `credentials: "include"` through `/backend/watchlist`. Artwork may be re-requested straight from `image.tmdb.org` by the image fallback (images only, no API access).
 - Build: lint, build, `git diff --check` clean; 85 backend tests passing; every npm dependency is used (`react-dom`, `shadcn` and `tw-animate-css` implicitly or through `globals.css`).
 - Docs: fixed two stale route lists (Stage 05 §5 and the UI skill's product-scope) that still named only four routes; STATUS, ROADMAP, DECISIONS and ARCHITECTURE agree.
-- Remaining issues found by the verification were fixed the same day (Tech Lead approved the plan): `next` 16.3.6 → 16.4.2 (it carried a critical advisory), `eslint-config-next` 16.4.2, `lucide-react` 1.61, `@base-ui/react` 1.9, React type packages 19.3; `shadcn` moved from `dependencies` to `devDependencies` and its one used file, `shadcn/tailwind.css`, copied unchanged to `src/app/shadcn-tailwind.css` (no component imports the package; generated CSS compared before / after: no rule from it changed; D031); `npm audit fix` (non-breaking). `npm audit --omit=dev`: 0 vulnerabilities (was 19, 2 critical). The 9 findings still listed by a full `npm audit` are dev-only (`shadcn` CLI and `eslint-config-next` via `braces` / `micromatch` / `fast-glob`; no patched `braces` exists yet) and do not ship. Scene thumbnails on Details now use TMDB w780 (the full-size viewer keeps the original): the failing thumbnail requests are gone (0 errors on Details at 390 / 768 / 1440).
+- Remaining issues found by the verification were fixed the same day (Tech Lead approved the plan): `next` 16.3.6 → 16.4.2 (it carried a critical advisory), `eslint-config-next` 16.4.2, `lucide-react` 1.61, `@base-ui/react` 1.9, React type packages 19.3; `shadcn` moved from `dependencies` to `devDependencies` and its one used file, `shadcn/tailwind.css`, copied unchanged to `src/app/shadcn-tailwind.css` (no component imports the package; generated CSS compared before / after: no rule from it changed; D031); `npm audit fix` (non-breaking). `npm audit --omit=dev`: 0 vulnerabilities (was 19, 2 critical). The 9 findings still listed by a full `npm audit` are dev-only (`shadcn` CLI and `eslint-config-next` via `braces` / `micromatch` / `fast-glob`; no patched `braces` existed then and they did not ship; resolved by later updates). Scene thumbnails on Details now use TMDB w780 (the full-size viewer keeps the original): the failing thumbnail requests are gone (0 errors on Details at 390 / 768 / 1440).
 - Not changed: the image fallback may re-request artwork from `image.tmdb.org` (images only); the dev-only hydration warnings come from a browser extension (`bis_skin_checked`), not the code.
 - After the fixes: lint, tsc, build, 85 backend tests, the 18 live checks and the 13-route sweep were run again and pass.
 - Stage 06 has not been started. Screenshots `docs/screenshots/05.8-*`.
