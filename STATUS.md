@@ -2,13 +2,17 @@
 
 ## Current Phase
 
-Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff is next and has not started
+Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 in progress
 
 ## Current Stage
 
-Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / accepted). Stage 07 — Final Polish & Portfolio Handoff is next. Stage 05 is completed / accepted.
+Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / accepted). Stage 07 — Final Polish & Portfolio Handoff is in progress. Stage 05 is completed / accepted.
 
 ## Current Sprint
+
+Sprint 07.1 — Performance & Loading Polish (in progress).
+
+Previous sprint:
 
 Sprint 06.5 — Stage 06 Verification & Handoff (accepted by the Tech Lead on 2026-10-23; verified 2026-10-23: PASS).
 
