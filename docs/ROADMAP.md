@@ -1,6 +1,6 @@
 # MovieNight — Roadmap
 
-MovieNight 1.0 is complete: all eight stages are finished. Each stage with a short summary in [docs/stages/](stages/). Detailed history lives in Git.
+MovieNight 1.0 is complete: all eight stages are finished. Each stage has a short summary in [docs/stages/](stages/); detailed history lives in Git.
 
 | Stage | Name | Status |
 |---|---|---|
