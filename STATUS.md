@@ -5,7 +5,7 @@ Single source of truth for where the project stands. Keep it short; history live
 ## Current state
 
 - **MovieNight 1.0 is complete.** Stages 00–07 are finished and accepted by the Tech Lead (Stage 07 on 2026-10-24). The application is feature-complete, verified and documented; Stage 07 added no features.
-- Stage 07 delivered: performance and loading polish, accessibility / responsive / metadata review, code cleanup and backend structure, documentation / repository hygiene / secrets (README with a TMDB token guide, single-source docs, `CLAUDE.md` as the only agent file, curated images, secret scan, clean-clone check, history cleanup of old screenshots), and final verification with demo and portfolio notes ([docs/PORTFOLIO.md](docs/PORTFOLIO.md)).
+- Stage 07 delivered: performance and loading polish, accessibility / responsive / metadata review, code cleanup and backend structure, documentation / repository hygiene / secrets (README with a TMDB token guide, single-source docs, `CLAUDE.md` as the only agent file, curated images, secret scan, clean-clone check, history cleanup of old screenshots),and final verification.
 - Nothing is open. Suggested release: tag `v1.0.0` on `master` after the final pull request is merged.
 
 ## Verified at the last full check (fresh clone of the pushed branch, following the README)
