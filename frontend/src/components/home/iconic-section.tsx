@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { MovieRow } from "@/components/movie/movie-row";
 import { getTopRatedMovies } from "@/lib/api/movies";
 import type { MovieSummary } from "@/types/movie";

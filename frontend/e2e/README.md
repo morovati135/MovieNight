@@ -5,9 +5,12 @@ Two scripts drive a real headless browser (Edge or Chrome, over the DevTools Pro
 | Script | Command | What it checks |
 |---|---|---|
 | `journeys.mjs` | `npm run e2e` | The user journeys: Home, save to Watchlist, Details, Search, Pick for Me, remove / undo, friendly errors with the backend blocked, not-found pages, and that the browser never calls `api.themoviedb.org`. |
-| `sweep.mjs` | `npm run e2e:sweep` | All 13 routes at 390, 768 and 1440 px: no horizontal overflow, exactly one `h1`, no broken visible images, no touch target under 40 px, no console errors or failed requests (except expected 404 pages). |
+| `sweep.mjs` | `npm run e2e:sweep` | All 13 routes at 320, 390, 768 and 1440 px: no horizontal overflow, exactly one `h1`, no broken visible images, no touch target under 40 px, no console errors or failed requests (except expected 404 pages). |
 
-Both exit with code 1 when something fails.
+| `a11y.mjs` | `npm run e2e:a11y` | axe-core (WCAG 2.1 A / AA and best-practice rules) on 11 routes at 320, 390 and 1440 px, a keyboard Tab pass (skip link first, accessible names, visible focus) on five routes, and page metadata (title, description, social image). |
+| `perf.mjs` | `npm run e2e:perf` | Page-load numbers on a production build: FCP, LCP, layout shift, image requests and bytes, failed images. |
+
+All exit with code 1 when something fails.
 
 ## Run them
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { useRailScroll } from "@/components/movie/use-rail-scroll";
 import { glassControlClassName } from "@/components/ui/controls";
 import { ResilientImage } from "@/components/ui/resilient-image";
@@ -127,7 +127,7 @@ export function CollectionsSection() {
       ) : (
         <div className="relative">
           <div
-            aria-label="Collections"
+            aria-label="Collections list"
             className="overflow-visible outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:-mx-8 sm:overflow-x-auto sm:overscroll-x-contain sm:[scrollbar-width:none] lg:mx-0 [&::-webkit-scrollbar]:hidden"
             onScroll={updateScrollState}
             ref={railRef}

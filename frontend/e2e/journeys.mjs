@@ -1,6 +1,6 @@
 // End-to-end user journeys through the real frontend and backend (and live TMDB data).
 // Start the backend and the frontend first; see e2e/README.md. Exits with code 1 if any check fails.
-import { launch, sleep } from "./browser.mjs";
+import { apiUrl, launch, sleep } from "./browser.mjs";
 
 const browser = await launch();
 let failures = 0;
@@ -54,8 +54,15 @@ try {
   // Pick for Me
   await browser.go("/pick", 4000);
   const picked = await click(`(b) => /Pick a movie/i.test(b.textContent)`);
-  await sleep(9000);
-  check("Pick: the button works and a movie is revealed", picked && /Tonight's ticket|Pick again|View Details/i.test(await browser.text()));
+  // The reveal waits for the movie's artwork (up to a few seconds with a cold TMDB), so poll rather than guess.
+  let revealed = false;
+
+  for (let attempt = 0; attempt < 15 && picked && !revealed; attempt++) {
+    await sleep(2000);
+    revealed = /Tonight's ticket|Pick again|View Details/i.test(await browser.text());
+  }
+
+  check("Pick: the button works and a movie is revealed", picked && revealed);
 
   // Remove, undo window, empty state
   await browser.go("/watchlist", 4000);
@@ -67,7 +74,7 @@ try {
   check("Watchlist: empty state after removal", /Discover movies|Pick for Me/.test(text) && !/waiting for movie night/.test(text));
 
   // Backend down
-  await browser.blockUrls(["http://localhost:5080/*", "*/backend/*"]);
+  await browser.blockUrls([`${apiUrl}/*`, "*/backend/*"]);
   await browser.go("/", 6000);
   text = await browser.text();
   check(
@@ -84,7 +91,7 @@ try {
   await browser.go("/movies/abc", 3500);
   check("Not found: an invalid movie id", /couldn’t find that movie/i.test(await browser.text()));
   await browser.go("/zzz", 3000);
-  check("Not found: an unknown route", /404/.test(await browser.text()));
+  check("Not found: an unknown route", /couldn’t find that page/.test(await browser.text()));
 
   // Integration
   await browser.go("/", 5000);

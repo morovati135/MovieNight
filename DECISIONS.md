@@ -1,325 +1,105 @@
-# MovieNight — Architecture & Product Decisions
+# MovieNight — Decisions
 
-This file records decisions that future agent sessions must preserve unless explicitly changed.
+Decisions that must be preserved unless explicitly changed. To change one, add a new decision here first.
 
----
+## Foundations (D001–D024)
 
-## D001 — Backend Framework
-
-**Decision:** Use .NET 10 with ASP.NET Core Web API.
-
-**Reason:** The project is backend-focused and should use a modern supported .NET stack.
-
----
-
-## D002 — Frontend Framework
-
-**Decision:** Use Next.js with TypeScript.
-
-**Reason:** It provides a mature React-based foundation suitable for a polished portfolio frontend.
-
----
-
-## D003 — Styling
-
-**Decision:** Use Tailwind CSS and shadcn/ui.
-
-**Reason:** They allow rapid implementation of a consistent, modern UI without introducing a large custom design-system codebase.
-
----
-
-## D004 — Persistence
-
-**Decision:** Use SQLite with Entity Framework Core.
-
-**Reason:** The application is local-only and does not need infrastructure complexity associated with a separate database server.
-
----
-
-## D005 — Movie Source of Truth
-
-**Decision:** TMDB remains the source of truth for movie catalog data.
-
-**Reason:** MovieNight should not maintain or synchronize a duplicate movie catalog.
-
----
-
-## D006 — Backend Boundary
-
-**Decision:** The frontend must not call TMDB directly.
-
-**Reason:** API credentials, mapping, caching, error handling, and movie-related backend logic must remain behind the application API.
-
----
-
-## D007 — Watchlist Model
-
-**Decision:** Each browser has one private anonymous watchlist, associated through a protected anonymous-browser identity.
-
-**Reason:** The application supports an account-free personal watchlist without public sharing or a separate owner credential.
-
----
-
-## D008 — Anonymous-Browser Identity Protection
-
-**Decision:** Do not use owner tokens; protect the anonymous-browser identity at the browser boundary.
-
-**Reason:** The identity is an implementation boundary for a browser-private watchlist, not a reusable public write credential.
-
----
-
-## D009 — Watchlist Movie Storage
-
-**Decision:** Store TMDB movie identifiers and application-owned watchlist metadata, not movie-detail snapshots.
-
-**Reason:** TMDB remains the source of truth for movie details and the local database stays limited to application-owned state.
-
----
-
-## D010 — Backend Structure
-
-**Decision:** Use one ASP.NET Core project organized primarily by feature.
-
-**Reason:** The project is too small to justify multiple architectural projects or layers.
-
----
-
-## D011 — No Clean Architecture
-
-**Decision:** Do not implement a traditional multi-project Clean Architecture.
-
-**Reason:** It would add abstractions and context cost without solving a current project problem.
-
----
-
-## D012 — No MediatR or CQRS
-
-**Decision:** Do not use MediatR or CQRS.
-
-**Reason:** Current request/response and business complexity do not justify an additional dispatch abstraction.
-
----
-
-## D013 — No Generic Repository
-
-**Decision:** Feature services may use EF Core DbContext directly.
-
-**Reason:** EF Core already provides the required persistence abstraction for this project.
-
----
-
-## D014 — Caching
-
-**Decision:** Use `IMemoryCache` for selected read-heavy TMDB data.
-
-**Reason:** It provides useful local caching without introducing external infrastructure.
-
----
-
-## D015 — API Error Contract
-
-**Decision:** Use ASP.NET Core Problem Details for API errors.
-
-**Reason:** The application needs one consistent error representation without a custom error framework.
-
----
-
-## D016 — Authentication
-
-**Decision:** Do not implement registration, login, Identity, or JWT.
-
-**Reason:** Anonymous ownership is sufficient for the current watchlist feature.
-
----
-
-## D017 — Movie Only
-
-**Decision:** Version 1 supports movies only.
-
-**Reason:** Supporting both movies and TV series would duplicate mapping, routing, filtering, and UI concerns without adding enough value to the primary learning goal.
-
----
-
-## D018 — Local Execution Only
-
-**Decision:** Version 1 must run fully on localhost. Deployment and Docker are out of scope.
-
-**Reason:** The primary goal is Agent Engineering and full-stack implementation, not infrastructure work.
-
----
-
-## D019 — Agent Development Model
-
-**Decision:** Implementation is performed by the coding agent. The human acts primarily as Tech Lead and reviewer.
-
-**Reason:** The project is explicitly intended as an Agent Engineering exercise.
-
----
-
-## D020 — Context Efficiency
-
-**Decision:** Each implementation sprint should receive only the stable documents, current stage document, status file, and relevant code.
-
-**Reason:** Avoid wasting coding-agent context on unrelated files and historical conversations.
-
-
----
-
-## D021 — Controller-Based Backend API
-
-**Decision:** Use controller-based ASP.NET Core Web API endpoints.
-
-**Reason:** The project benefits from explicit feature controllers and predictable API organization while staying simple.
-
----
-
-## D022 — Frontend Package Manager
-
-**Decision:** Use npm for the frontend.
-
-**Reason:** Keep the project setup conventional and avoid introducing multiple JavaScript package-manager workflows.
-
----
-
-## D023 — Local Development Ports
-
-**Decision:** Use `http://localhost:3000` for the frontend and `http://localhost:5080` for the backend development HTTP endpoint.
-
-**Reason:** Stable local addresses make CORS, frontend configuration, documentation, and smoke tests predictable.
-
----
-
-## D024 — Bootstrap Integration Gate
-
-**Decision:** Project bootstrap is not complete until the frontend successfully calls the backend health endpoint.
-
-**Reason:** Validate the full-stack boundary before introducing domain features such as TMDB and Watchlists.
-
-
----
-
-## D025 — Same-Origin Forwarding for Watchlist Requests
-
-**Decision:** Frontend Watchlist requests use the same-origin paths `/backend/watchlist` and `/backend/watchlist/{movieId}`, which `frontend/next.config.ts` rewrites to the backend `/api/watchlist` endpoints. Movie requests keep using the normal API client (`apiFetch`), which calls the backend directly through `NEXT_PUBLIC_API_BASE_URL`.
-
-**Reason:** The anonymous Watchlist identity is a backend-issued, protected HttpOnly cookie (D007, D008). Keeping Watchlist requests same-origin lets the browser send and receive that cookie on first-party requests made with `credentials: "include"`. The backend CORS policy allows the frontend origin but does not allow credentialed cross-origin requests, so direct browser-to-backend Watchlist calls do not fit the current credential/CORS model. Movie endpoints are public and cookie-free, so they do not need forwarding.
-
-**Rules:**
-
-- This split between the Watchlist and Movie request paths is intentional, not accidental duplication of the API client.
-- The forwarding rules exist only when `NEXT_PUBLIC_API_BASE_URL` is set when the Next.js configuration loads (dev server start or build). If it is missing, no rewrites are registered and Watchlist requests fail with 404.
-- Do not replace this with `localStorage`/`sessionStorage` Watchlist storage or with direct cross-origin Watchlist calls without an explicit architecture change recorded in this file.
-## D026 — Optional Release Year on Movie Search
-
-**Decision:** `GET /api/movies/search` accepts an optional `year` (1888–2100, the same range as Discover), which the backend forwards to TMDB title search as `primary_release_year`. Genre and minimum rating remain Discover-only filters.
-
-**Reason:** In the Home Search view (Sprint 05.3) a title can be combined with Genre / Year / Minimum Rating filters. TMDB title search supports a release-year filter but not genre or rating filters. Without a backend year, a year filter could only narrow the first loaded page of title matches, so common titles routinely showed no results for a year that does have matches. Forwarding the year makes title + year exact, with correct totals and paging.
-
-**Rules:**
-
-- The frontend sends `year` with a title query; genre and minimum rating with a title still narrow the loaded title matches in the browser.
-- Do not emulate genre or rating filtering for title Search on the backend by scanning multiple TMDB pages without a separate decision (request cost and caching belong to Stage 06).
-
-## D027 — Movie Details Enrichment from the Existing TMDB Request
-
-**Decision:** `GET /api/movies/{id}` additionally returns `directors` (from TMDB credits crew, job "Director"), `productionCountryCodes` (ISO 3166-1) and `sceneImageUrls` (up to 10 text-free TMDB backdrops, excluding the hero backdrop). `similarMovies` keeps its name but is now sourced from TMDB recommendations instead of TMDB "similar". All of it comes from the single existing TMDB details request (`append_to_response=credits,recommendations,images&include_image_language=null`).
-
-**Reason:** The Tech Lead asked for a richer Movie Details page (Sprint 05.4). The supplied reference shows a director, a country and a row of scene images, all of which TMDB already provides for the request MovieNight makes. TMDB has no separate "screenshot" type for movies; text-free backdrops are its scene images. TMDB "similar" results are keyword-based and often unrelated (for John Wick: Chapter 4 they included Barton Fink); recommendations are markedly more relevant (John Wick: Chapter 2 and 3 first).
-
-**Rules:**
-
-- Keep this to one TMDB request per movie; cap list sizes in the mapper.
-- Still out of scope (PROJECT.md non-goals / Stage 05 scope): reviews and comments, likes and user ratings, watch providers, IMDb data, production studios. Trailers, tagline, age rating and collections were offered and not selected; adding them needs a new decision.
-
-## D028 — Vote-Count Floor for Minimum Rating Filters
-
-**Decision:** When a minimum rating is set, the backend Discover request to TMDB (used by `GET /api/movies/discover` and `GET /api/movies/pick`) also sends a minimum vote count (`vote_count.gte`). Without a minimum rating, no floor is sent. The floor is 100 votes (`MinimumRatingVoteCount` in `TmdbClient`).
-
-**Reason:** TMDB `vote_average.gte` alone lets movies with only a handful of votes satisfy high ratings, so "Min. rating 9" returned obscure titles instead of well-rated films. The Tech Lead approved the floor on 2026-10-22 during Sprint 05.5 planning.
-
-**Rules:**
-
-- The floor applies only together with a minimum rating; unfiltered and genre/year-only results are unchanged.
-- It affects Search & Discover (Sprint 05.3) as well as Pick for Me; this is intended.
-- Changing the floor value or exposing it as a parameter needs a new decision.
-
-## D029 — Optional Backdrop on Movie Summaries
-
-**Decision:** `MovieSummaryDto` (every movie list: trending, popular, search, discover, pick, recommendations, Watchlist) gains an optional `backdropUrl`, built from the TMDB list result's `backdrop_path` that MovieNight already receives. It is null when TMDB has none and on Watchlist snapshots created before this change.
-
-**Reason:** The Tech Lead asked (2026-10-22, Sprint 05.5) for landscape suggestion cards (`movie-covers/Cards`, `Covers_Type_2`) and a backdrop behind the Pick spotlight. Landscape cards need wide artwork, which summaries did not carry (05.4 had dropped these cards for that reason). TMDB list results already include it, so no extra request is made.
-
-**Rules:**
-
-- Additive and optional: existing clients and stored data stay valid.
-- Landscape cards fall back to the poster when `backdropUrl` is null.
-- Summary backdrops use the TMDB `w1280` rendition (cards, blurred backgrounds and, since Sprint 05.7-X3, the Home hero); since Sprint 05.7-X7 the Movie Details hero also uses `w1280` (its `original` file, about 2.6 MB, could time out in the image optimiser and leave the hero blank); the Details scene images stay at `original` for the full-size viewer. `original` files can be several MB and timed out in the Next image optimiser on slow connections; `w780` was used first and raised to `w1280` so a full-width hero stays sharp.
-
-## D030 — Sprint 05.7 Product Additions: About, Browse Pages, Home Sections and Footer
-
-**Decision:** Version 1 adds two public routes to the locked set — `/about` (portfolio note and Socials) and `/browse/[category]` (category pages with paging, opened by "See more" on Home sections) — a site-wide footer with the TMDB attribution, and two Home sections: curated Collections (TMDB franchise collections mixed with studio / genre sets) and "Iconic: Top rated of all time".
-
-**Reason:** The Tech Lead requested these on 2026-10-22 while planning Sprint 05.7. TMDB's API terms require attribution, which the frontend did not show. The About page presents MovieNight as a portfolio and practice project by Amir Mahdi Morovati.
-
-**Rules:**
-
-- Collections are a fixed, curated catalogue chosen by the project, not user-created or named collections (still out of scope).
-- New lists come from the MovieNight backend only (TMDB stays behind the backend), with paging where a page shows more than one batch.
-- The catalogue (`Features/Collections/MovieCollectionCatalog.cs`): Marvel (company 420), DC (companies 9993, 128064, 429), Harry Potter (collection 1241), John Wick (404609), Godzilla (535313), Musicals (genre 10402), The Lord of the Rings (119), Star Wars (10). `GET /api/collections` returns each with up to three cover posters (franchises in release order), cached 6 hours; a collection TMDB cannot load is left out.
-- "Iconic: Top rated of all time" (`GET /api/movies/top-rated?page=`) is TMDB Discover sorted by rating with at least 10,000 votes, not TMDB's `movie/top_rated`, which currently ranks new, barely voted titles first.
-- `/login`, `/register`, `/profile`, `/settings`, `/collections` and `/admin` remain out of scope.
-- `/browse/[category]` serves `trending`, `popular`, `iconic` and every collection slug; trending, popular and top rated take `?page=` (1–500), `GET /api/collections/{slug}/movies?page=` serves one collection (franchises are a single page, studio and genre sets page through Discover, unknown slug returns 404).
-
----
-
-## D031 — `shadcn` Is a Development Tool, Not a Runtime Dependency
-
-**Decision:** The `shadcn` package lives in `devDependencies` (for adding components with its CLI). The one file the app uses from it, `shadcn/tailwind.css`, is kept as `frontend/src/app/shadcn-tailwind.css`, copied unchanged and imported by `globals.css`.
-
-**Reason:** The package is a command-line tool with a large dependency tree that accounted for most of the 19 `npm audit` findings, while the application used only its 16 KB stylesheet. No component imports the package; components use `class-variance-authority`, `clsx`, `tailwind-merge` and Base UI.
-
-**Rules:**
-
-- After updating `shadcn`, compare its `dist/tailwind.css` with `src/app/shadcn-tailwind.css` and refresh the copy if it changed.
-- Do not import the `shadcn` package from application code.
-
-
-## D032 — Cache Policy (Sprint 06.1)
-
-**Decision:** All TMDB-derived data is cached in memory through one helper, `CatalogCache` (`Features/Caching`), with lifetimes chosen by how fast each kind of data changes, because a cold TMDB call costs 0.5–5 s and a cached one about 2 ms (measured locally on 2026-10-23).
-
-**Lifetimes (`CacheTtl`):**
-
-| Data | Lifetime | Why |
+| ID | Decision | Why |
 |---|---|---|
-| Genres | 24 h | names effectively never change |
-| Collections list and pages | 12 h | curated sets; TMDB reorders them rarely |
-| Top rated (Iconic) | 6 h | barely moves |
-| Movie details and summaries | 2 h | only ratings and vote counts drift (was 10 min; a cold details call took up to 5 s) |
-| Trending and popular pages | 30 min | TMDB recomputes over hours (was 5 min) |
-| Discover (genre / year / rating / page) | 15 min | new; Home genre switching and Pick repeat these (about 0.55 s uncached) |
-| Unknown movie id (TMDB 404) | 1 min | negative cache; a new movie appears soon |
-| Search | not cached | free-text keys rarely repeat |
-| TMDB failures and timeouts | never cached | the next request retries |
+| D001 | Backend: .NET 10, ASP.NET Core Web API, controller-based (D021) | Modern supported stack; explicit feature controllers |
+| D002 | Frontend: Next.js (App Router) + TypeScript, npm (D022) | Mature React base for a polished UI; one package manager |
+| D003 | Styling: Tailwind CSS 4 with shadcn-style components on Base UI | Consistent UI without a large custom design system |
+| D004 | Persistence: SQLite with EF Core | Local-only app; no database server |
+| D005 | TMDB is the source of truth for movies; no local catalog | Nothing to synchronize |
+| D006 | The browser never calls TMDB's API; everything goes through the backend | Credentials, mapping, caching and errors stay behind the API |
+| D007 | One private anonymous watchlist per browser, tied to a protected anonymous-browser identity | Account-free watchlist, no public sharing |
+| D008 | No owner tokens; the identity is protected at the browser boundary (protected HttpOnly cookie) | It is an implementation boundary, not a public write credential |
+| D009 | The watchlist stores TMDB movie ids and app-owned metadata, not movie snapshots | TMDB stays the source of truth |
+| D010–D013 | One ASP.NET Core project organized by feature; no Clean Architecture, MediatR, CQRS or generic repository; services use `DbContext` directly | Too small to justify layers |
+| D014 | `IMemoryCache` for selected TMDB reads (policy: D032) | Useful caching without infrastructure |
+| D015 | ASP.NET Core Problem Details for every API error | One consistent error shape |
+| D016 | No registration, login, Identity or JWT | Anonymous ownership is enough |
+| D017 | Movies only (no TV) | Avoid duplicated mapping, routing and UI |
+| D018 | Runs fully on localhost; deployment and Docker are out of scope | The goal is full-stack engineering, not infrastructure |
+| D019 | Built by an AI coding agent, with the human as Tech Lead and reviewer | The project is an agent-engineering exercise |
+| D020 | Each task gets only the stable docs, the current status and the relevant code | Save agent context |
+| D023 | Ports: frontend `http://localhost:3000`, backend `http://localhost:5080` | Predictable CORS, config and smoke tests |
+| D024 | Bootstrap was complete only when the frontend reached the backend health endpoint | Prove the full-stack boundary first |
 
-**Rules:**
+## D025 — Same-origin forwarding for Watchlist requests
 
-- Only MovieNight DTOs are cached, never TMDB transport models. Pick samples the cached Discover DTO pages, so a Pick after browsing a genre costs no extra TMDB call.
-- Concurrent misses for one key share a single TMDB call, and one caller cancelling does not cancel it for the others.
-- The memory cache has `SizeLimit = 5000`; each entry counts as 1, which bounds the page-keyed entries.
-- Keys are `group:name:...` and built the same way everywhere; Discover keys use invariant formatting.
-- Hits, misses and joined loads are counted (`MovieNight.Cache` meter, tagged by key group) and logged at debug level.
-- Staleness is accepted up to the lifetime. There is no background refresh (a user can still meet one cold call when an entry expires); revisit only if measurements show it matters.
+Watchlist requests use `/backend/watchlist` and `/backend/watchlist/{movieId}`, which `frontend/next.config.ts` rewrites to the backend `/api/watchlist`. Movie requests call the backend directly through `NEXT_PUBLIC_API_BASE_URL`.
 
+The anonymous identity is a protected HttpOnly cookie (D007, D008). Same-origin requests with `credentials: "include"` let the browser send it; the backend CORS policy never allows credentialed cross-origin calls. The split is intentional.
 
-## D033 — Runtime Hardening and Configuration (Sprint 06.4)
+- The rewrites exist only when `NEXT_PUBLIC_API_BASE_URL` is set at dev-server start or build; otherwise Watchlist calls 404.
+- Do not replace this with `localStorage` storage or direct cross-origin Watchlist calls without a new decision.
 
-**Decision:** The API is hardened for a deployed run without changing any product behavior.
+## D026 — Optional release year on title search
 
-**Rules:**
+`GET /api/movies/search` accepts an optional `year` (1888–2100), forwarded to TMDB as `primary_release_year`. Genre and minimum rating stay Discover-only; with a title they narrow the loaded matches in the browser. Without a backend year, a year filter could only narrow one page, so common titles showed no results. Do not emulate genre or rating filtering for search by scanning many TMDB pages without a new decision.
 
-- **Configuration:** `Tmdb:ReadAccessToken` (user secret or environment variable) is required and `Tmdb:BaseUrl` must be an absolute HTTPS URL; the app refuses to start otherwise, with a message that never contains the token. CORS origins come from `Cors:AllowedOrigins` (default `http://localhost:3000`); credentials are never allowed cross-origin because the Watchlist goes through the frontend's same-origin `/backend` proxy.
-- **Errors:** an unexpected failure outside Development returns a generic `application/problem+json` 500 (no message, stack or type); malformed TMDB answers are 502; the exception is only logged. OpenAPI, Scalar and `GET /api/tmdb/preflight` exist only in Development (the preflight reaches TMDB uncached on every call).
-- **Headers:** the API sends `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and `Referrer-Policy: no-referrer`; the frontend sends nosniff, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` and a restrictive `Permissions-Policy`.
-- **Cookie:** the anonymous cookie is HttpOnly and SameSite=Lax, and Secure whenever the request is HTTPS (tested).
-- **Not done, on purpose:** no Content-Security-Policy (Next needs nonces; the pages load only TMDB images and own scripts, so the benefit is small for this project), no rate limiting (behind the Next proxy every Watchlist call would share one address, so a per-IP limit would punish everyone; revisit with a deployment decision), no HTTPS redirect or HSTS (depends on where it is hosted).
+## D027 — Movie details enrichment
+
+`GET /api/movies/{id}` also returns `directors`, `productionCountryCodes` and `sceneImageUrls` (up to 10 text-free TMDB backdrops, excluding the hero backdrop). `similarMovies` comes from TMDB *recommendations* (far more relevant than keyword-based "similar"). All of it comes from one TMDB request (`append_to_response=credits,recommendations,images&include_image_language=null`).
+
+- Keep one TMDB request per movie; cap list sizes in the mapper.
+- Out of scope: reviews, comments, likes, user ratings, watch providers, IMDb data, studios, trailers, tagline, age rating.
+
+## D028 — Vote-count floor for minimum-rating filters
+
+With a minimum rating, Discover and Pick also send `vote_count.gte=100` (`MinimumRatingVoteCount` in `TmdbClient`); without one, no floor. Otherwise "minimum rating 9" returns obscure titles with a handful of votes. It applies to Search & Discover and Pick. Changing the value or exposing it needs a new decision.
+
+## D029 — Optional backdrop on movie summaries
+
+`MovieSummaryDto` has an optional `backdropUrl` (from the list result TMDB already returns; null when absent and on older Watchlist rows) for landscape cards and the Pick spotlight. Cards fall back to the poster.
+
+Artwork sizes: summary backdrops and the Details hero use TMDB `w1280`; scene images stay `original` for the full-size viewer, and scene thumbnails use `w780`. Multi-MB `original` files timed out in the image optimizer and left heroes blank.
+
+## D030 — Public routes, collections and category pages
+
+Public routes: `/` (Home and Search), `/movies/[id]`, `/pick`, `/watchlist`, `/about`, `/browse/[category]`. A site-wide footer carries the TMDB attribution. Home has curated Collections and "Iconic: Top rated of all time".
+
+- Collections are a fixed, project-curated catalogue (`Features/Collections/MovieCollectionCatalog.cs`): Marvel, DC, Harry Potter, John Wick, Godzilla, Musicals, The Lord of the Rings, Star Wars. Not user-created.
+- `GET /api/collections` returns each with up to three cover posters (a collection TMDB cannot load is left out); `GET /api/collections/{slug}/movies?page=` serves one (franchises are one page in release order; studio and genre sets page through Discover; unknown slug is 404).
+- "Iconic" (`GET /api/movies/top-rated?page=`) is Discover sorted by rating with at least 10,000 votes, not TMDB's `movie/top_rated`.
+- `/browse/[category]` serves `trending`, `popular`, `iconic` and every collection slug; trending, popular and top rated take `?page=` (1–500).
+- `/login`, `/register`, `/profile`, `/settings`, `/collections` and `/admin` stay out of scope.
+
+## D031 — `shadcn` is a development tool
+
+`shadcn` is a `devDependency` (for its CLI). The one file the app uses, `shadcn/tailwind.css`, is kept unchanged as `frontend/src/app/shadcn-tailwind.css` and imported by `globals.css`; no component imports the package. After updating `shadcn`, compare its `dist/tailwind.css` with the copy and refresh it if it changed.
+
+## D032 — Cache policy
+
+All TMDB-derived data is cached in memory through one helper, `CatalogCache` (`Features/Caching`), with lifetimes by how fast the data changes (a cold TMDB call costs 0.5–5 s, a cached one about 2 ms):
+
+| Data | Lifetime (`CacheTtl`) |
+|---|---|
+| Genres | 24 h |
+| Collections list and pages | 12 h |
+| Top rated (Iconic) | 6 h |
+| Movie details and summaries | 2 h |
+| Trending and popular pages | 30 min |
+| Discover (genre / year / rating / page) | 15 min |
+| Unknown movie id (TMDB 404) | 1 min |
+| Search | not cached |
+| TMDB failures and timeouts | never cached |
+
+- Only MovieNight DTOs are cached, never TMDB models. Pick samples the cached Discover pages.
+- Concurrent misses for a key share one TMDB call; one caller cancelling does not cancel it for the others.
+- `SizeLimit` is 5000 entries (one per key). Keys are `group:name:...`, with invariant formatting.
+- Hits, misses and joined loads are counted (`MovieNight.Cache` meter) and logged at debug level.
+- Staleness is accepted up to the lifetime; no background refresh and no invalidation logic.
+
+## D033 — Runtime hardening and configuration
+
+- `Tmdb:ReadAccessToken` is required and `Tmdb:BaseUrl` must be an absolute HTTPS URL; the app refuses to start otherwise, without echoing the token. CORS origins come from `Cors:AllowedOrigins` (default `http://localhost:3000`); credentials are never allowed cross-origin.
+- Outside Development an unexpected failure returns a generic `application/problem+json` 500; malformed TMDB answers are 502; exceptions are only logged. OpenAPI, Scalar and `GET /api/tmdb/preflight` exist only in Development.
+- The API sends `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`; the frontend sends nosniff, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` and a restrictive `Permissions-Policy`.
+- The anonymous cookie is HttpOnly, SameSite=Lax, one year, and Secure on HTTPS.
+- Not done on purpose, to decide with a hosting choice: Content-Security-Policy, rate limiting (behind the Next proxy every Watchlist call shares one address), HTTPS redirect and HSTS.
+
+## D034 — Documentation and AI instructions
+
+`CLAUDE.md` is the single instruction file for AI agents; there is no `AGENTS.md`. The project UI contract and approved design references live in `.claude/skills/movienight-ui/`. Documentation is kept short; history lives in Git. Working screenshots are not tracked (`docs/screenshots/` is ignored); the README uses a curated set in `docs/images/`.

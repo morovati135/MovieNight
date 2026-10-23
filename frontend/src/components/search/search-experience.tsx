@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { LoaderCircle, RotateCcw, Search, X } from "lucide-react";
 
 import { SectionNotice } from "@/components/home/home-states";
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { MovieGrid, movieGridClassName } from "@/components/movie/movie-grid";
 import { Button } from "@/components/ui/button";
 import { glassControlClassName } from "@/components/ui/controls";

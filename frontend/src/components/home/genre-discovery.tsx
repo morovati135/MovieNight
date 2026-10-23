@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getImageProps } from "next/image";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { GenreChips } from "@/components/movie/genre-chips";
 import { MovieRow } from "@/components/movie/movie-row";
 import { discoverMoviesByGenre, getGenres } from "@/lib/api/movies";
@@ -27,6 +27,13 @@ type GenreResultsState =
 // Must match the poster card's `sizes`, so the browser warms the same image candidate the card will request.
 const posterSizes = "(max-width: 639px) 112px, (max-width: 1023px) 168px, 208px";
 const warmedPosterCount = 12;
+
+/** True on Save-Data or slow connections, where downloading posters nobody asked for would cost real data. */
+function isDataConstrained() {
+  const connection = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+
+  return Boolean(connection?.saveData) || /(^|-)[23]g$/.test(connection?.effectiveType ?? "");
+}
 
 /** Starts downloading the first posters of a genre, so they are already cached when its row appears. */
 function warmPosters(movies: MovieSummary[]) {
@@ -184,7 +191,7 @@ export function GenreDiscovery({
   const genres = genreList.status === "ready" ? genreList.genres : null;
 
   useEffect(() => {
-    if (firstShownGenreId === null || !genres) {
+    if (firstShownGenreId === null || !genres || isDataConstrained()) {
       return;
     }
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { glassControlClassName, inlineLinkClassName } from "@/components/ui/controls";
 import { cn } from "@/lib/utils";
 import type { MovieSummary } from "@/types/movie";
@@ -65,7 +65,7 @@ export function MovieRow({
         ) : headingMode === "sr-only" ? null : (
           <button
             aria-controls={railId}
-            aria-label={`Show more ${controlLabel} movies`}
+            aria-label={`See more ${controlLabel} movies`}
             className={cn(inlineLinkClassName, "md:hidden disabled:pointer-events-none disabled:opacity-0")}
             disabled={!canScrollNext}
             onClick={() => scrollRail(1)}
@@ -82,7 +82,7 @@ export function MovieRow({
 
       <div className="relative z-10">
         <div
-          aria-label={`${controlLabel} movies`}
+          aria-label={`${controlLabel} movies list`}
           className={cn(
             "-mx-5 overflow-x-auto overscroll-x-contain pb-5 outline-none [scroll-padding-inline-start:1.25rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] [touch-action:pan-x_pan-y] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ring sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden",
             // Landscape cards cast a longer shadow; extra bottom room keeps it soft instead of clipped.

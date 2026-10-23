@@ -5,9 +5,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-export const baseUrl = (process.env.E2E_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const baseUrl = (process.env.E2E_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 export const apiUrl = (process.env.E2E_API_URL ?? "http://localhost:5080").replace(/\/$/, "");
-export const shotsDir = process.env.E2E_SHOTS_DIR ?? path.join(os.tmpdir(), "movienight-e2e-shots");
+const shotsDir = process.env.E2E_SHOTS_DIR ?? path.join(os.tmpdir(), "movienight-e2e-shots");
 
 const candidates = [
   process.env.BROWSER_PATH,
@@ -100,6 +100,9 @@ export async function launch({ port = 9400 + Math.floor(Math.random() * 400) } =
     },
     resize: (width, height, mobile = false) =>
       send("Emulation.setDeviceMetricsOverride", { deviceScaleFactor: 1, height, mobile, width }),
+    /** Raw DevTools events since the last navigation (for the performance script). */
+    rawEvents: () => events,
+    send,
     blockUrls: (urls) => send("Network.setBlockedURLs", { urls }),
     /** Console errors, thrown exceptions and failed (>= 400) responses since the last navigation. */
     problems() {
@@ -118,10 +121,12 @@ export async function launch({ port = 9400 + Math.floor(Math.random() * 400) } =
           .map((event) => `${event.params.response.status} ${event.params.response.url.slice(0, 100)}`),
       };
     },
-    async screenshot(name) {
-      const shot = await send("Page.captureScreenshot", { format: "png" });
+    /** Saves a screenshot of the tab as `<dir>/<name>.<png|jpg>` (default folder: the temp shots folder). */
+    async screenshot(name, { dir = shotsDir, format = "png", quality = 85 } = {}) {
+      const shot = await send("Page.captureScreenshot", { format, ...(format === "jpeg" ? { quality } : {}) });
 
-      fs.writeFileSync(path.join(shotsDir, `${name}.png`), Buffer.from(shot.result.data, "base64"));
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, `${name}.${format === "jpeg" ? "jpg" : "png"}`), Buffer.from(shot.result.data, "base64"));
     },
     text: () => send("Runtime.evaluate", { expression: "document.body.innerText", returnByValue: true }).then((r) => r.result.result.value),
     async close() {

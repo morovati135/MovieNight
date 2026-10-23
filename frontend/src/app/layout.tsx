@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
+import { preconnect } from "react-dom";
 
 import { AppHeader } from "@/components/layout/app-header";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
@@ -13,9 +14,15 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
+const siteDescription = "Discover, pick and save movies for your next movie night. A portfolio project built on the TMDB API.";
+
 export const metadata: Metadata = {
-  title: "MovieNight",
-  description: "Discover your next movie night favorite.",
+  // Absolute address for social-preview images; set NEXT_PUBLIC_SITE_URL to the deployed address.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: { default: "MovieNight", template: "%s · MovieNight" },
+  description: siteDescription,
+  openGraph: { title: "MovieNight", description: siteDescription, siteName: "MovieNight", type: "website" },
+  twitter: { card: "summary_large_image", title: "MovieNight", description: siteDescription },
 };
 
 export const viewport: Viewport = {
@@ -23,6 +30,10 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  // Artwork comes from TMDB's image servers; opening the connection early helps when an image is
+  // requested from there directly (the optimiser fallback).
+  preconnect("https://image.tmdb.org");
+
   return (
     <html lang="en" className={`${manrope.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">

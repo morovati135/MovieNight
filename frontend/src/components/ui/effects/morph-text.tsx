@@ -187,5 +187,3 @@ export function MorphText({
     </div>
   );
 }
-
-export default MorphText;

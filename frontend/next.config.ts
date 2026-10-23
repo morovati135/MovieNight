@@ -4,6 +4,9 @@ const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
   images: {
+    // TMDB artwork paths never change their content, and a first fetch costs up to several seconds, so
+    // optimised copies are kept for 30 days (the default is 4 hours) instead of being fetched again.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: "https",

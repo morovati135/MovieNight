@@ -30,7 +30,7 @@ const layoutSpring = {
   stiffness: 420,
 }
 
-export interface HaloToggleGroupItem {
+interface HaloToggleGroupItem {
   value: string
   label: ReactNode
   disabled?: boolean

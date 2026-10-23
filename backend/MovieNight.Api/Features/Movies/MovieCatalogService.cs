@@ -5,11 +5,6 @@ using MovieNight.Api.Integrations.Tmdb;
 
 namespace MovieNight.Api.Features.Movies;
 
-public interface IMovieSummaryLookup
-{
-    Task<MovieSummaryDto> GetSummaryAsync(int movieId, CancellationToken cancellationToken);
-}
-
 public sealed class MovieCatalogService(TmdbClient tmdbClient, CatalogCache cache, Func<int, int, int>? nextRandom = null)
     : IMovieSummaryLookup
 {
@@ -98,6 +93,4 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, CatalogCache cach
             async token => TmdbMovieMapper.ToMovieDetails(await tmdbClient.GetMovieDetailsAsync(movieId, token)),
             cancellationToken,
             rememberNotFound: true);
-
-    private static PagedMovieResultDto EmptyPage() => new([], 1, 0, 0);
 }

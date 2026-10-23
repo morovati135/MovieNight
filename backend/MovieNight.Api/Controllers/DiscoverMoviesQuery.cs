@@ -1,0 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace MovieNight.Api.Controllers;
+
+public sealed class DiscoverMoviesQuery
+{
+    [Range(1, int.MaxValue)]
+    public int? GenreId { get; init; }
+
+    [Range(1888, 2100)]
+    public int? Year { get; init; }
+
+    [Range(typeof(double), "0", "10")]
+    public double? MinRating { get; init; }
+
+    [Range(1, 500)]
+    public int Page { get; init; } = 1;
+}

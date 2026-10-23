@@ -1,371 +1,90 @@
 # MovieNight — Architecture
 
-## 1. Architecture Goal
-
-Use a simple full-stack architecture with clear boundaries and minimal abstraction.
-
-This project is intentionally not implemented using Clean Architecture, CQRS, MediatR, microservices, or a generic repository layer.
-
----
-
-## 2. System Overview
+A simple full-stack app with clear boundaries and minimal abstraction: no Clean Architecture, CQRS, MediatR, microservices or generic repository (D010–D013).
 
 ```text
-Browser
-   |
-   v
-Next.js Frontend
-   |
-   v
-ASP.NET Core Web API
-   |                |
-   v                v
-TMDB API         SQLite
+Browser ──> Next.js frontend ──> ASP.NET Core API ──> TMDB API
+                                        └──────────> SQLite (watchlist only)
 ```
 
-The frontend communicates only with the MovieNight backend.
+The browser talks only to the MovieNight API. The API owns TMDB access, persistence, validation, caching and business rules.
 
-The backend owns external integration, persistence, validation, caching, and business rules.
+## Stack
 
----
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Base UI, motion |
+| Backend | .NET 10, ASP.NET Core controllers, EF Core + SQLite, `IHttpClientFactory`, `IMemoryCache`, Problem Details, OpenAPI + Scalar (Development) |
+| Tests | xUnit (+ in-memory ASP.NET Core host), Vitest + Testing Library, axe-core and browser scripts |
+| External | TMDB API (read access token, bearer auth) |
 
-## 3. Technology Stack
-
-### Frontend
-
-- Next.js
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-
-### Backend
-
-- .NET 10
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQLite
-- `IHttpClientFactory`
-- `IMemoryCache`
-- ASP.NET Core Problem Details
-
-### Testing
-
-- xUnit
-- ASP.NET Core integration testing infrastructure
-
-### External Service
-
-- TMDB API
-
----
-
-## 4. Repository Structure
+## Repository layout
 
 ```text
-/
-├── PROJECT.md
-├── ARCHITECTURE.md
-├── DECISIONS.md
-├── STATUS.md
-├── docs/
-│   └── stages/
-├── backend/
-└── frontend/
+backend/MovieNight.Api/          the API (one project, organized by feature)
+  Controllers/                   Movies, Collections, Watchlist, Health, TmdbPreflight + query models
+  Features/Movies|Collections|Watchlists|Caching/   services, DTO contracts, CatalogCache
+  Integrations/Tmdb/             TmdbClient, options, exceptions, Transport/ (TMDB models, never public)
+  Data/, Migrations/             EF Core DbContext and migrations
+backend/MovieNight.Api.Tests/    unit tests + Http/ (real app in memory with a fake TMDB)
+frontend/src/app/                routes: / /movies/[id] /pick /watchlist /about /browse/[category]
+frontend/src/components/         feature folders (home, movie, movie-details, search, pick, watchlist, layout, ui)
+frontend/src/lib/api/            the only place that calls the backend; src/types/ mirrors the API
+frontend/e2e/                    browser journey, sweep, accessibility and performance scripts
+contracts/api-shapes.json        JSON property names shared by backend and frontend tests
+.claude/skills/movienight-ui/    UI contract and approved design references
 ```
 
----
+Rules: one top-level type per file; public API contracts are MovieNight-owned DTOs, never TMDB models; `Common/` only for code that is genuinely shared.
 
-## 5. Backend Structure
+## API
 
-Use one ASP.NET Core application project.
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/health` | Availability (no TMDB call) |
+| `GET /api/movies/genres`, `trending`, `popular`, `top-rated` | Lists; paged lists take `?page=` (1–500) |
+| `GET /api/movies/search?query=&year=&page=` | Title search (query required, non-blank) |
+| `GET /api/movies/discover?genreId=&year=&minRating=&page=` | Filtered discovery |
+| `GET /api/movies/pick?genreId=&year=&minRating=` | One random match (404 if none) |
+| `GET /api/movies/{id}` | Details with cast, directors, countries, scenes, recommendations |
+| `GET /api/collections`, `/api/collections/{slug}/movies?page=` | Curated collections |
+| `GET /api/watchlist`, `POST/DELETE /api/watchlist/{movieId}` | The current anonymous browser's watchlist |
+| `GET /api/tmdb/preflight` | Development-only TMDB connectivity check |
 
-Recommended structure:
+In Development, `/openapi/v1.json` and `/scalar` document them. Errors are Problem Details (400 validation, 404, 409 watchlist full, 502 TMDB trouble); raw TMDB responses, stack traces and secrets are never returned.
 
-```text
-backend/
-└── MovieNight.Api/
-    ├── Features/
-    │   ├── Movies/
-    │   └── Watchlists/
-    ├── Integrations/
-    │   └── Tmdb/
-    ├── Data/
-    ├── Common/
-    ├── Program.cs
-    └── appsettings.json
-```
+## Watchlist
 
-### Features
+The first Watchlist request issues a protected, HttpOnly, SameSite=Lax cookie (`movienight.anonymous-id`, one year, Secure on HTTPS) holding an opaque id. Watchlist items are rows of `(anonymous id, TMDB movie id, created time)` in SQLite: at most 50 per browser, no duplicates, add and remove are idempotent, and a movie is validated against TMDB before it is saved. Listing hydrates the ids into movie summaries through the cached summary lookup with bounded concurrency; a movie TMDB no longer knows is skipped and a TMDB outage is a 502. The frontend calls it through the same-origin `/backend` proxy (D025).
 
-Feature folders contain code owned by a specific business capability.
+## Caching
 
-Example:
+All caching goes through `CatalogCache` over `IMemoryCache` (D032): lifetimes by data category in `CacheTtl`, shared loads for concurrent misses, a bounded size, a short negative cache for unknown ids, failures never cached, hit/miss counters. Only DTOs are cached. There is no invalidation: entries expire.
 
-```text
-Features/
-└── Movies/
-    ├── MoviesController.cs
-    ├── MovieService.cs
-    ├── MovieDtos.cs
-    └── MovieMappings.cs
-```
+## Frontend
 
-Do not split a small feature into unnecessary layers.
+- All backend access lives in `src/lib/api/`; components never call `fetch()` directly and never call TMDB.
+- Artwork uses `next/image` (30-day optimizer cache) with a fallback that retries TMDB directly (images only).
+- Pages load their data in the browser, with explicit loading, empty and error states.
+- Visual source of truth: the approved references and contract in `.claude/skills/movienight-ui/`.
 
-### Integrations
+## Configuration
 
-TMDB-specific transport models and client code belong under:
+| Setting | Where | Notes |
+|---|---|---|
+| `Tmdb:ReadAccessToken` | user secrets or env `Tmdb__ReadAccessToken` | required; never in committed files |
+| `Tmdb:BaseUrl` | `appsettings.json` | HTTPS only |
+| `ConnectionStrings:MovieNightDatabase` | `appsettings.json` | SQLite file in `App_Data/` (git-ignored) |
+| `Cors:AllowedOrigins` | config / env | default `http://localhost:3000` |
+| `NEXT_PUBLIC_API_BASE_URL` | `frontend/.env.local` | backend address; also enables the `/backend` proxy |
+| `NEXT_PUBLIC_SITE_URL` | env | absolute site address for social previews |
 
-```text
-Integrations/Tmdb/
-```
+## Testing
 
-TMDB models must not be exposed directly from public API endpoints.
+Test logic with meaningful failure modes, not coverage numbers.
 
-### Persistence
-
-EF Core infrastructure belongs under:
-
-```text
-Data/
-```
-
-The initial persistence model contains only watchlist items keyed by the protected anonymous-browser identity. It does not persist TMDB movie snapshots or require a separate watchlist table.
-
-### Common
-
-Use `Common/` only for code that is genuinely shared.
-
-Do not move code to `Common/` preemptively.
-
----
-
-## 6. Frontend Structure
-
-Recommended structure:
-
-```text
-frontend/
-└── src/
-    ├── app/
-    ├── components/
-    │   ├── movie/
-    │   ├── watchlist/
-    │   ├── layout/
-    │   └── ui/
-    ├── lib/
-    │   ├── api/
-    │   └── utils/
-    └── types/
-```
-
-### Rules
-
-- UI components must not call TMDB.
-- Backend API access should be centralized under `lib/api`.
-- Avoid scattered raw `fetch()` calls across unrelated components.
-- Keep components feature-oriented when practical.
-- Do not create frontend abstraction layers unless repeated complexity justifies them.
-
----
-
-## 7. API Boundary
-
-All movie data requested by the frontend must pass through the backend.
-
-Example endpoints may include:
-
-```text
-GET  /api/movies/trending?page=
-GET  /api/movies/popular?page=
-GET  /api/movies/top-rated?page=
-GET  /api/collections
-GET  /api/collections/{slug}/movies?page=
-GET  /api/movies/search
-GET  /api/movies/discover
-GET  /api/movies/{id}
-GET  /api/movies/{id}/similar
-POST /api/movies/pick
-
-```
-
-Exact route design may be refined during the relevant stage, but endpoint behavior must remain resource-oriented and simple.
-
----
-
-## 8. Error Handling
-
-Use ASP.NET Core Problem Details for public API errors.
-
-Expected application errors include:
-
-- invalid input,
-- resource not found,
-- invalid anonymous-browser identity,
-- duplicate watchlist movie,
-- unavailable TMDB dependency.
-
-Raw TMDB responses, stack traces, internal exception messages, or secrets must never be returned to the frontend.
-
----
-
-## 9. Validation
-
-Use straightforward validation close to the affected feature.
-
-Do not add a validation framework unless the project gains enough validation complexity to justify it.
-
-Important validations include:
-
-- search query,
-- year,
-- rating range,
-- anonymous-browser identity,
-- duplicate movie,
-- TMDB movie existence.
-
----
-
-## 10. TMDB Integration
-
-Use a typed or named HttpClient configured through `IHttpClientFactory`.
-
-TMDB API configuration must come from configuration/environment variables.
-
-Do not hard-code secrets.
-
-Responsibilities of the TMDB integration:
-
-- build external requests,
-- deserialize TMDB transport models,
-- surface controlled integration failures,
-- stay isolated from public API DTOs.
-
----
-
-## 11. Caching
-
-Use `IMemoryCache` only where it provides clear value for repeatedly requested TMDB data.
-
-All caching goes through one helper, `CatalogCache` (`Features/Caching`), over `IMemoryCache`. Policy (D032):
-
-- cached: genres, trending, popular, top rated, Discover, collections, movie details and summaries; not cached: Search, Pick (it samples cached Discover pages), TMDB failures;
-- lifetimes by data category in `CacheTtl` (24 h genres, 12 h collections, 6 h top rated, 2 h movie data, 30 min trending / popular, 15 min Discover, 1 min for an unknown movie id);
-- concurrent misses for one key share one TMDB call; the cache is bounded (`SizeLimit` 5000 entries, one per key);
-- only MovieNight DTOs are cached, never TMDB transport models; hits and misses are counted (`MovieNight.Cache` meter) and logged at debug level.
-
-Caching is an optimization, not a second source of truth. There is no invalidation logic: entries simply expire.
-
----
-
-## 12. Persistence
-
-Use SQLite through EF Core.
-
-Persist only application-owned state:
-
-- watchlists,
-- watchlist items,
-- anonymous-browser association.
-
-TMDB movie catalog data is not replicated locally.
-
----
-
-## 13. Anonymous Ownership
-
-Each browser is associated with one private watchlist through a protected anonymous-browser identity. The identity is not a public share identifier or a separate owner token, and no shared-watchlist read behavior exists.
-
----
-
-## 14. Dependency Rules
-
-Allowed:
-
-```text
-Controller -> Feature Service
-Feature Service -> TMDB Integration
-Feature Service -> DbContext
-TMDB Integration -> HttpClient
-Persistence -> EF Core
-```
-
-Avoid introducing interfaces only to mirror every concrete class.
-
-Use an interface when it creates a real boundary, improves testability, or represents external infrastructure.
-
----
-
-## 15. Testing Strategy
-
-Prioritize tests for logic with meaningful failure modes.
-
-Backend tests should cover:
-
-- watchlist business rules,
-- anonymous-browser identity handling,
-- duplicate prevention,
-- movie validation,
-- recommendation rules,
-- API success/error behavior.
-
-Layers (Stage 06):
-
-- backend unit tests for services, mapping and the TMDB client;
-- backend HTTP tests (`MovieNight.Api.Tests/Http`) that run the real application in memory with a fake TMDB, a temporary SQLite database and keys: routing, validation, Problem Details, cookies, CORS, caching, startup configuration, security headers;
-- a shared contract of JSON property names (`contracts/api-shapes.json`) checked by a backend test against the real API and by a frontend test against the TypeScript types;
-- frontend Vitest tests for the API clients, `useWatchlist` and Browse paging (`npm test`);
-- manual browser journeys and a 13-route responsive sweep (`frontend/e2e`, `npm run e2e`, `npm run e2e:sweep`) against the running application with live TMDB data.
-
-Do not chase artificial test coverage percentages.
-
----
-
-## 16. Architectural Constraints
-
-The coding agent must not introduce these without explicit approval:
-
-- additional application layers,
-- additional backend projects,
-- MediatR,
-- CQRS,
-- repository pattern,
-- Unit of Work wrapper,
-- AutoMapper,
-- Redis,
-- background jobs,
-- message brokers,
-- authentication systems,
-- Docker infrastructure.
-
----
-
-## 17. Decision Principle
-
-Optimize for clarity, explicit behavior, low operational complexity, and low agent context cost.
-
-A smaller codebase with fewer indirections is preferred over a theoretically more extensible architecture.
-
-
----
-
-## 18. Local Development Baseline
-
-For the initial localhost workflow:
-
-```text
-Frontend: http://localhost:3000
-Backend:  http://localhost:5080
-```
-
-The backend uses controller-based ASP.NET Core Web API endpoints.
-
-CORS allows only the configured frontend origin(s) (`Cors:AllowedOrigins`, default the origin above), never an unrestricted policy and never credentials; the Watchlist is called through the frontend's same-origin `/backend` proxy. Runtime hardening rules (generic 500s, Development-only diagnostics and API reference, security headers) are in D033.
-
-The first integration gate is:
-
-```text
-GET /api/health
-```
-
-The frontend should prove it can reach this endpoint before TMDB or persistence features are introduced.
+- Backend unit tests: services, TMDB client and mapping, watchlist rules, cache behavior.
+- Backend HTTP tests (`Http/`): the real application with a fake TMDB and a temporary database: routing, validation, Problem Details, cookies, CORS, caching, startup configuration, security headers.
+- Contract: `contracts/api-shapes.json` is checked against the real API (backend) and the TypeScript types (frontend).
+- Frontend (Vitest): API clients, `useWatchlist`, Browse paging.
+- Browser scripts (`frontend/e2e`, live TMDB data): user journeys, 13-route responsive sweep, axe accessibility and keyboard audit, page-load measurements.

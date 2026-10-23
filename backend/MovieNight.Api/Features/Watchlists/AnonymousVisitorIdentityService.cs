@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.DataProtection;
 
 namespace MovieNight.Api.Features.Watchlists;
 
-public interface IAnonymousVisitorIdentityService
-{
-    Guid GetOrCreate(HttpContext context);
-}
-
 public sealed class AnonymousVisitorIdentityService(IDataProtectionProvider dataProtectionProvider) : IAnonymousVisitorIdentityService
 {
     internal const string CookieName = "movienight.anonymous-id";

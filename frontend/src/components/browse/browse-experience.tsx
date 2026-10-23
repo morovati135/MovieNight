@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ChevronLeft, LoaderCircle, RotateCcw } from "lucide-react";
 
 import { SectionNotice } from "@/components/home/home-states";
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { MovieGrid, movieGridClassName } from "@/components/movie/movie-grid";
 import { Button } from "@/components/ui/button";
 import { inlineLinkClassName } from "@/components/ui/controls";

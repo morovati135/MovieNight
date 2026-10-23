@@ -1,4 +1,0 @@
-interface:
-  display_name: "MovieNight UI"
-  short_description: "MovieNight frontend visual contract"
-  default_prompt: "Use $movienight-ui to apply the MovieNight frontend visual and product contract."

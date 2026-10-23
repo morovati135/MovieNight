@@ -1,4 +1,4 @@
-import { sectionTitleClassName } from "@/components/layout/section-heading";
+import { sectionTitleClassName } from "@/components/layout/section-title";
 import { MovieRow } from "@/components/movie/movie-row";
 import type { WatchlistState } from "@/components/watchlist/use-watchlist";
 import type { MovieSummary } from "@/types/movie";
