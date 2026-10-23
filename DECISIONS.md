@@ -102,4 +102,4 @@ All TMDB-derived data is cached in memory through one helper, `CatalogCache` (`F
 
 ## D034 — Documentation and AI instructions
 
-`CLAUDE.md` is the single instruction file for AI agents; there is no `AGENTS.md`. The project UI contract and approved design references live in `.claude/skills/movienight-ui/`. Documentation is kept short; history lives in Git. Working screenshots are not tracked (`docs/screenshots/` is ignored); the README uses a curated set in `docs/images/`.
+`CLAUDE.md` is the single instruction file for AI agents; there is no `AGENTS.md`. The project UI contract (visual language, responsive rules, product scope) lives in `.claude/skills/movienight-ui/`; it is written from MovieNight's own design and contains no third-party design files. Documentation is kept short; history lives in Git. Working screenshots are not tracked (`docs/screenshots/` is ignored); the README uses a curated set in `docs/images/`.
