@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 accepted by the Tech Lead on 2026-10-23; Sprint 06.4 accepted by the Tech Lead on 2026-10-23; Sprint 06.5 accepted by the Tech Lead on 2026-10-23; Stage 06 complete; Stage 07 is next and has not started
+Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff is next and has not started
 
 ## Current Stage
 
