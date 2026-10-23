@@ -1,6 +1,6 @@
 # MovieNight — Roadmap
 
-Eight stages, each with a short summary in [docs/stages/](stages/). Detailed history lives in Git.
+MovieNight 1.0 is complete: all eight stages are finished. Each stage has a short summary in [docs/stages/](stages/); detailed history lives in Git.
 
 | Stage | Name | Status |
 |---|---|---|
@@ -11,7 +11,7 @@ Eight stages, each with a short summary in [docs/stages/](stages/). Detailed his
 | 04 | Anonymous Watchlist Backend and Persistence | Completed |
 | 05 | Frontend Product Experience | Completed |
 | 06 | Full-Stack Integration, Testing and Runtime Hardening | Completed |
-| 07 | Final Polish and Portfolio Handoff | In progress |
+| 07 | Final Polish and Portfolio Handoff | Completed |
 
 ## Rules
 
