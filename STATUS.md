@@ -2,13 +2,26 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 is next and has not started
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 in progress
 
 ## Current Stage
 
 Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). Stage 05 is completed / accepted.
 
 ## Current Sprint
+
+Sprint 06.3 — Contract Verification & Frontend Tests (in progress).
+
+Sprint 06.2 — Backend Integration & Failure-Path Tests (accepted by the Tech Lead on 2026-10-23).
+
+06.2 implemented state:
+
+- Gap found: the 85 earlier tests called controllers directly, so routing, model validation, Problem Details output, cookies, CORS, data protection and the real SQLite database were never exercised together.
+- New HTTP-level tests start the real application in memory (`Microsoft.AspNetCore.Mvc.Testing` 10.0.10, test project only; `public partial class Program` added so the tests can start it) with a fake TMDB, a temporary database and keys per test. 63 new tests in `backend/MovieNight.Api.Tests/Http/`:
+  - Movies: all public endpoints return 200 JSON; MovieNight shape (no TMDB fields); 13 invalid inputs return 400 validation problems without calling TMDB; unknown id 404 (remembered 1 minute); 401 / 500 / network failure return a safe 502 that leaks no upstream text or token and is not cached; list endpoints and Collections turn an outage into 502; cache and no-cache behavior; no anonymous cookie on movie endpoints; CORS allows only the frontend origin.
+  - Collections: list, pages (studio pages through Discover, franchise is one page), unknown slug 404 without calling TMDB, invalid page 400, outage 502.
+  - Watchlist: protected HttpOnly SameSite=Lax cookie issued once; tampered cookie replaced with an empty list; idempotent add and remove; newest first; two browsers isolated; same cookie restores the list; unknown movie 404 and not saved; invalid id 400; TMDB failure 502 and nothing saved; the 51st movie returns 409 while existing movies can be re-added and a removal frees a slot; hydration served from cache; after a cold start a movie TMDB forgot is left out and an outage returns 502.
+- 154 backend tests pass (91 before). Developer database and keys under `App_Data` were not touched.
 
 Sprint 06.1 — Cache Review & Hardening (accepted by the Tech Lead on 2026-10-23; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
 
