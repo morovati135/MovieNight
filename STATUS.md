@@ -5,7 +5,8 @@ Single source of truth for where the project stands. Keep it short; history live
 ## Current state
 
 - **Stages 00–06 are complete and accepted.** The application is feature-complete and verified.
-- **Stage 07 (final polish and portfolio handoff) is in progress.** Done: performance and loading polish, accessibility / responsive / metadata review, code cleanup and backend structure. In progress: documentation, repository hygiene and secrets (README with TMDB token guide, short single-source docs, `CLAUDE.md` as the only agent file, curated images in `docs/images`, secret scan and clean-clone check done; history cleanup of old screenshots pending). Remaining: final verification and handoff (license, demo notes, release tag).
+- **Stage 07 (final polish and portfolio handoff) is in progress.** Done: performance and loading polish, accessibility / responsive / metadata review, code cleanup and backend structure, and documentation / repository hygiene / secrets (awaiting Tech Lead review). Remaining: final verification and handoff (demo notes, release tag).
+- Documentation and hygiene delivered: `README.md` with a step-by-step TMDB token guide and local setup (verified from a clean clone), `docs/AI-WORKFLOW.md`, MIT license, short single-source docs, `CLAUDE.md` as the only agent instruction file, curated images in `docs/images`, secret scan of the working tree and the whole Git history (none found), working screenshots no longer tracked and removed from the whole remote history (a fresh clone is about 25 MB instead of about 150 MB).
 - Nothing else is open. Stage 07 adds no features.
 
 ## Verified at the last full check
