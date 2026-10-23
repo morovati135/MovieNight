@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 accepted by the Tech Lead on 2026-10-23; Sprint 07.2 in progress
+Implementation / Stages 00–06 complete (Stage 06 accepted by the Tech Lead on 2026-10-23); Stage 07 — Final Polish & Portfolio Handoff plan approved by the Tech Lead on 2026-10-23 (`docs/stages/07-final-polish-portfolio-handoff.md`); Sprint 07.1 accepted by the Tech Lead on 2026-10-23; Sprint 07.2 accepted by the Tech Lead on 2026-10-23; Sprint 07.3 is next and has not started
 
 ## Current Stage
 
@@ -10,7 +10,16 @@ Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (completed / ac
 
 ## Current Sprint
 
-Sprint 07.2 — Accessibility, Responsive & Metadata Review (in progress).
+Sprint 07.2 — Accessibility, Responsive & Metadata Review (accepted by the Tech Lead on 2026-10-23, including the deeper brand blue and pink).
+
+07.2 implemented state:
+
+- New audit script `frontend/e2e/a11y.mjs` (`npm run e2e:a11y`, axe-core as a dev dependency): WCAG 2.1 A / AA and best-practice rules on 11 routes at 320 / 390 / 1440 px, a keyboard Tab pass on five routes (skip link first, accessible names, visible focus) and page metadata. The sweep now also covers 320 px.
+- First run: 45 findings. Fixed: white text on the brand blue (2.97:1) and brand pink (3.53:1) failed AA → `--brand-blue` #149dec → #0f7bb9, hover #0e71ab, `--brand-pink` #e84c9d → #d41d7c (white text now 4.6:1 or better; glows unchanged); footer legal line contrast (text-white/45 → /60); duplicate landmark names (scroll lists now "Popular movies list", "Cast list", "Scene list", "Collections list"); landscape poster cards are named by their visible title (label-in-name) and "See more" buttons match their visible text; Next's default 404 page (failed contrast, title "404: …") replaced by a MovieNight not-found page.
+- Metadata: title template `%s · MovieNight`, description, Open Graph and Twitter tags, a generated 1200×630 social-preview image (`opengraph-image.tsx`), `metadataBase` from `NEXT_PUBLIC_SITE_URL` (default localhost), per-category Browse titles.
+- Verified: 0 axe violations on 33 route / width combinations; keyboard pass clean (poster cards show their SVG focus ring); with `prefers-reduced-motion` no animation runs and the Hero stays on its slide; 13-route × 4-width sweep clean; 17 / 17 journey checks; 41 frontend tests, tsc, eslint, build.
+- Visible change (accepted): the primary blue and the pink are deeper; layout and all other colors are unchanged.
+
 
 Sprint 07.1 — Performance & Loading Polish (accepted by the Tech Lead on 2026-10-23).
 
