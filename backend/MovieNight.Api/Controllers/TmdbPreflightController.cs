@@ -6,15 +6,21 @@ namespace MovieNight.Api.Controllers;
 [ApiController]
 [Route("api/tmdb/preflight")]
 [Tags("Diagnostics")]
-public sealed class TmdbPreflightController(TmdbClient tmdbClient) : ControllerBase
+public sealed class TmdbPreflightController(TmdbClient tmdbClient, IHostEnvironment environment) : ControllerBase
 {
     [HttpGet]
     [EndpointSummary("Verify TMDB connectivity.")]
-    [EndpointDescription("Performs a harmless TMDB read to verify the configured integration. This is intended for local diagnostics.")]
+    [EndpointDescription("Performs a harmless TMDB read to verify the configured integration. This is intended for local diagnostics and answers 404 outside the Development environment.")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
+        // Every call reaches TMDB uncached, so it is not offered to the public.
+        if (!environment.IsDevelopment())
+        {
+            return NotFound();
+        }
+
         try
         {
             await tmdbClient.VerifyConnectivityAsync(cancellationToken);

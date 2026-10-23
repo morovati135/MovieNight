@@ -15,7 +15,7 @@ namespace MovieNight.Api.Tests.Http;
 /// data protection, SQLite database and caches. Only TMDB is replaced, by <see cref="FakeTmdb"/>.
 /// Each instance has its own database, keys and cache.
 /// </summary>
-public sealed class ApiHost : WebApplicationFactory<Program>
+public sealed class ApiHost(string environment = "Production", IReadOnlyDictionary<string, string?>? settings = null) : WebApplicationFactory<Program>
 {
     private readonly DirectoryInfo directory = Directory.CreateTempSubdirectory("movienight-api-");
 
@@ -23,10 +23,15 @@ public sealed class ApiHost : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseEnvironment("Production");
+        builder.UseEnvironment(environment);
         builder.UseContentRoot(directory.FullName);
         builder.UseSetting("Tmdb:ReadAccessToken", FakeTmdb.Token);
         builder.UseSetting("ConnectionStrings:MovieNightDatabase", $"Data Source={Path.Combine(directory.FullName, "test.db")};Pooling=False");
+        foreach (var (key, value) in settings ?? new Dictionary<string, string?>())
+        {
+            builder.UseSetting(key, value);
+        }
+
         builder.ConfigureTestServices(services =>
             services.AddHttpClient<TmdbClient>().ConfigurePrimaryHttpMessageHandler(() => Tmdb));
     }
@@ -34,9 +39,9 @@ public sealed class ApiHost : WebApplicationFactory<Program>
     /// <summary>A client with its own cookie jar: one anonymous browser.</summary>
     public HttpClient CreateBrowser() => CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = true });
 
-    public static async Task<ApiHost> StartAsync()
+    public static async Task<ApiHost> StartAsync(string environment = "Production", IReadOnlyDictionary<string, string?>? settings = null)
     {
-        var host = new ApiHost();
+        var host = new ApiHost(environment, settings);
 
         using var scope = host.Services.CreateScope();
         await scope.ServiceProvider.GetRequiredService<MovieNightDbContext>().Database.MigrateAsync();
