@@ -124,7 +124,7 @@ MovieNight is built to run locally; deployment is out of scope for version 1. If
 
 ## Working with AI agents
 
-[CLAUDE.md](CLAUDE.md) holds the rules agents follow in this repository, and [docs/AI-WORKFLOW.md](docs/AI-WORKFLOW.md) explains how to maintain and extend the project with an agent.
+[CLAUDE.md](CLAUDE.md) holds the rules agents follow in this repository, and [docs/AI-WORKFLOW.md](docs/AI-WORKFLOW.md) explains how to maintain and extend the project with an agent. Demo script and presentation notes: [docs/PORTFOLIO.md](docs/PORTFOLIO.md).
 
 ## Credits and license
 

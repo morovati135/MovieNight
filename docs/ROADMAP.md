@@ -11,7 +11,7 @@ Eight stages, each with a short summary in [docs/stages/](stages/). Detailed his
 | 04 | Anonymous Watchlist Backend and Persistence | Completed |
 | 05 | Frontend Product Experience | Completed |
 | 06 | Full-Stack Integration, Testing and Runtime Hardening | Completed |
-| 07 | Final Polish and Portfolio Handoff | In progress |
+| 07 | Final Polish and Portfolio Handoff | Done; awaiting final acceptance |
 
 ## Rules
 
