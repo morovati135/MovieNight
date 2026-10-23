@@ -4,10 +4,9 @@ Single source of truth for where the project stands. Keep it short; history live
 
 ## Current state
 
-- **Stages 00–06 are complete and accepted.** The application is feature-complete and verified.
-- **Stage 07 (final polish and portfolio handoff) is in progress.** Done: performance and loading polish, accessibility / responsive / metadata review, code cleanup and backend structure, and documentation / repository hygiene / secrets (all accepted by the Tech Lead on 2026-10-23). Final verification and handoff done and awaiting Tech Lead acceptance (clean-clone regression below, `docs/PORTFOLIO.md` with the demo script and X draft, release tag suggestion).
-- Documentation and hygiene delivered: `README.md` with a step-by-step TMDB token guide and local setup (verified from a clean clone), `docs/AI-WORKFLOW.md`, MIT license, short single-source docs, `CLAUDE.md` as the only agent instruction file, curated images in `docs/images`, secret scan of the working tree and the whole Git history (none found), working screenshots no longer tracked and removed from the whole remote history (a fresh clone is about 25 MB instead of about 150 MB).
-- Nothing else is open. Stage 07 adds no features.
+- **MovieNight 1.0 is complete.** Stages 00–07 are finished and accepted by the Tech Lead (Stage 07 on 2026-10-24). The application is feature-complete, verified and documented; Stage 07 added no features.
+- Stage 07 delivered: performance and loading polish, accessibility / responsive / metadata review, code cleanup and backend structure, documentation / repository hygiene / secrets (README with a TMDB token guide, single-source docs, `CLAUDE.md` as the only agent file, curated images, secret scan, clean-clone check, history cleanup of old screenshots), and final verification with demo and portfolio notes ([docs/PORTFOLIO.md](docs/PORTFOLIO.md)).
+- Nothing is open. Suggested release: tag `v1.0.0` on `master` after the final pull request is merged.
 
 ## Verified at the last full check (fresh clone of the pushed branch, following the README)
 
@@ -28,4 +27,4 @@ Single source of truth for where the project stands. Keep it short; history live
 
 ## How to continue
 
-Read [CLAUDE.md](CLAUDE.md) (agent rules), [PROJECT.md](PROJECT.md), [ARCHITECTURE.md](ARCHITECTURE.md), [DECISIONS.md](DECISIONS.md) and the Stage 07 summary, then work only on the step the Tech Lead names.
+The project is complete; any further work is new scope that needs a decision first. Read [CLAUDE.md](CLAUDE.md) (agent rules), [PROJECT.md](PROJECT.md), [ARCHITECTURE.md](ARCHITECTURE.md), [DECISIONS.md](DECISIONS.md) and the Stage 07 summary, then work only on the step the Tech Lead names.

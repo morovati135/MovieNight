@@ -1,6 +1,6 @@
 # Stage 07 — Final Polish and Portfolio Handoff
 
-**Status:** all steps done; awaiting final Tech Lead acceptance (see [STATUS.md](../../STATUS.md)).
+**Status:** completed and accepted by the Tech Lead (2026-10-24). MovieNight 1.0 is complete (see [STATUS.md](../../STATUS.md)).
 
 **Goal:** turn the verified application into a clean portfolio deliverable. No new features.
 
