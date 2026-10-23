@@ -269,3 +269,16 @@ This file records decisions that future agent sessions must preserve unless expl
 - "Iconic: Top rated of all time" (`GET /api/movies/top-rated?page=`) is TMDB Discover sorted by rating with at least 10,000 votes, not TMDB's `movie/top_rated`, which currently ranks new, barely voted titles first.
 - `/login`, `/register`, `/profile`, `/settings`, `/collections` and `/admin` remain out of scope.
 - `/browse/[category]` serves `trending`, `popular`, `iconic` and every collection slug; trending, popular and top rated take `?page=` (1–500), `GET /api/collections/{slug}/movies?page=` serves one collection (franchises are a single page, studio and genre sets page through Discover, unknown slug returns 404).
+
+---
+
+## D031 — `shadcn` Is a Development Tool, Not a Runtime Dependency
+
+**Decision:** The `shadcn` package lives in `devDependencies` (for adding components with its CLI). The one file the app uses from it, `shadcn/tailwind.css`, is kept as `frontend/src/app/shadcn-tailwind.css`, copied unchanged and imported by `globals.css`.
+
+**Reason:** The package is a command-line tool with a large dependency tree that accounted for most of the 19 `npm audit` findings, while the application used only its 16 KB stylesheet. No component imports the package; components use `class-variance-authority`, `clsx`, `tailwind-merge` and Base UI.
+
+**Rules:**
+
+- After updating `shadcn`, compare its `dist/tailwind.css` with `src/app/shadcn-tailwind.css` and refresh the copy if it changed.
+- Do not import the `shadcn` package from application code.

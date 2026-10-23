@@ -18,6 +18,12 @@ Pick for Me.
 ### `/watchlist`
 Anonymous Watchlist.
 
+### `/about`
+About page: portfolio note and Socials (D030).
+
+### `/browse/[category]`
+See more / category pages with a grid and paging: `trending`, `popular`, `iconic` or a collection slug (D030).
+
 ## Explicitly out of scope
 
 Do not introduce:

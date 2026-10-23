@@ -253,7 +253,7 @@ Major capabilities:
        05.7-X1 → X2 → X3 → X4 → X5 → X6 → X7
 
 05.8 — Stage 05 Verification & Handoff
-       Status: Not Started
+       Status: Completed / Accepted
 ```
 
 Sprint 05.2 remains **one Sprint**.

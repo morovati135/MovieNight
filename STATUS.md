@@ -2,17 +2,29 @@
 
 ## Current Phase
 
-Implementation / Stage 05 (in progress — only Sprint 05.8 remains)
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 is next and has not started
 
 ## Current Stage
 
-Stage 05 — Frontend Product Experience (in progress)
+Stage 05 — Frontend Product Experience (completed / accepted)
 
 ## Current Sprint
 
-Sprint 05.8 — Stage 05 Verification & Handoff (not started; starts only when the Tech Lead asks)
+Sprint 05.8 — Stage 05 Verification & Handoff (accepted by the Tech Lead on 2026-10-23; verification run 2026-10-23: PASS; branch `feature/stage-05-handoff`)
 
-Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted by the Tech Lead on 2026-10-22 and 2026-10-23); it is committed and pushed on branch `feature/polish-05.7` and not yet merged into `master`.
+05.8 verification (2026-10-23, result PASS):
+
+- Product: 18 live checks through the real backend in a fresh browser all passed — Home sections; save from a Home card → Watchlist page → saved state on Details; Details cast and similar movies; Search by title, title + genre and an empty result; Pick for Me reveals a movie; Remove → Undo → empty shelf; Home and Details with the backend blocked show friendly errors without raw Problem Details; invalid movie id and unknown route show not-found.
+- Responsive / accessibility: X7 sweep of 13 routes at 390 / 768 / 1440 (no overflow, no target under 40px, one h1 each); no forbidden login / account / streaming copy in the frontend.
+- Integration: no request to api.themoviedb.org, no `fetch()` outside `src/lib/api/`, Watchlist requests use `credentials: "include"` through `/backend/watchlist`. Artwork may be re-requested straight from `image.tmdb.org` by the image fallback (images only, no API access).
+- Build: lint, build, `git diff --check` clean; 85 backend tests passing; every npm dependency is used (`react-dom`, `shadcn` and `tw-animate-css` implicitly or through `globals.css`).
+- Docs: fixed two stale route lists (Stage 05 §5 and the UI skill's product-scope) that still named only four routes; STATUS, ROADMAP, DECISIONS and ARCHITECTURE agree.
+- Remaining issues found by the verification were fixed the same day (Tech Lead approved the plan): `next` 16.3.6 → 16.4.2 (it carried a critical advisory), `eslint-config-next` 16.4.2, `lucide-react` 1.61, `@base-ui/react` 1.9, React type packages 19.3; `shadcn` moved from `dependencies` to `devDependencies` and its one used file, `shadcn/tailwind.css`, copied unchanged to `src/app/shadcn-tailwind.css` (no component imports the package; generated CSS compared before / after: no rule from it changed; D031); `npm audit fix` (non-breaking). `npm audit --omit=dev`: 0 vulnerabilities (was 19, 2 critical). The 9 findings still listed by a full `npm audit` are dev-only (`shadcn` CLI and `eslint-config-next` via `braces` / `micromatch` / `fast-glob`; no patched `braces` exists yet) and do not ship. Scene thumbnails on Details now use TMDB w780 (the full-size viewer keeps the original): the failing thumbnail requests are gone (0 errors on Details at 390 / 768 / 1440).
+- Not changed: the image fallback may re-request artwork from `image.tmdb.org` (images only); the dev-only hydration warnings come from a browser extension (`bis_skin_checked`), not the code.
+- After the fixes: lint, tsc, build, 85 backend tests, the 18 live checks and the 13-route sweep were run again and pass.
+- Stage 06 has not been started. Screenshots `docs/screenshots/05.8-*`.
+
+Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted by the Tech Lead on 2026-10-22 and 2026-10-23); it is merged into `master` (PR #1).
 
 ### Sprint 05.7 Work Packages
 
@@ -26,7 +38,7 @@ Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 a
 
 Scope extension, audit findings, decisions (footer, About and Socials, header, collections, browse pages) and work packages are recorded in `docs/stages/05-frontend-product-experience.md` (§15.1) and D030. Work happened on branch `feature/polish-05.7`.
 
-What remains: Sprint 05.8 (Stage 05 verification and handoff, no new features), then Stage 06 (full-stack integration, testing and runtime hardening, including the mandatory cache review) and Stage 07 (final polish and portfolio handoff). Open Tech Lead decision: whether the details page's scene thumbnails should use TMDB w1280 instead of `original`.
+What remains: Stage 06 (full-stack integration, testing and runtime hardening, including the mandatory cache review) and Stage 07 (final polish and portfolio handoff). The scene-thumbnail question is settled: thumbnails use TMDB w780, the viewer keeps the original.
 
 05.7-X7 accepted state:
 
