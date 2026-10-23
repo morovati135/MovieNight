@@ -18,9 +18,7 @@ When instructions conflict, follow this priority:
 5. Responsive rules in `references/responsive.md`.
 6. Page-specific requirements such as `references/home.md`.
 7. Existing backend/API contracts.
-8. `frontend-app-builder` workflow.
-9. `ui-ux-pro-max` recommendations.
-10. Agent design preference or creativity.
+8. Agent design preference or creativity.
 
 Generic design advice must never override an approved MovieNight reference or product decision.
 
@@ -69,16 +67,3 @@ MovieNight requirements define:
 - scope
 
 Do not copy irrelevant product features from a visual template.
-
-## Supporting skills
-
-For implementation use:
-- `frontend-app-builder` for section-based frontend execution and visual comparison.
-- `ui-ux-pro-max` only for implementation-level UX, responsive, accessibility, and interaction-quality guidance.
-
-For final review use:
-- `web-design-guidelines`.
-
-Supporting skills are advisory. They cannot replace this project's requirements or visual references.
-
-==================================================
