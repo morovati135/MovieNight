@@ -1,224 +1,34 @@
-# MovieNight — Project Definition
+# MovieNight — Product Definition
 
-## 1. Product Vision
+## Vision
 
-MovieNight is a small full-stack movie discovery application designed to be portfolio-ready while remaining intentionally limited in scope.
+MovieNight is a small, portfolio-ready full-stack movie app with an intentionally limited scope. Visitors discover movies, inspect details, get a simple recommendation and keep a private watchlist without registering. The engineering goal is a complete, polished application built almost entirely through an AI coding agent in small, reviewable steps, with a simple architecture.
 
-The application allows users to discover movies, inspect movie details, receive a simple recommendation, and maintain an anonymous private watchlist without registration or login.
+## Features
 
-The primary engineering goal is to build the project almost entirely through an AI coding agent while keeping the codebase simple, reviewable, and maintainable.
+- **Home:** hero, trending, popular, genre discovery, curated collections, "Iconic: Top rated of all time", entry points to Pick for Me and the Watchlist; "See more" opens a paged category page.
+- **Search and discovery:** by title, with optional year; filter by genre, year and minimum rating; paged results.
+- **Movie details:** poster, backdrop, title, overview, release date, runtime, genres, rating, cast, directors, countries, scene images, recommendations, add-to-watchlist.
+- **Pick for Me:** optional genre, minimum year and minimum rating; the backend returns one random match (rule-based, not AI).
+- **Anonymous watchlist:** one private list per browser (up to 50 movies), reopened from the same browser; not shared by URL.
+- **About and footer:** a portfolio note and the TMDB attribution.
 
----
+## Data source
 
-## 2. Primary Goals
+TMDB is the source of truth. Flow: frontend → ASP.NET Core API → TMDB; the frontend never calls TMDB's API. The backend owns authentication with TMDB, request building, mapping to MovieNight DTOs, caching, validation and error handling. The database stores only watchlist rows (anonymous id + TMDB movie id).
 
-- Build a complete full-stack application that runs locally.
-- Use ASP.NET Core as a real backend, not only as a proxy.
-- Keep the frontend visually polished and portfolio-ready.
-- Keep the architecture intentionally simple.
-- Practice Agent Engineering through small, controlled implementation stages.
-- Make every sprint independently reviewable and verifiable.
+## Business rules
 
----
+1. No registration or login.
+2. A watchlist is private to its anonymous browser, holds at most 50 movies and never contains a movie twice.
+3. A movie is validated against TMDB before it is added.
+4. Rating filters are 0–10; invalid years are rejected; blank search queries are rejected.
+5. TMDB errors never reach the frontend raw; the frontend only sees MovieNight DTOs and Problem Details.
 
-## 3. Target Users
+## Non-goals
 
-A visitor who wants to:
+Registration, login, Identity, JWT, profiles, roles, admin, reviews, comments, user ratings, likes, notifications, e-mail, payments, TV series, localization, Redis, message brokers, CQRS, MediatR, generic repositories, unit-of-work wrappers, multi-project Clean Architecture, microservices, Docker, Kubernetes, CI/CD and production deployment. Changing any of these needs an explicit scope decision.
 
-- discover movies,
-- search and filter movies,
-- inspect movie details,
-- receive a movie suggestion,
-- create a personal watchlist without creating an account,
-- reopen that watchlist from the same browser.
+## Quality expectations
 
----
-
-## 4. Core Features
-
-### 4.1 Home
-
-The home page should contain:
-
-- Hero section
-- Trending movies
-- Popular or top-rated movies
-- Entry point to Discover
-- Entry point to Pick for Me
-
-### 4.2 Movie Discovery
-
-Users can:
-
-- search movies by title,
-- filter by genre,
-- filter by release year,
-- filter by minimum rating,
-- navigate paginated results.
-
-### 4.3 Movie Details
-
-The movie details page should show:
-
-- poster,
-- backdrop,
-- title,
-- overview,
-- release date,
-- runtime,
-- genres,
-- rating,
-- cast,
-- similar movies,
-- add-to-watchlist action.
-
-### 4.4 Pick for Me
-
-Users can provide simple preferences such as:
-
-- genre,
-- minimum release year,
-- minimum rating.
-
-The backend queries eligible candidates and returns one recommendation.
-
-This is rule-based/randomized recommendation logic, not AI recommendation.
-
-### 4.5 Anonymous Watchlist
-
-Each browser has one private anonymous watchlist. It can add and remove movies and reopen the watchlist later from the same browser. A protected anonymous-browser identity associates the browser with its watchlist; watchlists are not shared through public URLs.
-
----
-
-## 5. Movie Data Source
-
-TMDB is the source of truth for movie data.
-
-The frontend must never call TMDB directly.
-
-Required flow:
-
-Frontend -> ASP.NET Core API -> TMDB
-
-The backend is responsible for:
-
-- TMDB authentication,
-- request construction,
-- response mapping,
-- caching,
-- validation,
-- third-party error handling,
-- business logic.
-
----
-
-## 6. Watchlist Persistence
-
-The project does not maintain a full local movie catalog.
-
-When a movie is added to a watchlist, store the TMDB movie identifier and application-owned watchlist metadata. TMDB remains the source of truth for movie details.
-
-Before adding a movie, the backend must validate that the movie exists in TMDB.
-
----
-
-## 7. Business Rules
-
-1. Registration and login do not exist.
-2. A watchlist is private to its associated anonymous browser.
-3. A movie cannot exist more than once in the same watchlist.
-4. Movies must be validated through TMDB before being added.
-5. Rating filters must be between 0 and 10.
-6. Invalid year filters must be rejected.
-7. Empty search queries must not be sent as movie searches.
-8. Third-party TMDB errors must not leak directly to the frontend.
-9. Movie data exposed to the frontend must use application-owned DTOs rather than raw TMDB response models.
-
----
-
-## 8. Primary User Flows
-
-### Flow A — Discovery
-
-Home -> Trending movie -> Movie details -> Similar movie -> Movie details
-
-### Flow B — Search
-
-Discover -> Search by title -> Results -> Movie details
-
-### Flow C — Filtering
-
-Discover -> Apply genre/year/rating filters -> Results
-
-### Flow D — Recommendation
-
-Pick for Me -> Select preferences -> Backend selects candidate -> Movie details
-
-### Flow E — Create Watchlist
-
-Movie details -> Add to watchlist -> Associate the browser with its private watchlist -> Add movie
-
-### Flow F — Returning Owner
-
-Open application -> Send the browser identity -> Open My Watchlist -> Modify watchlist
-
----
-
-## 9. Non-Goals
-
-Do not implement any of the following unless the project scope is explicitly changed:
-
-- Registration
-- Login
-- ASP.NET Identity
-- JWT authentication
-- User profiles
-- Roles
-- Permissions
-- Admin panel
-- Reviews
-- Comments
-- User ratings
-- Likes
-- Notifications
-- Email
-- Payments
-- TV series
-- Multi-language UI
-- Localization
-- Redis
-- Message brokers
-- CQRS
-- MediatR
-- Generic repository abstraction
-- Custom Unit of Work abstraction
-- Clean Architecture with multiple projects/layers
-- Microservices
-- Docker
-- Kubernetes
-- CI/CD
-- Production deployment
-
----
-
-## 10. Product Quality Expectations
-
-The application should be:
-
-- visually polished,
-- responsive,
-- consistent,
-- easy to run locally,
-- simple to understand,
-- explicit in its business rules,
-- free of unnecessary abstractions.
-
-The frontend may be sophisticated visually, but the underlying implementation should remain straightforward.
-
----
-
-## 11. Engineering Principle
-
-Prefer the simplest design that clearly satisfies the current project requirements.
-
-Do not introduce an abstraction, library, architectural pattern, or infrastructure component only because it may be useful in a hypothetical future version.
+Visually polished, responsive, accessible, consistent, easy to run locally, simple to understand and free of unnecessary abstractions. Prefer the simplest design that satisfies the current requirement; do not add abstractions, libraries or infrastructure for a hypothetical future.
