@@ -1,4 +1,4 @@
-// Visits every route at phone, tablet and desktop widths and reports layout and console problems:
+// Visits every route at small phone, phone, tablet and desktop widths and reports layout and console problems:
 // horizontal overflow, missing h1, broken images, tiny touch targets, console errors and failed requests.
 // Exits with code 1 if any page has a problem. See e2e/README.md.
 import { launch, sleep } from "./browser.mjs";
@@ -22,6 +22,7 @@ const allRoutes = [
 const only = process.env.E2E_ROUTES?.split(",");
 const routes = only ? allRoutes.filter(([name]) => only.includes(name)) : allRoutes;
 const widths = [
+  [320, 700, true],
   [390, 844, true],
   [768, 1024, false],
   [1440, 900, false],

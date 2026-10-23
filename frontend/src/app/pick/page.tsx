@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { PickExperience } from "@/components/pick/pick-experience";
 
 export const metadata: Metadata = {
-  title: "Pick for Me · MovieNight",
+  title: "Pick for Me",
 };
 
 export default function PickPage() {

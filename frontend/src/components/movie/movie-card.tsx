@@ -74,7 +74,8 @@ export function MovieCard({
           style={{ clipPath: `url(#${clipPathId})` }}
         >
           <Link
-            aria-label={`View details for ${movie.title}`}
+            // Landscape cards show the title, which names the link; portrait cards have no visible text.
+            aria-label={isLandscape ? undefined : `View details for ${movie.title}`}
             className="group/link absolute inset-0 z-10 outline-none"
             href={`/movies/${movie.id}`}
           >

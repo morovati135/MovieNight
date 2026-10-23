@@ -14,9 +14,15 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
+const siteDescription = "Discover, pick and save movies for your next movie night. A portfolio project built on the TMDB API.";
+
 export const metadata: Metadata = {
-  title: "MovieNight",
-  description: "Discover your next movie night favorite.",
+  // Absolute address for social-preview images; set NEXT_PUBLIC_SITE_URL to the deployed address.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: { default: "MovieNight", template: "%s · MovieNight" },
+  description: siteDescription,
+  openGraph: { title: "MovieNight", description: siteDescription, siteName: "MovieNight", type: "website" },
+  twitter: { card: "summary_large_image", title: "MovieNight", description: siteDescription },
 };
 
 export const viewport: Viewport = {

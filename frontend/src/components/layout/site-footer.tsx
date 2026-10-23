@@ -56,7 +56,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[77rem] flex-col items-start justify-between gap-1 border-t border-white/6 px-5 py-4 text-xs text-white/45 sm:flex-row sm:items-center sm:px-8 lg:px-12">
+      <div className="mx-auto flex w-full max-w-[77rem] flex-col items-start justify-between gap-1 border-t border-white/6 px-5 py-4 text-xs text-white/60 sm:flex-row sm:items-center sm:px-8 lg:px-12">
         <p>© {new Date().getFullYear()} MovieNight</p>
         <p className="inline-flex items-center gap-1.5">
           Made with <Heart aria-label="love" className="size-3.5 fill-brand-pink text-brand-pink" role="img" /> by

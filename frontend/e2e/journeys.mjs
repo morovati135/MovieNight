@@ -91,7 +91,7 @@ try {
   await browser.go("/movies/abc", 3500);
   check("Not found: an invalid movie id", /couldn’t find that movie/i.test(await browser.text()));
   await browser.go("/zzz", 3000);
-  check("Not found: an unknown route", /404/.test(await browser.text()));
+  check("Not found: an unknown route", /couldn’t find that page/.test(await browser.text()));
 
   // Integration
   await browser.go("/", 5000);

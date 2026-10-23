@@ -90,9 +90,9 @@
   --glass: #061126;
   --link: #21aaf5;
   --link-hover: #67c9ff;
-  --brand-pink: #e84c9d;
-  --brand-blue: #149dec;
-  --brand-blue-hover: #27aaf7;
+  --brand-pink: #d41d7c;
+  --brand-blue: #0f7bb9;
+  --brand-blue-hover: #0e71ab;
   --shadow-soft: 0 16px 44px oklch(0.07 0.015 260 / 24%);
   --shadow-button: 0 8px 20px oklch(0.07 0.015 260 / 20%);
   --glow-accent: 0 0 0 1px oklch(0.75 0.105 205 / 20%), 0 8px 26px oklch(0.75 0.105 205 / 18%);

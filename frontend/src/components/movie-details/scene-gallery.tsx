@@ -33,7 +33,7 @@ export function SceneGallery({ imageUrls, title }: SceneGalleryProps) {
   return (
     <section aria-label={`Scenes from ${title}`} className="relative isolate [container-type:inline-size]">
       <div
-        aria-label={`Scenes from ${title}`}
+        aria-label="Scene list"
         className="-mx-4 overflow-x-auto overscroll-x-contain outline-none [scroll-padding-inline-start:1rem] [scrollbar-width:none] [scroll-snap-type:x_proximity] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-ring sm:-mx-8 sm:[scroll-padding-inline-start:2rem] lg:mx-0 lg:[scroll-padding-inline-start:0] [&::-webkit-scrollbar]:hidden"
         id={railId}
         onScroll={updateScrollState}
