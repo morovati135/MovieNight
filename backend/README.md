@@ -1,30 +1,27 @@
-# Backend local configuration
+# MovieNight API
 
-MovieNight uses a TMDB **Read Access Token** with HTTP Bearer authentication. Never add this token to `appsettings*.json`, source files, or commits.
+ASP.NET Core 10 Web API: movies and collections from TMDB, and the anonymous watchlist in SQLite. Setup (including the TMDB token) is in the [root README](../README.md); structure and rules are in [ARCHITECTURE.md](../ARCHITECTURE.md).
 
-For the current PowerShell session, provide it with:
+## Commands (from the repository root)
 
-```powershell
-$env:Tmdb__ReadAccessToken = "your-tmdb-read-access-token"
+```bash
+dotnet run --project backend/MovieNight.Api --launch-profile http   # http://localhost:5080
+dotnet test backend/MovieNight.slnx                                  # all backend tests
+dotnet tool restore                                                  # EF Core CLI, once
+dotnet restore backend/MovieNight.slnx                               # packages, once (before dotnet-ef)
 ```
 
-For persistent local development, initialize .NET user secrets once from `backend/MovieNight.Api`, then set the secret:
+## Configuration
 
-```powershell
-dotnet user-secrets init
-dotnet user-secrets set "Tmdb:ReadAccessToken" "your-tmdb-read-access-token"
-```
+| Key | Source | Notes |
+|---|---|---|
+| `Tmdb:ReadAccessToken` | user secrets or env `Tmdb__ReadAccessToken` | required; never in a committed file |
+| `Tmdb:BaseUrl` | `appsettings.json` | HTTPS only |
+| `ConnectionStrings:MovieNightDatabase` | `appsettings.json` | default `Data Source=App_Data/movienight.db` (git-ignored) |
+| `Cors:AllowedOrigins` | config / env | default `http://localhost:3000` |
 
-Run `GET /api/tmdb/preflight` to make one harmless TMDB read request. A successful check returns `204 No Content`; failures return a safe Problem Details response without exposing the token or raw TMDB response.
+## Development helpers
 
-## Development API reference
-
-In the Development environment, the built-in OpenAPI document is available at `/openapi/v1.json` and the interactive Scalar reference at `/scalar`. Neither endpoint is mapped outside Development. Scalar can exercise the public Movie and Watchlist endpoints; Watchlist requests use the browser's `movienight.anonymous-id` cookie to select the anonymous watchlist.
-
-## Local database migrations
-
-The local SQLite database is stored at `backend/MovieNight.Api/App_Data/movienight.db` and is not tracked by Git. Apply migrations explicitly from `backend/MovieNight.Api`:
-
-```powershell
-dotnet ef database update
-```
+- API reference: `/scalar`; OpenAPI document: `/openapi/v1.json`; TMDB connectivity check: `GET /api/tmdb/preflight` (204 on success). All three exist only in the Development environment.
+- Database: `cd backend/MovieNight.Api && dotnet tool run dotnet-ef database update`. After changing the model: `dotnet tool run dotnet-ef migrations add <Name>`.
+- Tests: `MovieNight.Api.Tests/Http` starts the real app in memory with a fake TMDB and a temporary database; the other test files are unit tests.
