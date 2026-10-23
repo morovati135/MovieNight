@@ -1,3 +1,4 @@
+using MovieNight.Api.Features.Caching;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,9 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
-builder.Services.AddMemoryCache();
+// Every entry counts as size 1 (see CatalogCache), so this bounds the cache to that many entries.
+builder.Services.AddMemoryCache(options => options.SizeLimit = 5000);
+builder.Services.AddSingleton<CatalogCache>();
 
 Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
 

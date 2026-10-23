@@ -19,6 +19,7 @@ This file is a lightweight entry point. The canonical rules live in the reposito
 - Inspect only relevant code.
 - Preserve recorded architecture and decisions. Avoid unrelated cleanup or redesign.
 - Do not commit unless explicitly requested.
+- Commit messages describe what the change does, not the project phase. Use a conventional prefix (`feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `chore`) with an optional scope, an imperative subject under about 72 characters, and a short body explaining why when it is not obvious. Never mention sprint, stage or work-package numbers (for example "Sprint 06.1", "X6", "Stage 05") in commit messages or pull request titles. Good: `perf(api): cache Discover results and share concurrent TMDB loads`. Bad: `feat: Sprint 06.1 cache work`. Keep unrelated changes in separate commits.
 - Run relevant verification before reporting completion.
 - Update `STATUS.md` when actual project state changes.
 - Never mark Tech Lead acceptance unless the human explicitly accepted it.

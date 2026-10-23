@@ -1,3 +1,4 @@
+using MovieNight.Api.Features.Caching;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
@@ -42,8 +43,8 @@ public sealed class MovieCollectionServiceTests
             return (HttpStatusCode.NotFound, "{}");
         });
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCollectionService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCollectionService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var collections = await service.GetCollectionsAsync(CancellationToken.None);
         var again = await service.GetCollectionsAsync(CancellationToken.None);
@@ -68,8 +69,8 @@ public sealed class MovieCollectionServiceTests
                 ? (HttpStatusCode.OK, """{ "id": 1241, "parts": [{ "id": 1, "title": "Stone", "release_date": "2001-11-16", "poster_path": "/hp.jpg" }] }""")
                 : (HttpStatusCode.InternalServerError, "{}"));
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCollectionService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCollectionService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var collections = await service.GetCollectionsAsync(CancellationToken.None);
 
@@ -81,8 +82,8 @@ public sealed class MovieCollectionServiceTests
     {
         var handler = new RoutingHandler(_ => (HttpStatusCode.InternalServerError, "{}"));
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCollectionService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCollectionService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         await Assert.ThrowsAsync<TmdbUpstreamException>(() => service.GetCollectionsAsync(CancellationToken.None));
     }
@@ -98,8 +99,8 @@ public sealed class MovieCollectionServiceTests
                 : (HttpStatusCode.OK, """{ "page": 2, "total_pages": 5, "total_results": 100, "results": [{ "id": 5, "title": "Popular" }] }""");
         });
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCollectionService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCollectionService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         var studio = await service.GetCollectionMoviesAsync("marvel", 2, CancellationToken.None);
         var franchise = await service.GetCollectionMoviesAsync("harry-potter", 1, CancellationToken.None);
@@ -117,8 +118,8 @@ public sealed class MovieCollectionServiceTests
     {
         var handler = new RoutingHandler(_ => (HttpStatusCode.OK, "{}"));
         using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var service = new MovieCollectionService(new TmdbClient(httpClient), cache);
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var service = new MovieCollectionService(new TmdbClient(httpClient), new CatalogCache(cache));
 
         Assert.Null(await service.GetCollectionMoviesAsync("nope", 1, CancellationToken.None));
         Assert.Empty(handler.RequestUris);

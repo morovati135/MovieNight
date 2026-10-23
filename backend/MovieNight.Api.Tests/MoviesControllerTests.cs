@@ -1,3 +1,4 @@
+using MovieNight.Api.Features.Caching;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +18,8 @@ public sealed class MoviesControllerTests
         {
             BaseAddress = new Uri("https://api.themoviedb.org/3/")
         };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), cache));
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache)));
 
         var result = await controller.Pick(new PickMovieQuery(), CancellationToken.None);
 
@@ -33,8 +34,8 @@ public sealed class MoviesControllerTests
         {
             BaseAddress = new Uri("https://api.themoviedb.org/3/")
         };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), cache))
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache)))
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };
@@ -51,8 +52,8 @@ public sealed class MoviesControllerTests
         {
             BaseAddress = new Uri("https://api.themoviedb.org/3/")
         };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), cache));
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache)));
 
         var result = await controller.Pick(new PickMovieQuery(), CancellationToken.None);
 
@@ -71,8 +72,8 @@ public sealed class MoviesControllerTests
         {
             BaseAddress = new Uri("https://api.themoviedb.org/3/")
         };
-        using var cache = new MemoryCache(new MemoryCacheOptions());
-        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), cache));
+        using var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1000 });
+        var controller = new MoviesController(new MovieCatalogService(new TmdbClient(httpClient), new CatalogCache(cache)));
 
         var result = await controller.GetDetails(1, CancellationToken.None);
 
