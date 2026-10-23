@@ -121,10 +121,12 @@ export async function launch({ port = 9400 + Math.floor(Math.random() * 400) } =
           .map((event) => `${event.params.response.status} ${event.params.response.url.slice(0, 100)}`),
       };
     },
-    async screenshot(name) {
-      const shot = await send("Page.captureScreenshot", { format: "png" });
+    /** Saves a screenshot of the tab as `<dir>/<name>.<png|jpg>` (default folder: the temp shots folder). */
+    async screenshot(name, { dir = shotsDir, format = "png", quality = 85 } = {}) {
+      const shot = await send("Page.captureScreenshot", { format, ...(format === "jpeg" ? { quality } : {}) });
 
-      fs.writeFileSync(path.join(shotsDir, `${name}.png`), Buffer.from(shot.result.data, "base64"));
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, `${name}.${format === "jpeg" ? "jpg" : "png"}`), Buffer.from(shot.result.data, "base64"));
     },
     text: () => send("Runtime.evaluate", { expression: "document.body.innerText", returnByValue: true }).then((r) => r.result.result.value),
     async close() {
