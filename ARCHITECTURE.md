@@ -32,7 +32,7 @@ frontend/src/components/         feature folders (home, movie, movie-details, se
 frontend/src/lib/api/            the only place that calls the backend; src/types/ mirrors the API
 frontend/e2e/                    browser journey, sweep, accessibility and performance scripts
 contracts/api-shapes.json        JSON property names shared by backend and frontend tests
-.claude/skills/movienight-ui/    UI contract and approved design references
+.claude/skills/movienight-ui/    UI contract (visual language, responsive rules, product scope)
 ```
 
 Rules: one top-level type per file; public API contracts are MovieNight-owned DTOs, never TMDB models; `Common/` only for code that is genuinely shared.
@@ -66,7 +66,7 @@ All caching goes through `CatalogCache` over `IMemoryCache` (D032): lifetimes by
 - All backend access lives in `src/lib/api/`; components never call `fetch()` directly and never call TMDB.
 - Artwork uses `next/image` (30-day optimizer cache) with a fallback that retries TMDB directly (images only).
 - Pages load their data in the browser, with explicit loading, empty and error states.
-- Visual source of truth: the approved references and contract in `.claude/skills/movienight-ui/`.
+- Visual source of truth: the design contract in `.claude/skills/movienight-ui/` and the baseline screenshots in `docs/images/`.
 
 ## Configuration
 

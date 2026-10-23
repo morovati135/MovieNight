@@ -46,7 +46,7 @@ Update `STATUS.md` when the real project state changes.
 - Next.js App Router, TypeScript, Tailwind CSS 4, Base UI primitives. This Next.js version has breaking changes from older releases: read the relevant guide in `frontend/node_modules/next/dist/docs/` before writing Next-specific code.
 - The browser talks only to the MovieNight API (`NEXT_PUBLIC_API_BASE_URL`, and the same-origin `/backend` proxy for the Watchlist). Never call TMDB's API or expose credentials in browser code. All API access lives in `src/lib/api/`; no raw `fetch()` in components.
 - Keep the TypeScript types in `src/types/` and `contracts/api-shapes.json` in sync with the API (both sides have tests).
-- Visual work: the approved reference images and the project design contract in `.claude/skills/movienight-ui/` are the visual source of truth, not existing code. Validate at 390, 768 and 1440 px.
+- Visual work: the written design contract in `.claude/skills/movienight-ui/` and the baseline screenshots in `docs/images/` are the visual source of truth. Validate at 390, 768 and 1440 px.
 
 ## Secrets
 

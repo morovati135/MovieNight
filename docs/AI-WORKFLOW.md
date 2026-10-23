@@ -39,7 +39,7 @@ A claim of "tested" without the command and its result is not accepted.
 - **Scope:** one task at a time; no unrelated refactors; no new packages or patterns without a requirement (the non-goals are in `PROJECT.md`).
 - **Decisions are durable:** changing one means editing `DECISIONS.md` first, with the reason.
 - **Secrets:** nothing secret in Git, prompts, logs or screenshots. The pre-commit habit: look at `git diff --staged` before every commit.
-- **Visuals:** the approved references in `.claude/skills/movienight-ui/` outrank existing code; check at 390, 768 and 1440 px.
+- **Visuals:** the design contract in `.claude/skills/movienight-ui/` and the baseline screenshots in `docs/images/` define the look; check at 390, 768 and 1440 px.
 - **Destructive actions** (history rewrites, force-pushes, deleting files outside the task) need your explicit approval each time.
 - **Commit messages** describe the change (`feat(api): …`, `fix(frontend): …`), not the project phase.
 
