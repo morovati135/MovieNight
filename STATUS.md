@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 in progress
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 is next and has not started
 
 ## Current Stage
 
@@ -10,7 +10,7 @@ Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). 
 
 ## Current Sprint
 
-Sprint 06.1 — Cache Review & Hardening (implemented and verified; awaiting Tech Lead review; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
+Sprint 06.1 — Cache Review & Hardening (accepted by the Tech Lead on 2026-10-23; branch `feature/stage-06-plan`). Tech Lead note: TTL choices drive performance, so they must be based on measurement.
 
 06.1 implemented state:
 
