@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 in progress
+Implementation / Stage 05 complete (Sprint 05.8 accepted by the Tech Lead on 2026-10-23); Stage 06 plan approved by the Tech Lead on 2026-10-23 (`docs/stages/06-full-stack-integration-testing-hardening.md`); Sprint 06.1 accepted by the Tech Lead on 2026-10-23; Sprint 06.2 accepted by the Tech Lead on 2026-10-23; Sprint 06.3 accepted by the Tech Lead on 2026-10-23; Sprint 06.4 in progress
 
 ## Current Stage
 
@@ -10,7 +10,18 @@ Stage 06 — Full-Stack Integration, Testing & Runtime Hardening (in progress). 
 
 ## Current Sprint
 
-Sprint 06.3 — Contract Verification & Frontend Tests (in progress).
+Sprint 06.4 — Runtime Configuration, Security & Dependency Audit (in progress).
+
+Sprint 06.3 — Contract Verification & Frontend Tests (accepted by the Tech Lead on 2026-10-23).
+
+06.3 implemented state:
+
+- Contract: `contracts/api-shapes.json` lists the JSON property names of every shape the frontend consumes (movie summary, details, cast, person, genre, page, collection). The backend test `ApiContractTests` checks the real API responses (including nested items and Problem Details) against it; the frontend test `src/lib/api/contract.test.ts` checks the TypeScript types in `src/types/movie.ts` against it, with compile-time exhaustive key lists. No drift was found; changing one side now fails a test (confirmed by changing the file).
+- Frontend tests: Vitest + Testing Library + jsdom (dev dependencies; `@types/node` raised to 24 as Vitest requires). 41 tests in 5 files: API client (URLs, paging, encoding, 404 / error mapping), Watchlist client (proxy path, cookie, messages), `useWatchlist` (load, retry, add, remove, failure, double-click guard, rehydrate), Browse paging (Load more, duplicate removal, retry on page failure, empty, not-found, collection slug, category change), contract. `npm test`.
+- End-to-end: the Stage 05 browser journeys and the 13-route × 3-width sweep are now committed scripts in `frontend/e2e/` (`npm run e2e`, `npm run e2e:sweep`, README); they use live TMDB data and are run by hand. Run now: 17 / 17 journey checks and all 39 route-width pages pass. The sweep ignores hidden images (the Hero's inactive slides are loaded eagerly and some finish unrendered); noted for Stage 07 polish: image-optimizer requests in dev took up to 7.5 s cold.
+- Checks: tsc, eslint, `next build`, 41 frontend tests, 163 backend tests, `npm audit --omit=dev` 0.
+
+
 
 Sprint 06.2 — Backend Integration & Failure-Path Tests (accepted by the Tech Lead on 2026-10-23).
 
