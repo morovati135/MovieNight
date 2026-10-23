@@ -8,7 +8,7 @@ Stage 04 — Anonymous Watchlist Backend & Persistence is accepted and complete.
 
 Sprint 05.1 — Frontend Design Foundation & App Shell is accepted and complete.
 
-Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Next work is Sprint 05.7 — Responsive, Interaction & UX Polish.
+Sprint 05.2 — Discover Home Experience is accepted and complete. Sprint 05.3 — Search & Discover Experience is accepted and complete. Sprint 05.4 — Movie Details Experience is accepted and complete. Sprint 05.5 — Pick for Me Experience is accepted and complete. Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete. Sprint 05.7 — Product Additions and Polish is in progress (plan approved 2026-10-22, §15.1).
 
 ---
 
@@ -1220,6 +1220,35 @@ Fix only genuine frontend UX/polish issues.
 - [ ] typography/spacing/radius are consistent.
 - [ ] page references remain respected.
 - [ ] no dashboard/template drift has accumulated.
+
+## 15.1 Sprint 05.7 Plan — Product Additions and Polish
+
+**Status: Plan approved by the Tech Lead on 2026-10-22 — in progress.**
+
+The Tech Lead extended Sprint 05.7 on 2026-10-22 with product additions alongside the planned polish (D030). The planning audit (1440 / 768 / 390, every page) found: Movie Details overflowing horizontally on phones; no footer and no TMDB attribution anywhere; generic tab titles for Search and not-found; "Add to watchlist" vs "Add to Watchlist"; a 36px skip link; Home / Details error and not-found screens in the older plain style. Keyboard focus, headings, alt text and console were clean.
+
+Decisions (Tech Lead, 2026-10-22):
+
+- Footer on every page: MovieNight logo, Home / Watchlist / About links (not a copy of the header menu), the TMDB attribution ("This product uses the TMDB API but is not endorsed or certified by TMDB.") with TMDB's official logo linking to themoviedb.org, and "Made with ♥ by Amir Mahdi" linking to https://x.com/AmirMahdi_Salar.
+- About page (`/about`): a portfolio and practice project developed by Amir Mahdi Morovati, with Socials — GitHub https://github.com/morovati135, X https://x.com/AmirMahdi_Salar, Instagram https://www.instagram.com/morovati135.
+- Header: an icon before each item, a more distinctive selected effect, no border stroke, rounder corners, plus the About item; the mobile bar follows.
+- Home speed: faster first load without visible quality loss (measured before / after).
+- Movie cards: a bolder, rounded plus icon in the Watchlist island (Tech Lead reference). Pick CTA: a slightly longer glow line, nothing else changed.
+- New Home sections after the Pick CTA and before Your Watchlist: Collections in the stacked-card style of `movie-covers/Collections` / `Collection_Mobile` (a curated set mixing TMDB franchise collections with studio / genre sets), and "Iconic: Top rated of all time" in the landscape `movie-covers/Cards` style (TMDB top rated).
+- "See more" on every Home section, opening a category page with a grid and paging (`/browse/[category]`); the genre section keeps using the Search view, Your Watchlist keeps opening `/watchlist`.
+- State screens on Home and Details move to the cinematic frame used by Pick and Watchlist; the approved effects (rays, aurora, marquee, halo glows, morph text) are kept and only checked for smoothness and reduced motion.
+
+Work packages (each ends with a screenshot review checkpoint):
+
+- [x] 05.7-X1 — Fixes + consistency + footer (accepted 2026-10-22): Details mobile overflow; site-wide footer with TMDB attribution; Search / not-found tab titles; "Add to Watchlist" wording; 44px skip link; Home / Details state screens in the cinematic frame.
+- [x] 05.7-X2 — Navigation + About (accepted 2026-10-22): header redesign with icons and the About item (mobile bar matched); `/about` with the portfolio note and Socials.
+- [x] 05.7-X3 — Home speed (accepted 2026-10-22): measure, remove the hero details waterfall, lighter backdrops, prioritise only the first hero image, defer lower rails; before / after numbers.
+- [x] 05.7-X4 — Card + CTA details (accepted 2026-10-22): bold rounded plus icon; longer Pick CTA glow line.
+- [x] 05.7-X5 — New Home sections (accepted 2026-10-22): Collections (stacked cards) and Iconic top rated (landscape cards), with the backend additions they need.
+- [x] 05.7-X6 — See more + category pages (accepted 2026-10-23): `/browse/[category]` with grid and paging; backend paging for those lists.
+- [x] 05.7-X7 — (accepted 2026-10-23) Interaction pass + final QA across all pages, including the new ones; screenshots in `docs/screenshots/05.7-*`.
+
+Work happens on branch `feature/polish-05.7`. Sprint 05.7 is complete only after X1–X7 are accepted.
 
 ## Verification
 
