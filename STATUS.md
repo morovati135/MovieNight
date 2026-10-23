@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Implementation / Stage 05 (in progress)
+Implementation / Stage 05 (in progress — only Sprint 05.8 remains)
 
 ## Current Stage
 
@@ -10,7 +10,82 @@ Stage 05 — Frontend Product Experience (in progress)
 
 ## Current Sprint
 
-Sprint 05.7 — Responsive, Interaction & UX Polish (next; not started)
+Sprint 05.8 — Stage 05 Verification & Handoff (not started; starts only when the Tech Lead asks)
+
+Sprint 05.7 — Product Additions and Polish is accepted and complete (X1–X7 accepted by the Tech Lead on 2026-10-22 and 2026-10-23); it is committed and pushed on branch `feature/polish-05.7` and not yet merged into `master`.
+
+### Sprint 05.7 Work Packages
+
+- [x] 05.7-X1 — Fixes + consistency + footer (TMDB attribution) (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.7-X2 — Navigation + About (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.7-X3 — Home speed (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.7-X4 — Card + CTA details (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.7-X5 — New Home sections (Collections, Iconic top rated) (accepted by the Tech Lead on 2026-10-22)
+- [x] 05.7-X6 — See more + category pages (accepted by the Tech Lead on 2026-10-23)
+- [x] 05.7-X7 — Interaction pass + final QA (accepted by the Tech Lead on 2026-10-23)
+
+Scope extension, audit findings, decisions (footer, About and Socials, header, collections, browse pages) and work packages are recorded in `docs/stages/05-frontend-product-experience.md` (§15.1) and D030. Work happened on branch `feature/polish-05.7`.
+
+What remains: Sprint 05.8 (Stage 05 verification and handoff, no new features), then Stage 06 (full-stack integration, testing and runtime hardening, including the mandatory cache review) and Stage 07 (final polish and portfolio handoff). Open Tech Lead decision: whether the details page's scene thumbnails should use TMDB w1280 instead of `original`.
+
+05.7-X7 accepted state:
+
+- Swept 13 routes (Home, the four Browse categories, an unknown collection, Search, Pick, Watchlist, About, movie details, unknown movie, 404) at 390 / 768 / 1440 in headless Edge: no horizontal overflow, no console or network errors except the expected 404s of the not-found pages, no touch target under 40px, every page has one h1.
+- Fix found by the sweep: movie details backdrops were TMDB "original" files (about 2.6 MB, 5–7 s), which the Next image optimiser could time out on (500) and leave the details hero blank; `BuildBackdropUrl` now uses w1280 like the list backdrops (test updated, 85 passing).
+- Checked: "Load more" on Trending (20 → 39 cards, one repeat dropped) and Marvel (20 → 40); Star Wars (franchise) shows one page without the button; genre chips are keyboard reachable and Enter selects.
+- Open point for the Tech Lead: the details page's scene thumbnails still use "original" files (chosen so the full-size viewer is sharp); an occasional one fails its first request and relies on the direct fallback. Using w1280 would remove that at some sharpness in the viewer.
+- Verified: lint, build, `git diff --check`, `dotnet test`; screenshots `docs/screenshots/05.7-X7-*`.
+
+05.7-X6 accepted state:
+
+- Backend: `page` (1–500) on `GET /api/movies/trending` and `/popular` (cached per page); new `GET /api/collections/{slug}/movies?page=` — franchises return one page in release order (later pages empty), studio and genre collections page through Discover, an unknown slug returns 404. 85 backend tests passing (2 new).
+- Frontend: `/browse/[category]` (`trending`, `popular`, `iconic`, or a collection slug) with the Search grid and "Load more" paging, skeleton, retry, not-found notice. "See more" links on Trending, Popular and Iconic; every collection card links to its page. The genre section still uses Search and Your Watchlist still opens `/watchlist`.
+- Review follow-ups (Tech Lead, same day): Discover by Genre keeps each genre's movies in memory, warms the other genres one at a time while idle (first 12 posters of each downloaded early) and fetches a genre on chip hover/focus/touch, so choosing one swaps in without a loading state once warmed; the genre chips are one frosted track like the Pick page's segmented controls (sliding raised thumb, site font semibold, chips share the width evenly when they fit, otherwise swipe/trackpad/mouse-drag with edge fades, no arrows, selected chip kept centred); on phones the Home hero has a 44rem minimum height instead of the full screen height, so the gap to Trending Now matches other sizes.
+- Known limit: a genre clicked in the first seconds, before the warm-up reaches it, still shows a short load; the browser extension attribute `bis_skin_checked` triggers dev-only hydration warnings and is not a code issue.
+- Verified: lint, tsc, build, `dotnet test`; live API (paging, 404, 400 on page 0) and `/browse/trending`, `/browse/star-wars`, `/browse/marvel`, `/browse/nope` rendered; screenshots `docs/screenshots/05.7-X6-*`. Load more in a browser and tablet width are covered in X7.
+
+05.7-X5 accepted state:
+
+- Backend: `GET /api/collections` (curated catalogue of eight — TMDB franchise collections plus studio and genre sets, D030 — each with up to three cover posters, 6 h cache, a failing collection left out) and `GET /api/movies/top-rated?page=` (highest rated films with at least 10,000 votes, 1 h cache); TMDB client gains collections, a company filter for Discover and the top-rated query. 83 backend tests passing (6 new).
+- Home, after the Pick CTA and before Your Watchlist: Collections — stacked poster cards with the name over the front poster (`movie-covers/Collections`, a rail from tablets up; `Collection_Mobile`, two columns on phones; the back posters fan out on hover) — and "Iconic: Top rated of all time" as landscape cards (`movie-covers/Cards`). Both load only when scrolled near (shared `use-near-viewport`), with skeletons and a retry notice.
+- Review follow-up: collection names in the site font (Manrope extra bold, normal case; an Anton display face was tried and rejected as off-theme) with a soft small text shadow; the two back posters fan out further (about 15% and 29% to the right) so the stack reads clearly; landscape cards' Watchlist plus is as big as on poster cards.
+- Verified: lint, build, `git diff --check`, `dotnet test`; live at 1440 / 768 / 390: section order, 8 collections, 20 iconic cards (The Shawshank Redemption, The Godfather, 12 Angry Men…), no overflow, no errors, new data requested only on scroll; screenshots `docs/screenshots/05.7-X5-*`.
+
+05.7-X4 accepted state:
+
+- Movie cards (poster and landscape): the Watchlist island's plus and saved check are bold (stroke 3 instead of 2, round caps), as in the Tech Lead reference.
+- Pick CTA: the travelling glow line is longer — about 40% for every glow layer, then (Tech Lead follow-up) a further ~30% for the line itself only (the bright rim and the hotspot on the edge), leaving the soft halo and inner bleed at their size; nothing else on the CTA changed.
+- Verified: lint, build, `git diff --check`; cards at 1440 / 390 and the landscape card on Pick; screenshots `docs/screenshots/05.7-X4-*`.
+
+05.7-X3 accepted state:
+
+- Cause: Home loaded trending + popular, then six full Movie Details requests (credits, recommendations, images) for the hero before anything rendered, and the hero used TMDB `original` backdrops.
+- Changes: the hero is built from the trending list itself (summary backdrop, D029) plus genre names, with trending, popular and genres loaded in one parallel round (10 API calls before the hero image → 3); movie-summary backdrops use TMDB `w1280` (was `w780`) so the full-width hero stays sharp; the visible hero image gets `fetchPriority="high"`; the genre section loads its data only when it comes near the viewport.
+- Measured (Chrome, 20 Mbps / 40 ms; cold = backend restarted and image cache emptied; warm = median of 3):
+  - cold: hero text 2,964 → 1,435 ms; hero image / LCP 6,841 → 4,362 ms;
+  - warm: hero text 935 → 445 ms; hero image 942 → 566 ms; LCP 732 → 568 ms;
+  - data transferred on first view 813 → 711 KB.
+- Tried and reverted: loading the hero image straight from TMDB (skipping the Next image optimiser) — slightly faster cold (3.95 s) but much slower on repeat visits (median 3.65 s), because browsers then download the full file instead of the optimised, cached copy.
+- Revision after Tech Lead review (slides went blank while their image loaded; desktop hero quality): the hero is now one stack of per-slide layers, and only the shown slide is opaque. The shown slide changes only once the new slide's image has loaded, so the previous backdrop stays and cross-fades instead of a blank hero. Desktop shows the quick 1280px backdrop first and fades TMDB's original over it (`lib/tmdb-image.ts` swaps the size segment of the backend-provided URL; still through the Next image optimiser, so 1440px screens get a 1920px image and retina screens more). Images load for the current slide first; after it is on screen, the next and previous slides load at low priority (full quality for current + next), and loaded slides stay mounted.
+- Measured after the revision: 0 blank frames in 9 runs of clicking through every slide faster than images download (1440 @1x, 1440 @2x, 390 @2x; cold and warm image cache); desktop settles on the original. Warm hero image ~0.5–0.9 s; LCP ~1.2–1.4 s because the full-quality fade-in is the largest paint; desktop first view transfers ~1.3–1.6 MB (was 0.7 MB with 1280px-only, 2.3 MB when every slide preloaded at full quality — narrowed to neighbours). Cold first-load times vary widely on this machine (3.5–11 s) because they depend on its connection to TMDB; they are cached afterwards.
+- Verified: lint, build, `git diff --check`, `dotnet test` (77 passing); hero still shows genres and rotates; rails and genre section unchanged at 1440 / 390; no overflow or errors; screenshots `docs/screenshots/05.7-X3-*`.
+
+05.7-X2 accepted state:
+
+- Header: no border stroke (an inner highlight and soft shadow instead), rounder corners (32px), an icon before each item (Compass, Sparkles, Bookmark, Info) and the cult-ui halo-tabs "pill" indicator (frosted fill, hairline rim, soft glow underneath) in one blue colour family matching the theme (single-hue like the halo-toast rims; Tech Lead choice), with the active icon in light blue, gliding between items; About added. Tablets use short labels ("Pick") so all four fit. halo-tabs is built on Base UI Tabs (`role="tab"`), so the items stay real links with `aria-current` and only its pill and its measured-position mechanism are used (`components/layout/nav-pill.tsx`); this replaced an earlier motion `layoutId` pill that could drift on the fixed mobile bar.
+- Mobile bar (revised after review): a fully rounded halo-tabs pill track with the same indicator; icons only and larger (24px), names kept for screen readers; even 6px inset on both sides at every width; About added (four columns). Shared item list in `components/layout/navigation-items.ts`.
+- `/about` ("Made for movie nights."): portfolio and practice project by Amir Mahdi Morovati; What's inside (Discover, Pick for Me, Watchlist); How it's built — spec-driven development with an AI coding agent (specs in the repository, one work package at a time, each reviewed in the browser), the architecture and the stack; Find me online — GitHub, X, Instagram with Simple Icons brand logos (`components/ui/brand-icons.tsx`, CC0); these cards float up 6px with a deeper shadow on hover (still with reduced motion). An editorial rewrite was tried and rolled back at the Tech Lead's request; the card version was kept, slightly simplified (no background glow, no hover lift).
+- Verified: lint, build, `git diff --check`; 1440 / 1024 / 768 / 390: no overflow, header fits, current page marked in header and mobile bar, no target under 44px, social links correct; the indicator stays exactly on the active item after navigating while scrolled at 360 / 390 / 430 / 560 / 700 and in the header at 1440 / 768; no errors; screenshots `docs/screenshots/05.7-X2-*`.
+
+05.7-X1 accepted state:
+
+- Site-wide footer (`components/layout/site-footer.tsx`): logo, tagline, Home / Watchlist / About links (Pick for Me left to the header so the footer is not a copy of the menu), TMDB's official logo (`public/tmdb-logo.svg`, from TMDB's logo page) linking to themoviedb.org with "This product uses the TMDB API but is not endorsed or certified by TMDB.", © year, and "Made with ♥ by Amir Mahdi" linking to X. The layout's main area no longer carries mobile-nav padding; the footer does.
+- Movie Details no longer overflows on phones: 20px side padding like the rails expect, and horizontal overflow clipped at page level (as on Home and Pick).
+- Tab titles: "Search · MovieNight" while Search is open; "Movie not found · MovieNight" / "Movie unavailable · MovieNight" on Details.
+- Watchlist button wording is "Add to Watchlist" / "In Watchlist" everywhere (the Home hero said "Add to watchlist" / "Remove").
+- Skip link is 44px tall.
+- Home and Details full-page states (`PageNotice`) use the cinematic frame of the Pick / Watchlist notices.
+- Verified: lint, build, `git diff --check`; all pages at 1440 / 768 / 390: no horizontal overflow, no target under 44px except the accepted 40px tablet rail arrows, no unnamed controls, footer on every page; the only console errors are the expected not-found 404 and `/about` prefetches until X2 adds that page; screenshots `docs/screenshots/05.7-X1-*`.
 
 Sprint 05.6 — Anonymous Watchlist Experience is accepted and complete (W1, W2, W3 accepted by the Tech Lead on 2026-10-22).
 
@@ -303,13 +378,12 @@ The existing frontend visual implementation is not a visual source of truth for 
 
 ## In Progress
 
-- None. Sprint 05.7 is next and has not started.
+- Sprint 05.7-X6 — See more + category pages.
 
 ---
 
 ## Not Started
 
-- Sprint 05.7 — Responsive, Interaction & UX Polish
 - Sprint 05.8 — Stage 05 Verification & Handoff
 - Stage 06 — Full-Stack Integration, Testing & Runtime Hardening
 - Stage 07 — Final Polish & Portfolio Handoff
@@ -379,7 +453,7 @@ None currently blocking.
 
 Sprint 05.4 note: Movie Details references are committed under `.agents/skills/movienight-ui/assets/movie-details/`, `movie-covers/` and `icons/`.
 
-Home footer note: the UI skill's Home section order lists a minimal footer with TMDB attribution; it is not assigned to any sprint yet.
+Home footer note: the minimal footer with TMDB attribution is now planned as Sprint 05.7-X1 (site-wide).
 
 Repository transition caution:
 
@@ -391,6 +465,6 @@ Repository transition caution:
 
 ## Next Planned Work
 
-1. Plan Sprint 05.7 — Responsive, Interaction & UX Polish (scope review and work packages with review checkpoints, as in 05.2–05.6).
-2. Execute 05.7 only after the plan is agreed; do not start Sprint 05.8 before Sprint 05.7 is accepted.
+1. Execute Sprint 05.7-X1, then X2–X7 one at a time after each is accepted (plan in stage doc §15.1).
+2. Do not start Sprint 05.8 before Sprint 05.7 is accepted.
 3. Complete mandatory Cache Completion & Hardening during Stage 06, not Stage 05.

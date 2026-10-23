@@ -1,4 +1,4 @@
-import type { Genre, MovieDetails, MovieSummary, PagedMovieResult } from "@/types/movie";
+import type { Genre, MovieCollection, MovieDetails, MovieSummary, PagedMovieResult } from "@/types/movie";
 
 import { apiFetch } from "./client";
 
@@ -23,16 +23,37 @@ export function getGenres(): Promise<Genre[]> {
   return getJson("/api/movies/genres", "Movie genres could not be loaded.");
 }
 
-export function getTrendingMovies(): Promise<PagedMovieResult> {
-  return getJson("/api/movies/trending", "Trending movies could not be loaded.");
+function pageQuery(page: number) {
+  return page > 1 ? `?page=${page}` : "";
+}
+
+export function getTrendingMovies(page = 1): Promise<PagedMovieResult> {
+  return getJson(`/api/movies/trending${pageQuery(page)}`, "Trending movies could not be loaded.");
 }
 
 export function getMovieDetails(movieId: number): Promise<MovieDetails> {
   return getJson(`/api/movies/${movieId}`, "Movie details could not be loaded.");
 }
 
-export function getPopularMovies(): Promise<PagedMovieResult> {
-  return getJson("/api/movies/popular", "Popular movies could not be loaded.");
+/** The highest rated films that very many people have rated ("Iconic: Top rated of all time"). */
+export function getTopRatedMovies(page = 1): Promise<PagedMovieResult> {
+  return getJson(`/api/movies/top-rated${pageQuery(page)}`, "Top rated movies could not be loaded.");
+}
+
+export function getCollections(): Promise<MovieCollection[]> {
+  return getJson("/api/collections", "Collections could not be loaded.");
+}
+
+export function getPopularMovies(page = 1): Promise<PagedMovieResult> {
+  return getJson(`/api/movies/popular${pageQuery(page)}`, "Popular movies could not be loaded.");
+}
+
+/** One page of a curated collection's movies; a `MovieNotFoundError` means the collection does not exist. */
+export function getCollectionMovies(slug: string, page = 1): Promise<PagedMovieResult> {
+  return getJson(
+    `/api/collections/${encodeURIComponent(slug)}/movies${pageQuery(page)}`,
+    "Collection movies could not be loaded.",
+  );
 }
 
 export function searchMovies(query: string, year: number | null = null, page = 1): Promise<PagedMovieResult> {

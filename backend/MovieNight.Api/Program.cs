@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MovieNight.Api.Data;
+using MovieNight.Api.Features.Collections;
 using MovieNight.Api.Features.Movies;
 using MovieNight.Api.Features.Watchlists;
 using MovieNight.Api.Integrations.Tmdb;
@@ -60,6 +61,7 @@ builder.Services.AddHttpClient<TmdbClient>((serviceProvider, client) =>
 });
 
 builder.Services.AddScoped<MovieCatalogService>();
+builder.Services.AddScoped<MovieCollectionService>();
 builder.Services.AddScoped<IMovieSummaryLookup>(serviceProvider => serviceProvider.GetRequiredService<MovieCatalogService>());
 
 builder.Services.AddScoped<IAnonymousVisitorIdentityService, AnonymousVisitorIdentityService>();

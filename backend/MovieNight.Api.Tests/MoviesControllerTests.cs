@@ -39,7 +39,7 @@ public sealed class MoviesControllerTests
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };
 
-        await controller.GetTrending(CancellationToken.None);
+        await controller.GetTrending(new PageQuery(), CancellationToken.None);
 
         Assert.Equal(0, controller.HttpContext.Response.Headers.SetCookie.Count);
     }

@@ -14,10 +14,10 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
 {
     private const int PickPageLimit = 15;
     private const string GenresCacheKey = "movies:genres";
-    private const string TrendingCacheKey = "movies:trending";
-    private const string PopularCacheKey = "movies:popular";
-    private static readonly TimeSpan GenresCacheDuration = TimeSpan.FromHours(6);
+        private static readonly TimeSpan GenresCacheDuration = TimeSpan.FromHours(6);
     private static readonly TimeSpan ListCacheDuration = TimeSpan.FromMinutes(5);
+    // The all-time top rated list barely changes.
+    private static readonly TimeSpan TopRatedCacheDuration = TimeSpan.FromHours(1);
     private static readonly TimeSpan SummaryCacheDuration = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan DetailsCacheDuration = TimeSpan.FromMinutes(10);
 
@@ -41,21 +41,30 @@ public sealed class MovieCatalogService(TmdbClient tmdbClient, IMemoryCache cach
         }) ?? [];
     }
 
-    public async Task<PagedMovieResultDto> GetTrendingAsync(CancellationToken cancellationToken)
+    public async Task<PagedMovieResultDto> GetTrendingAsync(int page, CancellationToken cancellationToken)
     {
-        return await cache.GetOrCreateAsync(TrendingCacheKey, async entry =>
+        return await cache.GetOrCreateAsync($"movies:trending:{page}", async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = ListCacheDuration;
-            return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.GetTrendingMoviesAsync(cancellationToken));
+            return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.GetTrendingMoviesAsync(page, cancellationToken));
         }) ?? EmptyPage();
     }
 
-    public async Task<PagedMovieResultDto> GetPopularAsync(CancellationToken cancellationToken)
+    public async Task<PagedMovieResultDto> GetPopularAsync(int page, CancellationToken cancellationToken)
     {
-        return await cache.GetOrCreateAsync(PopularCacheKey, async entry =>
+        return await cache.GetOrCreateAsync($"movies:popular:{page}", async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = ListCacheDuration;
-            return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.GetPopularMoviesAsync(cancellationToken));
+            return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.GetPopularMoviesAsync(page, cancellationToken));
+        }) ?? EmptyPage();
+    }
+
+    public async Task<PagedMovieResultDto> GetTopRatedAsync(int page, CancellationToken cancellationToken)
+    {
+        return await cache.GetOrCreateAsync($"movies:top-rated:{page}", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TopRatedCacheDuration;
+            return TmdbMovieMapper.ToPagedMovieResult(await tmdbClient.GetTopRatedMoviesAsync(page, cancellationToken));
         }) ?? EmptyPage();
     }
 

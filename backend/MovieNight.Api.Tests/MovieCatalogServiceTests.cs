@@ -43,11 +43,11 @@ public sealed class MovieCatalogServiceTests
         var service = new MovieCatalogService(new TmdbClient(httpClient), cache);
 
         var first = expectedPath.EndsWith("popular")
-            ? await service.GetPopularAsync(CancellationToken.None)
-            : await service.GetTrendingAsync(CancellationToken.None);
+            ? await service.GetPopularAsync(1, CancellationToken.None)
+            : await service.GetTrendingAsync(1, CancellationToken.None);
         var second = expectedPath.EndsWith("popular")
-            ? await service.GetPopularAsync(CancellationToken.None)
-            : await service.GetTrendingAsync(CancellationToken.None);
+            ? await service.GetPopularAsync(1, CancellationToken.None)
+            : await service.GetTrendingAsync(1, CancellationToken.None);
 
         Assert.Equal(7, Assert.Single(first.Results).Id);
         Assert.Equal(first, second);

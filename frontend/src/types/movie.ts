@@ -49,3 +49,10 @@ export type PagedMovieResult = {
   totalPages: number;
   totalResults: number;
 };
+
+/** A curated Home collection (D030): its title and up to three cover posters. */
+export type MovieCollection = {
+  slug: string;
+  title: string;
+  posterUrls: string[];
+};

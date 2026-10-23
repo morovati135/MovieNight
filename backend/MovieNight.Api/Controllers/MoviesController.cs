@@ -21,16 +21,26 @@ public sealed class MoviesController(MovieCatalogService movieCatalogService) : 
     [HttpGet("trending")]
     [EndpointSummary("Get trending movies.")]
     [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
-    public Task<ActionResult<PagedMovieResultDto>> GetTrending(CancellationToken cancellationToken) =>
-        ExecuteAsync(() => movieCatalogService.GetTrendingAsync(cancellationToken));
+    public Task<ActionResult<PagedMovieResultDto>> GetTrending([FromQuery] PageQuery query, CancellationToken cancellationToken) =>
+        ExecuteAsync(() => movieCatalogService.GetTrendingAsync(query.Page, cancellationToken));
 
     [HttpGet("popular")]
     [EndpointSummary("Get popular movies.")]
     [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
-    public Task<ActionResult<PagedMovieResultDto>> GetPopular(CancellationToken cancellationToken) =>
-        ExecuteAsync(() => movieCatalogService.GetPopularAsync(cancellationToken));
+    public Task<ActionResult<PagedMovieResultDto>> GetPopular([FromQuery] PageQuery query, CancellationToken cancellationToken) =>
+        ExecuteAsync(() => movieCatalogService.GetPopularAsync(query.Page, cancellationToken));
+
+    [HttpGet("top-rated")]
+    [EndpointSummary("Get the top rated movies of all time.")]
+    [ProducesResponseType(typeof(PagedMovieResultDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
+    public Task<ActionResult<PagedMovieResultDto>> GetTopRated([FromQuery] PageQuery query, CancellationToken cancellationToken) =>
+        ExecuteAsync(() => movieCatalogService.GetTopRatedAsync(query.Page, cancellationToken));
 
     [HttpGet("{id:int}")]
     [EndpointSummary("Get movie details.")]
@@ -102,6 +112,12 @@ public sealed class MoviesController(MovieCatalogService movieCatalogService) : 
             return Problem(statusCode: StatusCodes.Status502BadGateway, title: "TMDB is unavailable.", detail: "The MovieNight TMDB integration could not complete the requested operation.");
         }
     }
+}
+
+public sealed class PageQuery
+{
+    [Range(1, 500)]
+    public int Page { get; init; } = 1;
 }
 
 public sealed class SearchMoviesQuery

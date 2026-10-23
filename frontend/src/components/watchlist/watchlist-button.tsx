@@ -32,11 +32,13 @@ export function WatchlistButton({
   const icon = (
     <Icon
       aria-hidden="true"
+      // The cards' corner island uses a bold, round-capped plus / check (Tech Lead reference).
+      strokeWidth={isCardIsland ? 3 : 2}
       className={cn(
         isUpdating && "animate-pulse",
         isCardIsland && "size-5 drop-shadow-[0_1px_3px_rgb(0_0_0/72%)]",
         appearance === "poster" && "sm:size-7 lg:size-8",
-        appearance === "landscape" && "sm:size-6",
+        appearance === "landscape" && "sm:size-7 lg:size-8",
         appearance === "details" && "size-5",
         appearance === "details" && isSaved && "fill-current",
       )}
@@ -84,15 +86,7 @@ export function WatchlistButton({
       ) : (
         icon
       )}
-      {label === "full"
-        ? appearance === "details"
-          ? isSaved
-            ? "In Watchlist"
-            : "Add to Watchlist"
-          : isSaved
-            ? "Remove"
-            : "Add to watchlist"
-        : null}
+      {label === "full" ? (isSaved ? "In Watchlist" : "Add to Watchlist") : null}
     </Button>
   );
 }

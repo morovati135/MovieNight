@@ -38,7 +38,7 @@ public sealed class TmdbMovieMapperTests
         Assert.Equal(12, movie.Id);
         Assert.Equal(new[] { 18, 878 }, movie.GenreIds);
         Assert.Equal("https://image.tmdb.org/t/p/w780/poster.jpg", movie.PosterUrl);
-        Assert.Equal("https://image.tmdb.org/t/p/w780/backdrop.jpg", movie.BackdropUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w1280/backdrop.jpg", movie.BackdropUrl);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public sealed class TmdbMovieMapperTests
         Assert.Equal("Action", Assert.Single(result.Genres).Name);
         Assert.Equal(123, result.RuntimeMinutes);
         Assert.Equal("https://image.tmdb.org/t/p/w780/poster.jpg", result.PosterUrl);
-        Assert.Equal("https://image.tmdb.org/t/p/original/backdrop.jpg", result.BackdropUrl);
+        Assert.Equal("https://image.tmdb.org/t/p/w1280/backdrop.jpg", result.BackdropUrl);
         Assert.Collection(
             result.Cast,
             cast =>

@@ -84,6 +84,27 @@ public sealed class TmdbClientTests
         Assert.Equal("sort_by=popularity.desc&page=1&with_genres=28&primary_release_year=2020", handler.RequestUri?.Query.TrimStart('?'));
     }
 
+    [Theory]
+    [InlineData("top-rated", "/3/discover/movie", "sort_by=vote_average.desc&vote_count.gte=10000&page=2")]
+    [InlineData("collection", "/3/collection/119", "")]
+    [InlineData("studio", "/3/discover/movie", "sort_by=popularity.desc&page=1&with_companies=420")]
+    public async Task List_sources_use_their_tmdb_paths(string source, string expectedPath, string expectedQuery)
+    {
+        var handler = new StubHttpMessageHandler(HttpStatusCode.OK, """{ "id": 1, "page": 1, "total_pages": 1, "total_results": 0, "results": [], "parts": [] }""");
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://api.themoviedb.org/3/") };
+        var client = new TmdbClient(httpClient);
+
+        _ = source switch
+        {
+            "top-rated" => (object)await client.GetTopRatedMoviesAsync(2, CancellationToken.None),
+            "collection" => await client.GetCollectionAsync(119, CancellationToken.None),
+            _ => await client.DiscoverMoviesAsync(new TmdbDiscoverRequest(null, null, null, 1, "420"), CancellationToken.None),
+        };
+
+        Assert.Equal(expectedPath, handler.RequestUri?.AbsolutePath);
+        Assert.Equal(expectedQuery, handler.RequestUri?.Query.TrimStart('?'));
+    }
+
     [Fact]
     public async Task GetMovieDetailsAsync_uses_tmdb_response_aggregation()
     {

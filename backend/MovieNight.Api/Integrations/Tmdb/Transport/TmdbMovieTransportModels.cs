@@ -80,6 +80,15 @@ internal sealed class TmdbMovie
     public TmdbMovieImages Images { get; init; } = new();
 }
 
+internal sealed class TmdbCollection
+{
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+
+    [JsonPropertyName("parts")]
+    public IReadOnlyList<TmdbMovie> Parts { get; init; } = [];
+}
+
 internal sealed class TmdbProductionCountry
 {
     [JsonPropertyName("iso_3166_1")]
