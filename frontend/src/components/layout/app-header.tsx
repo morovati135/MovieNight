@@ -10,12 +10,13 @@ import { Clapperboard, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { isActivePath, navigationItems } from "./navigation-items";
-import { NavPill, useActiveBox } from "./nav-pill";
+import { NavPill, useActiveBox, useOptimisticActiveHref } from "./nav-pill";
 
 export function AppHeader() {
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
-  const activeHref = navigationItems.find((item) => isActivePath(pathname, item.href))?.href ?? "";
+  const routeHref = navigationItems.find((item) => isActivePath(pathname, item.href))?.href ?? "";
+  const [activeHref, selectHref] = useOptimisticActiveHref(routeHref, pathname);
   const pill = useActiveBox(navRef, activeHref);
 
   return (
@@ -46,6 +47,7 @@ export function AppHeader() {
                 )}
                 href={href}
                 key={href}
+                onClick={() => selectHref(href)}
               >
                 <Icon
                   aria-hidden="true"

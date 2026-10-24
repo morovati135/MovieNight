@@ -8,12 +8,13 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 import { isActivePath, navigationItems } from "./navigation-items";
-import { NavPill, useActiveBox } from "./nav-pill";
+import { NavPill, useActiveBox, useOptimisticActiveHref } from "./nav-pill";
 
 export function MobileNavigation() {
   const pathname = usePathname();
   const listRef = useRef<HTMLDivElement>(null);
-  const activeHref = navigationItems.find((item) => isActivePath(pathname, item.href))?.href ?? "";
+  const routeHref = navigationItems.find((item) => isActivePath(pathname, item.href))?.href ?? "";
+  const [activeHref, selectHref] = useOptimisticActiveHref(routeHref, pathname);
   const pill = useActiveBox(listRef, activeHref);
 
   return (
@@ -34,11 +35,12 @@ export function MobileNavigation() {
             <Link
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative z-10 flex min-h-[3.25rem] items-center justify-center rounded-full outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring",
+                "relative z-10 flex min-h-[3.25rem] touch-manipulation items-center justify-center rounded-full outline-none [-webkit-tap-highlight-color:transparent] transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring",
                 isActive ? "text-white" : "text-white/55 hover:text-white",
               )}
               href={href}
               key={href}
+              onPointerDown={() => selectHref(href)}
             >
               {/* Icons only on phones; the name stays available to screen readers. */}
               <Icon aria-hidden="true" className={cn("size-6 transition-colors", isActive && "text-[#7fd8ff]")} />
