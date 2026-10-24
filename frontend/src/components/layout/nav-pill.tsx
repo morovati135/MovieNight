@@ -15,6 +15,18 @@ import { cn } from "@/lib/utils";
 
 type Box = { height: number; left: number; top: number; width: number };
 
+/**
+ * The active href, switched the moment a link is tapped instead of when the route finishes loading,
+ * so the pill and icon move together at once (like the toggle groups). A tap is only held until the
+ * pathname changes, so it can never outlive the navigation it started.
+ */
+export function useOptimisticActiveHref(routeHref: string, pathname: string) {
+  const [tapped, setTapped] = useState<{ href: string; pathname: string } | null>(null);
+  const activeHref = tapped && tapped.pathname === pathname ? tapped.href : routeHref;
+
+  return [activeHref, (href: string) => setTapped({ href, pathname })] as const;
+}
+
 /** Measures the `[aria-current=page]` link inside `container` whenever the active item or the size changes. */
 export function useActiveBox(container: RefObject<HTMLElement | null>, activeKey: string) {
   const [box, setBox] = useState<Box | null>(null);
@@ -49,10 +61,12 @@ export function NavPill({ box, className }: { box: Box | null; className?: strin
     <span
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute z-0 rounded-full transition-[left,width,top,height] duration-300 ease-out motion-reduce:transition-none",
+        "pointer-events-none absolute top-0 left-0 z-0 rounded-full transition-[transform,width,height] duration-300 ease-out will-change-transform motion-reduce:transition-none",
         className,
       )}
-      style={{ height: box.height, left: box.left, top: box.top, width: box.width }}
+      // Moved with a transform (compositor) rather than left/top, so the slide stays smooth while the
+      // next route renders and hydrates on the main thread.
+      style={{ height: box.height, transform: `translate3d(${box.left}px, ${box.top}px, 0)`, width: box.width }}
     >
       <span
         className="absolute inset-0 overflow-hidden rounded-[inherit] shadow-[inset_0_1px_0_rgb(255_255_255/10%),0_0_0_1px_rgb(56_189_248/18%),0_0_22px_rgb(14_165_233/22%)]"
