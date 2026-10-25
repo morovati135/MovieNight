@@ -87,4 +87,4 @@ Test logic with meaningful failure modes, not coverage numbers.
 - Backend HTTP tests (`Http/`): the real application with a fake TMDB and a temporary database: routing, validation, Problem Details, cookies, CORS, caching, startup configuration, security headers.
 - Contract: `contracts/api-shapes.json` is checked against the real API (backend) and the TypeScript types (frontend).
 - Frontend (Vitest): API clients, `useWatchlist`, Browse paging.
-- Browser scripts (`frontend/e2e`, live TMDB data, plus `stubbed.mjs` with static API fixtures for reproducible empty/error states): user journeys, 13-route responsive sweep, axe accessibility and keyboard audit, page-load measurements.
+- Browser scripts (`frontend/e2e`, live TMDB data, plus `stubbed.mjs` with static API fixtures for reproducible empty/error states of Search, Watchlist, Details, Browse and Pick): user journeys, 13-route responsive sweep, axe accessibility and keyboard audit, page-load measurements.
