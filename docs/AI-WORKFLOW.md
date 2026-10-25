@@ -28,7 +28,7 @@ MovieNight was built by an AI coding agent with a human as Tech Lead and reviewe
 |---|---|
 | Backend | `dotnet test backend/MovieNight.slnx` |
 | Frontend | `cd frontend && npm run typecheck && npx eslint && npm test && npm run build` |
-| User-visible behavior | with both servers up: `npm run e2e`, `npm run e2e:sweep`, `npm run e2e:a11y` in `frontend/` |
+| User-visible behavior | with both servers up: `npm run e2e`, `npm run e2e:sweep`, `npm run e2e:a11y` in `frontend/` (`npm run e2e:stubbed` needs only the frontend) |
 | API shapes | update `contracts/api-shapes.json`, the DTOs and `frontend/src/types/` together; both test suites compare them |
 | Dependencies | `npm audit` and `dotnet list backend/MovieNight.slnx package --vulnerable --include-transitive` |
 

@@ -1,10 +1,11 @@
 # End-to-end checks
 
-Two scripts drive a real headless browser (Edge or Chrome, over the DevTools Protocol, no extra dependencies) through the running application. They need Node 22+ and use **live TMDB data**, so they are run by hand, not as part of `npm test`.
+Scripts drive a real headless browser (Edge or Chrome, over the DevTools Protocol, no extra dependencies) through the running application. They need Node 22+ and are run by hand, not as part of `npm test`. Most use **live TMDB data**; `stubbed.mjs` instead answers the browser's API calls with static fixtures, so it is reproducible and needs neither a backend nor a TMDB token.
 
 | Script | Command | What it checks |
 |---|---|---|
 | `journeys.mjs` | `npm run e2e` | The user journeys: Home, save to Watchlist, Details, Search, Pick for Me, remove / undo, friendly errors with the backend blocked, not-found pages, and that the browser never calls `api.themoviedb.org`. |
+| `stubbed.mjs` | `npm run e2e:stubbed` | Deterministic, fixture-based (no live data): empty and error states of Search, Watchlist, Movie Details, Browse, Pick for Me and Home (page-level empty / error, plus the Collections, Iconic, Discover by Genre and Watchlist-preview sections failing or empty on their own). Each empty result shows its message and ends the loading state; each failing API (502 / 404) shows a friendly message with a retry and no raw error details. Only the frontend must be running. |
 | `sweep.mjs` | `npm run e2e:sweep` | All 13 routes at 320, 390, 768 and 1440 px: no horizontal overflow, exactly one `h1`, no broken visible images, no touch target under 40 px, no console errors or failed requests (except expected 404 pages). |
 
 | `a11y.mjs` | `npm run e2e:a11y` | axe-core (WCAG 2.1 A / AA and best-practice rules) on 11 routes at 320, 390 and 1440 px, a keyboard Tab pass (skip link first, accessible names, visible focus) on five routes, and page metadata (title, description, social image). |
@@ -17,6 +18,8 @@ All exit with code 1 when something fails.
 1. Backend with a TMDB token configured: `dotnet run --project backend/MovieNight.Api --launch-profile http` (port 5080).
 2. Frontend: `NEXT_PUBLIC_API_BASE_URL=http://localhost:5080 npm run dev` (port 3000). Use `npm run build && npm start` for production-like numbers.
 3. `npm run e2e` and `npm run e2e:sweep`.
+
+`npm run e2e:stubbed` needs only step 2. The live scripts remain the check that the real TMDB connection works; the stubbed one never contacts it.
 
 The Watchlist journey saves and removes one movie in a fresh browser profile, so it leaves nothing behind.
 

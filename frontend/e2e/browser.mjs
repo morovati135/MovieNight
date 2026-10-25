@@ -65,10 +65,35 @@ export async function launch({ port = 9400 + Math.floor(Math.random() * 400) } =
     if (data.id && pending.has(data.id)) {
       pending.get(data.id)(data);
       pending.delete(data.id);
+    } else if (data.method === "Fetch.requestPaused") {
+      answerStubbedRequest(data.params);
     } else if (data.method) {
       events.push(data);
     }
   };
+
+  // Static responses for requests matching a rule (see `stubResponses`); everything else continues untouched.
+  let stubRules = [];
+
+  async function answerStubbedRequest({ requestId, request }) {
+    const rule = stubRules.find((candidate) => candidate.match.test(request.url));
+
+    if (!rule) {
+      send("Fetch.continueRequest", { requestId });
+      return;
+    }
+
+    await sleep(rule.delayMs ?? 0);
+    send("Fetch.fulfillRequest", {
+      body: Buffer.from(JSON.stringify(rule.body)).toString("base64"),
+      requestId,
+      responseCode: rule.status ?? 200,
+      responseHeaders: [
+        { name: "Content-Type", value: rule.status >= 400 ? "application/problem+json" : "application/json" },
+        { name: "Access-Control-Allow-Origin", value: "*" },
+      ],
+    });
+  }
 
   const send = (method, params = {}) =>
     new Promise((resolve) => {
@@ -103,6 +128,14 @@ export async function launch({ port = 9400 + Math.floor(Math.random() * 400) } =
     /** Raw DevTools events since the last navigation (for the performance script). */
     rawEvents: () => events,
     send,
+    /**
+     * Answers browser requests whose URL matches `match` (a RegExp) with a static JSON `body` (optionally a
+     * `status` and a `delayMs`), so a check does not depend on live TMDB data. Pass `[]` to stop stubbing.
+     */
+    async stubResponses(rules) {
+      stubRules = rules;
+      await send(rules.length > 0 ? "Fetch.enable" : "Fetch.disable", rules.length > 0 ? { patterns: [{ urlPattern: "*" }] } : {});
+    },
     blockUrls: (urls) => send("Network.setBlockedURLs", { urls }),
     /** Console errors, thrown exceptions and failed (>= 400) responses since the last navigation. */
     problems() {
