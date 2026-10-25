@@ -5,7 +5,7 @@ Scripts drive a real headless browser (Edge or Chrome, over the DevTools Protoco
 | Script | Command | What it checks |
 |---|---|---|
 | `journeys.mjs` | `npm run e2e` | The user journeys: Home, save to Watchlist, Details, Search, Pick for Me, remove / undo, friendly errors with the backend blocked, not-found pages, and that the browser never calls `api.themoviedb.org`. |
-| `stubbed.mjs` | `npm run e2e:stubbed` | Deterministic, fixture-based (no live data): empty and error states of Search, Watchlist, Movie Details, Browse and Pick for Me. Each empty result shows its message and ends the loading state; each failing API (502 / 404) shows a friendly message with a retry and no raw error details. Only the frontend must be running. |
+| `stubbed.mjs` | `npm run e2e:stubbed` | Deterministic, fixture-based (no live data): empty and error states of Search, Watchlist, Movie Details, Browse, Pick for Me and Home (page-level empty / error, plus the Collections, Iconic, Discover by Genre and Watchlist-preview sections failing or empty on their own). Each empty result shows its message and ends the loading state; each failing API (502 / 404) shows a friendly message with a retry and no raw error details. Only the frontend must be running. |
 | `sweep.mjs` | `npm run e2e:sweep` | All 13 routes at 320, 390, 768 and 1440 px: no horizontal overflow, exactly one `h1`, no broken visible images, no touch target under 40 px, no console errors or failed requests (except expected 404 pages). |
 
 | `a11y.mjs` | `npm run e2e:a11y` | axe-core (WCAG 2.1 A / AA and best-practice rules) on 11 routes at 320, 390 and 1440 px, a keyboard Tab pass (skip link first, accessible names, visible focus) on five routes, and page metadata (title, description, social image). |

@@ -85,6 +85,56 @@ try {
   text = await pickWith({ match: /\/api\/movies\/pick/, status: 502, body: problem(502, "Bad Gateway") });
   check("Pick (error fixture): friendly message with a retry, no raw details", /couldn’t pick a movie right now/.test(text) && /Try again/.test(text) && !rawDetails.test(text));
 
+  // Home: page-level empty and error states, then each lazy section failing or empty on its own.
+  const movie = { backdropUrl: null, genreIds: [28], id: 1, overview: "A fixture film.", posterUrl: null, releaseDate: "2020-01-01", title: "Fixture Film", voteAverage: 7.5 };
+  const onePage = { page: 1, results: [movie], totalPages: 1, totalResults: 1 };
+  const failure = (match) => ({ body: problem(502, "Bad Gateway"), match, status: 502 });
+  const homeBase = [
+    { match: /\/api\/movies\/trending/, body: onePage },
+    { match: /\/api\/movies\/popular/, body: onePage },
+    { match: /\/api\/movies\/top-rated/, body: onePage },
+    { match: /\/api\/movies\/discover/, body: onePage },
+    { match: /\/api\/collections$/, body: [{ posterUrls: [], slug: "fixture", title: "Fixture Collection" }] },
+    { match: /\/backend\/watchlist$/, body: [] },
+    genres,
+  ];
+  const homeWith = async (...overrides) => {
+    await browser.stubResponses([...overrides, ...homeBase]);
+    await browser.go("/", 2500);
+
+    // The lower sections load when they come near the viewport, so scroll down a screen at a time (a single jump to the bottom can skip a section).
+    for (let step = 0; step < 14; step++) {
+      await browser.evaluate("window.scrollBy(0, window.innerHeight * 0.7)");
+      await sleep(500);
+    }
+
+    await sleep(1500);
+    return browser.text();
+  };
+
+  text = await homeWith({ match: /\/api\/movies\/trending/, body: emptySearch });
+  check("Home (empty trending fixture): shows “Nothing is showing yet” with Check again", /Nothing is showing yet/.test(text) && /Check again/.test(text));
+  text = await homeWith(failure(/\/api\/movies\/trending/));
+  check("Home (error fixture): friendly message with a retry, no raw details", /couldn’t load movies right now/.test(text) && /Try again/.test(text) && !rawDetails.test(text));
+  text = await homeWith();
+  check("Home (healthy fixtures): hero, sections and no error notices", /Fixture Film/.test(text) && /Fixture Collection|Collections/.test(text) && !/could not be loaded|couldn’t be loaded/.test(text));
+  text = await homeWith(failure(/\/api\/collections$/));
+  check("Home (collections error): only that section shows a retry", /Collections could not be loaded right now/.test(text) && /Discover by Genre/.test(text) && !rawDetails.test(text));
+  text = await homeWith({ match: /\/api\/collections$/, body: [] });
+  check("Home (no collections): the section is left out", !/Collections/.test(text) && /Discover by Genre/.test(text));
+  text = await homeWith(failure(/\/api\/movies\/top-rated/));
+  check("Home (iconic error): only that section shows a retry", /Top rated movies could not be loaded right now/.test(text) && !rawDetails.test(text));
+  text = await homeWith({ match: /\/api\/movies\/top-rated/, body: emptySearch });
+  check("Home (no top-rated movies): the section is left out", !/Iconic/.test(text) && /Discover by Genre/.test(text));
+  text = await homeWith(failure(/\/api\/movies\/genres/));
+  check("Home (genres error): the genre section shows a retry", /Genres could not be loaded right now/.test(text) && !rawDetails.test(text));
+  text = await homeWith(failure(/\/api\/movies\/discover/));
+  check("Home (genre movies error): says Action movies could not be loaded", /Action movies could not be loaded/.test(text) && !rawDetails.test(text));
+  text = await homeWith({ match: /\/api\/movies\/discover/, body: emptySearch });
+  check("Home (no genre movies): says there is nothing to show", /No Action movies to show right now/.test(text));
+  text = await homeWith(failure(/\/backend\/watchlist$/));
+  check("Home (watchlist error): the preview shows a retry while the rest of Home works", /Your watchlist could not be loaded right now/.test(text) && /Fixture Film/.test(text));
+
   await browser.stubResponses([]);
 } finally {
   await browser.close();
