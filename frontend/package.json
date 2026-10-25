@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "node e2e/journeys.mjs",
+    "e2e:stubbed": "node e2e/stubbed.mjs",
     "e2e:sweep": "node e2e/sweep.mjs",
     "e2e:perf": "node e2e/perf.mjs",
     "e2e:a11y": "node e2e/a11y.mjs"

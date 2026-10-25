@@ -128,7 +128,7 @@ cd frontend && npm run typecheck && npx eslint && npm test            # types, l
 npm run build                                                         # production build
 ```
 
-With both servers running, the browser scripts (Edge or Chrome required, live TMDB data) run the user journeys, a responsive sweep, an accessibility audit and page-load measurements: see [frontend/e2e/README.md](frontend/e2e/README.md).
+With both servers running, the browser scripts (Edge or Chrome required, live TMDB data) run the user journeys, a responsive sweep, an accessibility audit and page-load measurements. `npm run e2e:stubbed` runs fixture-based checks that need no TMDB token. See [frontend/e2e/README.md](frontend/e2e/README.md).
 
 ## Project structure
 
